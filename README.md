@@ -48,12 +48,14 @@
 >
 > 每个小节属于哪种推理、溯因规则怎么写，见 [`lib/ai/tasks.ts`](./lib/ai/tasks.ts)；回归测试见 `scripts/regression/ai-reasoning-split.test.ts`。
 
-> **注：八字、六爻、五运六气、择日 Skill（本 fork 新增）**
+> **注：八字、六爻、五运六气、择日、太乙、皇极经世 Skill（本 fork 新增）**
 >
 > - [`.claude/skills/bazi/`](./.claude/skills/bazi/SKILL.md)：八字（子平术）排盘与解读，含十神、藏干、月令旺衰、合冲刑害、大运、流年。四柱另以独立算法（儒略日、Meeus 太阳黄经）交叉校验。日主强弱、用神一律按溯因标注。
 > - [`.claude/skills/liuyao/`](./.claude/skills/liuyao/SKILL.md)：六爻（纳甲筮法）起卦装卦，附《周易》卦辞爻辞原文（校勘见 [`docs/zhouyi-collation.md`](./docs/zhouyi-collation.md)）。断吉凶、应期、把经文套到所问之事一律按溯因标注。
 > - [`.claude/skills/wuyun-liuqi/`](./.claude/skills/wuyun-liuqi/SKILL.md)：五运六气年局（岁运、主客运、司天在泉、主客气六步、客主加临、天符岁会）。六十甲子对照《素问·六元正纪大论》验算。气候、疾病倾向、世事对应一律按溯因标注。
 > - [`.claude/skills/zeri/`](./.claude/skills/zeri/SKILL.md)：择日（通书宜忌、建除、黄道黑道、二十八宿、冲煞、时辰），可在一段日期里筛出宜办某事的日子并标出生肖相冲。只列不评分，多日取舍按溯因标注。
+> - [`.claude/skills/taiyi/`](./.claude/skills/taiyi/SKILL.md)：太乙神数岁计（依《太乙金镜式经》），看国运世局。七十二局逐局对照原书「阳局立成」（见 [`docs/taiyi-collation.md`](./docs/taiyi-collation.md)）。年势、分野对应、世事推测一律按溯因标注。
+> - [`.claude/skills/huangji/`](./.claude/skills/huangji/SKILL.md)：皇极经世元会运世定位，附《皇极经世书》「以运经世」逐年原文查询（公元前 2367 年至公元 963 年）。原书没有对后世的预言，时势推论一律按溯因标注。
 >
 > 后续体系规划见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
 

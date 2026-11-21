@@ -21,6 +21,12 @@ import {
 import {
   ZERI_ABDUCTION_HOTSPOTS, ZERI_OUT_OF_SCOPE, ZERI_SECTION_SETS, ZERI_VOCABULARY,
 } from './zeri/tasks';
+import {
+  TAIYI_ABDUCTION_HOTSPOTS, TAIYI_OUT_OF_SCOPE, TAIYI_SECTION_SETS, TAIYI_VOCABULARY,
+} from './taiyi/tasks';
+import {
+  HUANGJI_ABDUCTION_HOTSPOTS, HUANGJI_OUT_OF_SCOPE, HUANGJI_SECTION_SETS, HUANGJI_VOCABULARY,
+} from './huangji/tasks';
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
@@ -38,7 +44,7 @@ const ziwei: DivinationSystem = {
     { question: '命格定性、优势与课题、实际建议', why: '吉凶讯号并存时，以哪一面为主规则不决定' },
   ],
   outOfScope: [
-    '国运、地区运势（引擎只为个人出生时间设计）',
+    '用紫微盘推国运、地区运势（引擎只为个人出生时间设计；国运世局改用 taiyi、huangji）',
     '姓名学、风水布局、六神、测字（仓库没有对应工具）',
     '合盘分数、配对指数（仓库没有计分方法）',
     '语料里查不到的倪师原话、古籍里没有的说法',
@@ -102,7 +108,27 @@ const zeri: DivinationSystem = {
   outOfScope: ZERI_OUT_OF_SCOPE,
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri];
+const taiyi: DivinationSystem = {
+  id: 'taiyi',
+  name: '太乙神數（《太乙金鏡式經》歲計）',
+  scope: '世',
+  vocabulary: TAIYI_VOCABULARY,
+  sectionSets: TAIYI_SECTION_SETS,
+  abductionHotspots: TAIYI_ABDUCTION_HOTSPOTS,
+  outOfScope: TAIYI_OUT_OF_SCOPE,
+};
+
+const huangji: DivinationSystem = {
+  id: 'huangji',
+  name: '皇極經世（邵雍元會運世）',
+  scope: '世',
+  vocabulary: HUANGJI_VOCABULARY,
+  sectionSets: HUANGJI_SECTION_SETS,
+  abductionHotspots: HUANGJI_ABDUCTION_HOTSPOTS,
+  outOfScope: HUANGJI_OUT_OF_SCOPE,
+};
+
+export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri, taiyi, huangji];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);

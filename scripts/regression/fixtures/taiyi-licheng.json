@@ -1,0 +1,656 @@
+{
+ "source": "《太乙金鏡式經》（四庫全書本）卷三，維基文庫",
+ "notes": [
+  "局41：計神原文作「戊」，收為戌"
+ ],
+ "rows": [
+  {
+   "ju": 1,
+   "gong": 1,
+   "tianMu": "武德",
+   "zhuSuan": 7,
+   "keMu": "大武",
+   "keSuan": 13,
+   "jiShen": "寅"
+  },
+  {
+   "ju": 2,
+   "gong": 1,
+   "tianMu": "太簇",
+   "zhuSuan": 6,
+   "keMu": "陰主",
+   "keSuan": 1,
+   "jiShen": "丑"
+  },
+  {
+   "ju": 3,
+   "gong": 1,
+   "tianMu": "陰主",
+   "zhuSuan": 1,
+   "keMu": "大義",
+   "keSuan": 40,
+   "jiShen": "子"
+  },
+  {
+   "ju": 4,
+   "gong": 2,
+   "tianMu": "陰德",
+   "zhuSuan": 25,
+   "keMu": "陽德",
+   "keSuan": 17,
+   "jiShen": "亥"
+  },
+  {
+   "ju": 5,
+   "gong": 2,
+   "tianMu": "陰德",
+   "zhuSuan": 25,
+   "keMu": "呂申",
+   "keSuan": 14,
+   "jiShen": "戌"
+  },
+  {
+   "ju": 6,
+   "gong": 2,
+   "tianMu": "大義",
+   "zhuSuan": 25,
+   "keMu": "太陽",
+   "keSuan": 10,
+   "jiShen": "酉"
+  },
+  {
+   "ju": 7,
+   "gong": 3,
+   "tianMu": "地主",
+   "zhuSuan": 8,
+   "keMu": "大神",
+   "keSuan": 25,
+   "jiShen": "申"
+  },
+  {
+   "ju": 8,
+   "gong": 3,
+   "tianMu": "陽德",
+   "zhuSuan": 1,
+   "keMu": "大武",
+   "keSuan": 22,
+   "jiShen": "未"
+  },
+  {
+   "ju": 9,
+   "gong": 3,
+   "tianMu": "和德",
+   "zhuSuan": 3,
+   "keMu": "太簇",
+   "keSuan": 15,
+   "jiShen": "午"
+  },
+  {
+   "ju": 10,
+   "gong": 4,
+   "tianMu": "呂申",
+   "zhuSuan": 1,
+   "keMu": "陰德",
+   "keSuan": 12,
+   "jiShen": "巳"
+  },
+  {
+   "ju": 11,
+   "gong": 4,
+   "tianMu": "高叢",
+   "zhuSuan": 4,
+   "keMu": "陽德",
+   "keSuan": 4,
+   "jiShen": "辰"
+  },
+  {
+   "ju": 12,
+   "gong": 4,
+   "tianMu": "太陽",
+   "zhuSuan": 37,
+   "keMu": "呂申",
+   "keSuan": 1,
+   "jiShen": "卯"
+  },
+  {
+   "ju": 13,
+   "gong": 6,
+   "tianMu": "大炅",
+   "zhuSuan": 18,
+   "keMu": "太陽",
+   "keSuan": 19,
+   "jiShen": "寅"
+  },
+  {
+   "ju": 14,
+   "gong": 6,
+   "tianMu": "大神",
+   "zhuSuan": 10,
+   "keMu": "大威",
+   "keSuan": 9,
+   "jiShen": "丑"
+  },
+  {
+   "ju": 15,
+   "gong": 6,
+   "tianMu": "大威",
+   "zhuSuan": 9,
+   "keMu": "大武",
+   "keSuan": 7,
+   "jiShen": "子"
+  },
+  {
+   "ju": 16,
+   "gong": 7,
+   "tianMu": "天道",
+   "zhuSuan": 1,
+   "keMu": "太簇",
+   "keSuan": 33,
+   "jiShen": "亥"
+  },
+  {
+   "ju": 17,
+   "gong": 7,
+   "tianMu": "大武",
+   "zhuSuan": 7,
+   "keMu": "大義",
+   "keSuan": 27,
+   "jiShen": "戌"
+  },
+  {
+   "ju": 18,
+   "gong": 7,
+   "tianMu": "大武",
+   "zhuSuan": 7,
+   "keMu": "地主",
+   "keSuan": 26,
+   "jiShen": "酉"
+  },
+  {
+   "ju": 19,
+   "gong": 8,
+   "tianMu": "武德",
+   "zhuSuan": 8,
+   "keMu": "和德",
+   "keSuan": 32,
+   "jiShen": "申"
+  },
+  {
+   "ju": 20,
+   "gong": 8,
+   "tianMu": "太簇",
+   "zhuSuan": 7,
+   "keMu": "太陽",
+   "keSuan": 26,
+   "jiShen": "未"
+  },
+  {
+   "ju": 21,
+   "gong": 8,
+   "tianMu": "陰主",
+   "zhuSuan": 2,
+   "keMu": "大神",
+   "keSuan": 17,
+   "jiShen": "午"
+  },
+  {
+   "ju": 22,
+   "gong": 9,
+   "tianMu": "陰德",
+   "zhuSuan": 16,
+   "keMu": "天道",
+   "keSuan": 30,
+   "jiShen": "巳"
+  },
+  {
+   "ju": 23,
+   "gong": 9,
+   "tianMu": "陰德",
+   "zhuSuan": 16,
+   "keMu": "武德",
+   "keSuan": 23,
+   "jiShen": "辰"
+  },
+  {
+   "ju": 24,
+   "gong": 9,
+   "tianMu": "大義",
+   "zhuSuan": 16,
+   "keMu": "陰主",
+   "keSuan": 17,
+   "jiShen": "卯"
+  },
+  {
+   "ju": 25,
+   "gong": 1,
+   "tianMu": "地主",
+   "zhuSuan": 39,
+   "keMu": "大義",
+   "keSuan": 40,
+   "jiShen": "寅"
+  },
+  {
+   "ju": 26,
+   "gong": 1,
+   "tianMu": "陽德",
+   "zhuSuan": 32,
+   "keMu": "和德",
+   "keSuan": 31,
+   "jiShen": "丑"
+  },
+  {
+   "ju": 27,
+   "gong": 1,
+   "tianMu": "和德",
+   "zhuSuan": 31,
+   "keMu": "高叢",
+   "keSuan": 28,
+   "jiShen": "子"
+  },
+  {
+   "ju": 28,
+   "gong": 2,
+   "tianMu": "呂申",
+   "zhuSuan": 14,
+   "keMu": "大炅",
+   "keSuan": 9,
+   "jiShen": "亥"
+  },
+  {
+   "ju": 29,
+   "gong": 2,
+   "tianMu": "高叢",
+   "zhuSuan": 13,
+   "keMu": "天道",
+   "keSuan": 39,
+   "jiShen": "戌"
+  },
+  {
+   "ju": 30,
+   "gong": 2,
+   "tianMu": "太陽",
+   "zhuSuan": 10,
+   "keMu": "武德",
+   "keSuan": 32,
+   "jiShen": "酉"
+  },
+  {
+   "ju": 31,
+   "gong": 3,
+   "tianMu": "大炅",
+   "zhuSuan": 33,
+   "keMu": "陰主",
+   "keSuan": 10,
+   "jiShen": "申"
+  },
+  {
+   "ju": 32,
+   "gong": 3,
+   "tianMu": "大神",
+   "zhuSuan": 25,
+   "keMu": "地主",
+   "keSuan": 8,
+   "jiShen": "未"
+  },
+  {
+   "ju": 33,
+   "gong": 3,
+   "tianMu": "大威",
+   "zhuSuan": 24,
+   "keMu": "和德",
+   "keSuan": 3,
+   "jiShen": "午"
+  },
+  {
+   "ju": 34,
+   "gong": 4,
+   "tianMu": "天道",
+   "zhuSuan": 26,
+   "keMu": "高叢",
+   "keSuan": 4,
+   "jiShen": "巳"
+  },
+  {
+   "ju": 35,
+   "gong": 4,
+   "tianMu": "大武",
+   "zhuSuan": 25,
+   "keMu": "大神",
+   "keSuan": 28,
+   "jiShen": "辰"
+  },
+  {
+   "ju": 36,
+   "gong": 4,
+   "tianMu": "大武",
+   "zhuSuan": 25,
+   "keMu": "大威",
+   "keSuan": 27,
+   "jiShen": "卯"
+  },
+  {
+   "ju": 37,
+   "gong": 6,
+   "tianMu": "武德",
+   "zhuSuan": 1,
+   "keMu": "大武",
+   "keSuan": 7,
+   "jiShen": "寅"
+  },
+  {
+   "ju": 38,
+   "gong": 6,
+   "tianMu": "太簇",
+   "zhuSuan": 6,
+   "keMu": "陰主",
+   "keSuan": 35,
+   "jiShen": "丑"
+  },
+  {
+   "ju": 39,
+   "gong": 6,
+   "tianMu": "陰主",
+   "zhuSuan": 25,
+   "keMu": "大義",
+   "keSuan": 34,
+   "jiShen": "子"
+  },
+  {
+   "ju": 40,
+   "gong": 7,
+   "tianMu": "陰德",
+   "zhuSuan": 27,
+   "keMu": "陽德",
+   "keSuan": 19,
+   "jiShen": "亥"
+  },
+  {
+   "ju": 41,
+   "gong": 7,
+   "tianMu": "陰德",
+   "zhuSuan": 27,
+   "keMu": "呂申",
+   "keSuan": 16,
+   "jiShen": "戌"
+  },
+  {
+   "ju": 42,
+   "gong": 7,
+   "tianMu": "大義",
+   "zhuSuan": 27,
+   "keMu": "太陽",
+   "keSuan": 12,
+   "jiShen": "酉"
+  },
+  {
+   "ju": 43,
+   "gong": 8,
+   "tianMu": "地主",
+   "zhuSuan": 8,
+   "keMu": "大神",
+   "keSuan": 17,
+   "jiShen": "申"
+  },
+  {
+   "ju": 44,
+   "gong": 8,
+   "tianMu": "陽德",
+   "zhuSuan": 33,
+   "keMu": "大武",
+   "keSuan": 14,
+   "jiShen": "未"
+  },
+  {
+   "ju": 45,
+   "gong": 8,
+   "tianMu": "和德",
+   "zhuSuan": 32,
+   "keMu": "太簇",
+   "keSuan": 7,
+   "jiShen": "午"
+  },
+  {
+   "ju": 46,
+   "gong": 9,
+   "tianMu": "呂申",
+   "zhuSuan": 5,
+   "keMu": "陰德",
+   "keSuan": 16,
+   "jiShen": "巳"
+  },
+  {
+   "ju": 47,
+   "gong": 9,
+   "tianMu": "高叢",
+   "zhuSuan": 4,
+   "keMu": "陽德",
+   "keSuan": 8,
+   "jiShen": "辰"
+  },
+  {
+   "ju": 48,
+   "gong": 9,
+   "tianMu": "太陽",
+   "zhuSuan": 1,
+   "keMu": "呂申",
+   "keSuan": 5,
+   "jiShen": "卯"
+  },
+  {
+   "ju": 49,
+   "gong": 1,
+   "tianMu": "大炅",
+   "zhuSuan": 24,
+   "keMu": "太陽",
+   "keSuan": 25,
+   "jiShen": "寅"
+  },
+  {
+   "ju": 50,
+   "gong": 1,
+   "tianMu": "大神",
+   "zhuSuan": 6,
+   "keMu": "大威",
+   "keSuan": 15,
+   "jiShen": "丑"
+  },
+  {
+   "ju": 51,
+   "gong": 1,
+   "tianMu": "大威",
+   "zhuSuan": 15,
+   "keMu": "大武",
+   "keSuan": 13,
+   "jiShen": "子"
+  },
+  {
+   "ju": 52,
+   "gong": 2,
+   "tianMu": "天道",
+   "zhuSuan": 39,
+   "keMu": "太簇",
+   "keSuan": 31,
+   "jiShen": "亥"
+  },
+  {
+   "ju": 53,
+   "gong": 2,
+   "tianMu": "大武",
+   "zhuSuan": 38,
+   "keMu": "大義",
+   "keSuan": 25,
+   "jiShen": "戌"
+  },
+  {
+   "ju": 54,
+   "gong": 2,
+   "tianMu": "大武",
+   "zhuSuan": 38,
+   "keMu": "地主",
+   "keSuan": 24,
+   "jiShen": "酉"
+  },
+  {
+   "ju": 55,
+   "gong": 3,
+   "tianMu": "武德",
+   "zhuSuan": 16,
+   "keMu": "和德",
+   "keSuan": 3,
+   "jiShen": "申"
+  },
+  {
+   "ju": 56,
+   "gong": 3,
+   "tianMu": "太簇",
+   "zhuSuan": 15,
+   "keMu": "太陽",
+   "keSuan": 34,
+   "jiShen": "未"
+  },
+  {
+   "ju": 57,
+   "gong": 3,
+   "tianMu": "陰主",
+   "zhuSuan": 10,
+   "keMu": "大神",
+   "keSuan": 25,
+   "jiShen": "午"
+  },
+  {
+   "ju": 58,
+   "gong": 4,
+   "tianMu": "陰德",
+   "zhuSuan": 12,
+   "keMu": "天道",
+   "keSuan": 26,
+   "jiShen": "巳"
+  },
+  {
+   "ju": 59,
+   "gong": 4,
+   "tianMu": "陰德",
+   "zhuSuan": 12,
+   "keMu": "武德",
+   "keSuan": 19,
+   "jiShen": "辰"
+  },
+  {
+   "ju": 60,
+   "gong": 4,
+   "tianMu": "大義",
+   "zhuSuan": 12,
+   "keMu": "陰主",
+   "keSuan": 13,
+   "jiShen": "卯"
+  },
+  {
+   "ju": 61,
+   "gong": 6,
+   "tianMu": "地主",
+   "zhuSuan": 33,
+   "keMu": "大義",
+   "keSuan": 34,
+   "jiShen": "寅"
+  },
+  {
+   "ju": 62,
+   "gong": 6,
+   "tianMu": "陽德",
+   "zhuSuan": 26,
+   "keMu": "和德",
+   "keSuan": 25,
+   "jiShen": "丑"
+  },
+  {
+   "ju": 63,
+   "gong": 6,
+   "tianMu": "和德",
+   "zhuSuan": 25,
+   "keMu": "高叢",
+   "keSuan": 22,
+   "jiShen": "子"
+  },
+  {
+   "ju": 64,
+   "gong": 7,
+   "tianMu": "呂申",
+   "zhuSuan": 16,
+   "keMu": "大炅",
+   "keSuan": 11,
+   "jiShen": "亥"
+  },
+  {
+   "ju": 65,
+   "gong": 7,
+   "tianMu": "高叢",
+   "zhuSuan": 15,
+   "keMu": "天道",
+   "keSuan": 1,
+   "jiShen": "戌"
+  },
+  {
+   "ju": 66,
+   "gong": 7,
+   "tianMu": "太陽",
+   "zhuSuan": 12,
+   "keMu": "武德",
+   "keSuan": 34,
+   "jiShen": "酉"
+  },
+  {
+   "ju": 67,
+   "gong": 8,
+   "tianMu": "大炅",
+   "zhuSuan": 25,
+   "keMu": "陰主",
+   "keSuan": 2,
+   "jiShen": "申"
+  },
+  {
+   "ju": 68,
+   "gong": 8,
+   "tianMu": "大神",
+   "zhuSuan": 17,
+   "keMu": "地主",
+   "keSuan": 8,
+   "jiShen": "未"
+  },
+  {
+   "ju": 69,
+   "gong": 8,
+   "tianMu": "大威",
+   "zhuSuan": 16,
+   "keMu": "和德",
+   "keSuan": 32,
+   "jiShen": "午"
+  },
+  {
+   "ju": 70,
+   "gong": 9,
+   "tianMu": "天道",
+   "zhuSuan": 30,
+   "keMu": "高叢",
+   "keSuan": 4,
+   "jiShen": "巳"
+  },
+  {
+   "ju": 71,
+   "gong": 9,
+   "tianMu": "大武",
+   "zhuSuan": 29,
+   "keMu": "大神",
+   "keSuan": 32,
+   "jiShen": "辰"
+  },
+  {
+   "ju": 72,
+   "gong": 9,
+   "tianMu": "大武",
+   "zhuSuan": 29,
+   "keMu": "大威",
+   "keSuan": 31,
+   "jiShen": "卯"
+  }
+ ]
+}
