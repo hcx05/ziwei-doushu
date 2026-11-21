@@ -48,10 +48,14 @@
 >
 > 每个小节属于哪种推理、溯因规则怎么写，见 [`lib/ai/tasks.ts`](./lib/ai/tasks.ts)；回归测试见 `scripts/regression/ai-reasoning-split.test.ts`。
 
-> **注：八字、六爻 Skill（本 fork 新增）**
+> **注：八字、六爻、五运六气、择日 Skill（本 fork 新增）**
 >
 > - [`.claude/skills/bazi/`](./.claude/skills/bazi/SKILL.md)：八字（子平术）排盘与解读，含十神、藏干、月令旺衰、合冲刑害、大运、流年。四柱另以独立算法（儒略日、Meeus 太阳黄经）交叉校验。日主强弱、用神一律按溯因标注。
-> - [`.claude/skills/liuyao/`](./.claude/skills/liuyao/SKILL.md)：六爻（纳甲筮法）起卦装卦，附《周易》卦辞爻辞原文（校勘见 [`docs/zhouyi-collation.md`](./docs/zhouyi-collation.md)）。断吉凶、应期、把经文套到所问之事一律按溯因标注。后续体系规划见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
+> - [`.claude/skills/liuyao/`](./.claude/skills/liuyao/SKILL.md)：六爻（纳甲筮法）起卦装卦，附《周易》卦辞爻辞原文（校勘见 [`docs/zhouyi-collation.md`](./docs/zhouyi-collation.md)）。断吉凶、应期、把经文套到所问之事一律按溯因标注。
+> - [`.claude/skills/wuyun-liuqi/`](./.claude/skills/wuyun-liuqi/SKILL.md)：五运六气年局（岁运、主客运、司天在泉、主客气六步、客主加临、天符岁会）。六十甲子对照《素问·六元正纪大论》验算。气候、疾病倾向、世事对应一律按溯因标注。
+> - [`.claude/skills/zeri/`](./.claude/skills/zeri/SKILL.md)：择日（通书宜忌、建除、黄道黑道、二十八宿、冲煞、时辰），可在一段日期里筛出宜办某事的日子并标出生肖相冲。只列不评分，多日取舍按溯因标注。
+>
+> 后续体系规划见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
 
 > **注：Claude Skill 版本**
 >

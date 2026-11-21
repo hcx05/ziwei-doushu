@@ -15,6 +15,12 @@ import {
 import {
   LIUYAO_ABDUCTION_HOTSPOTS, LIUYAO_OUT_OF_SCOPE, LIUYAO_SECTION_SETS, LIUYAO_VOCABULARY,
 } from './liuyao/tasks';
+import {
+  WUYUN_ABDUCTION_HOTSPOTS, WUYUN_OUT_OF_SCOPE, WUYUN_SECTION_SETS, WUYUN_VOCABULARY,
+} from './wuyun/tasks';
+import {
+  ZERI_ABDUCTION_HOTSPOTS, ZERI_OUT_OF_SCOPE, ZERI_SECTION_SETS, ZERI_VOCABULARY,
+} from './zeri/tasks';
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
@@ -76,7 +82,27 @@ const liuyao: DivinationSystem = {
   outOfScope: LIUYAO_OUT_OF_SCOPE,
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao];
+const wuyun: DivinationSystem = {
+  id: 'wuyun',
+  name: '五运六气（《素问》运气学说）',
+  scope: '年',
+  vocabulary: WUYUN_VOCABULARY,
+  sectionSets: WUYUN_SECTION_SETS,
+  abductionHotspots: WUYUN_ABDUCTION_HOTSPOTS,
+  outOfScope: WUYUN_OUT_OF_SCOPE,
+};
+
+const zeri: DivinationSystem = {
+  id: 'zeri',
+  name: '择日（通书，《协纪辨方书》体系）',
+  scope: '时',
+  vocabulary: ZERI_VOCABULARY,
+  sectionSets: ZERI_SECTION_SETS,
+  abductionHotspots: ZERI_ABDUCTION_HOTSPOTS,
+  outOfScope: ZERI_OUT_OF_SCOPE,
+};
+
+export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);

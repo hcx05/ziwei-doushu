@@ -16,6 +16,53 @@ declare module 'lunar-javascript' {
     getNextJie(wholeDay?: boolean): JieQi;
     /** 换算成公历(2026-08-05 补声明:lib/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
     getSolar(): Solar;
+    // ── 择日 / 五运六气（2026-11-21 补：lib/systems/zeri、lib/systems/wuyun 用） ──
+    getYearInGanZhiByLiChun(): string;
+    /** 按「节」所在日换月（交节当日即用新月），通书口径 */
+    getMonthInGanZhi(): string;
+    getMonthInGanZhiExact(): string;
+    getDayInGanZhi(): string;
+    getDayNaYin(): string;
+    getMonthInChinese(): string;
+    getDayInChinese(): string;
+    getZhiXing(): string;
+    getXiu(): string;
+    getXiuLuck(): string;
+    getZheng(): string;
+    getAnimal(): string;
+    getDayTianShen(): string;
+    getDayTianShenType(): string;
+    getDayTianShenLuck(): string;
+    getDayYi(sect?: 1 | 2): string[];
+    getDayJi(sect?: 1 | 2): string[];
+    getDayJiShen(): string[];
+    getDayXiongSha(): string[];
+    getDayChong(): string;
+    getDayChongGan(): string;
+    getDayChongShengXiao(): string;
+    getDaySha(): string;
+    getPengZuGan(): string;
+    getPengZuZhi(): string;
+    getDayNineStar(): { toString(): string };
+    /** 当日若为十二节之一则返回节名，否则空字符串 */
+    getJie(): string;
+    getTimes(): LunarTime[];
+    /** 本农历年附近的节气表；当年为中文名，前后一年的为拼音大写键（如 DA_HAN） */
+    getJieQiTable(): Record<string, Solar>;
+  }
+
+  class LunarTime {
+    getGanZhi(): string;
+    getZhi(): string;
+    getMinHm(): string;
+    getMaxHm(): string;
+    getTianShen(): string;
+    getTianShenType(): string;
+    getTianShenLuck(): string;
+    getChongShengXiao(): string;
+    getSha(): string;
+    getYi(): string[];
+    getJi(): string[];
   }
 
   class Solar {
@@ -30,6 +77,10 @@ declare module 'lunar-javascript' {
     /** 本时刻减去另一时刻的分钟数 */
     subtractMinute(other: Solar): number;
     toYmdHms(): string;
+    toYmd(): string;
+    /** 0 = 星期日 */
+    getWeek(): number;
+    getJulianDay(): number;
   }
 
   /** 节气（2026-11-21 补：八字月柱边界用） */
@@ -69,7 +120,13 @@ declare module 'lunar-javascript' {
     getEndAge(): number;
   }
 
-  const LunarUtil: { NAYIN: Record<string, string> };
+  const LunarUtil: {
+    NAYIN: Record<string, string>;
+    /** 通书宜忌用语全表 */
+    YI_JI: string[];
+    getDayYi(monthGanZhi: string, dayGanZhi: string): string[];
+    getDayJi(monthGanZhi: string, dayGanZhi: string): string[];
+  };
 
   /** 农历月信息(2026-06-10 补:闰月大小月边界 clamp 用) */
   class LunarMonth {
