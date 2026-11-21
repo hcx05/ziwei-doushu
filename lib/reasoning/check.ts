@@ -2,7 +2,7 @@
  * lib/reasoning/check.ts —— 输出端的确定性检查：溯因节有没有标注
  *
  * 标注原本只靠提示词要求；模型漏写时没有任何补救。这里提供：
- *   · checkMarks()：找出缺标记的溯因节、缺失的小节；
+ *   · checkMarks()：找出缺标记的溯因节（小节按需取用，不要求逐节都写）；
  *   · enforceMarks()：在缺标记的溯因节第一行前补上 UNCERTAINTY_MARK（不改动其他内容）。
  *
  * 只认 **【标题】** 这种小节标题（标题后允许跟「（仅供参考）」等说明）。
@@ -38,8 +38,6 @@ function firstClaimLine(lines: string[], b: Block): number {
 export interface MarkReport {
   /** 是溯因节，但第一行没有以 UNCERTAINTY_MARK 开头 */
   unmarkedAbduction: string[];
-  /** 小节定义里有、输出里没出现的标题 */
-  missingSections: string[];
   ok: boolean;
 }
 
@@ -48,15 +46,13 @@ export function checkMarks(text: string, sections: SectionSpec[]): MarkReport {
   const blocks = splitBlocks(lines);
   const byTitle = new Map(blocks.map(b => [b.title, b]));
   const unmarkedAbduction: string[] = [];
-  const missingSections: string[] = [];
   for (const s of sections) {
     const b = byTitle.get(s.title);
-    if (!b) { missingSections.push(s.title); continue; }
-    if (s.kind !== 'abduction') continue;
+    if (!b || s.kind !== 'abduction') continue;
     const i = firstClaimLine(lines, b);
     if (i < 0 || !lines[i].trim().startsWith(UNCERTAINTY_MARK)) unmarkedAbduction.push(s.title);
   }
-  return { unmarkedAbduction, missingSections, ok: !unmarkedAbduction.length && !missingSections.length };
+  return { unmarkedAbduction, ok: !unmarkedAbduction.length };
 }
 
 /** 给缺标记的溯因节补上标记；已标记的、非溯因的小节原样保留 */

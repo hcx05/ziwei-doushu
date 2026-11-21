@@ -131,9 +131,8 @@ export function runCheck(args: Args, sections: SectionSpec[]): void {
     return;
   }
   const r = checkMarks(text, sections);
-  if (r.ok) { console.log('✓ 小节齐全，溯因节都已标注。'); return; }
-  if (r.unmarkedAbduction.length) console.log(`✗ 这些溯因节第一行没有以「${UNCERTAINTY_MARK}」开头：${r.unmarkedAbduction.join('、')}`);
-  if (r.missingSections.length) console.log(`✗ 缺少这些小节：${r.missingSections.join('、')}`);
+  if (r.ok) { console.log('✓ 溯因节都已标注。'); return; }
+  console.log(`✗ 这些溯因节第一行没有以「${UNCERTAINTY_MARK}」开头：${r.unmarkedAbduction.join('、')}`);
   process.exitCode = 1;
 }
 
