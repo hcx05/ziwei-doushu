@@ -48,6 +48,10 @@
 >
 > 每个小节属于哪种推理、溯因规则怎么写，见 [`lib/ai/tasks.ts`](./lib/ai/tasks.ts)；回归测试见 `scripts/regression/ai-reasoning-split.test.ts`。
 
+> **注：八字 Skill（本 fork 新增）**
+>
+> [`.claude/skills/bazi/`](./.claude/skills/bazi/SKILL.md)：八字（子平术）排盘与解读，含十神、藏干、月令旺衰、合冲刑害、大运、流年。四柱另以独立算法（儒略日、Meeus 太阳黄经）交叉校验。日主强弱、用神一律按溯因标注。后续体系规划见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
+
 > **注：Claude Skill 版本**
 >
 > [`.claude/skills/ziwei-doushu/`](./.claude/skills/ziwei-doushu/SKILL.md) 是同一套引擎与推理规则的 Claude Skill：在 Claude 里直接说「帮我看看命，1990-06-15 10:30 女，杭州」即可。Claude 用打包好的工具确定性排盘（含真太阳时、农历、海外时区、大限 / 流年 / 流月 / 流日四化落宫，以及按倪师起法的小六壬），按小节的演绎 / 归纳 / 溯因标注解读，引用倪师原话前先在 1848 条语料里检索，查不到就不引。反推原因、校正时辰、两人合不合这类溯因问题可以回答，但注明仅供参考；国运、姓名学、风水、六神测字等工具做不到的不做。

@@ -17,12 +17,12 @@ const skillDir = path.join(root, '.claude/skills/ziwei-doushu');
 const bundle = path.join(skillDir, 'scripts/ziwei.mjs');
 
 // ── 1) 产物未过期 ───────────────────────────────────────────
-const tmpOut = path.join(mkdtempSync(path.join(tmpdir(), 'ziwei-skill-')), 'ziwei.mjs');
+const tmpDir = mkdtempSync(path.join(tmpdir(), 'ziwei-skill-'));
 execFileSync(process.execPath, [path.join(root, 'scripts/skill/build.mjs')], {
-  env: { ...process.env, SKILL_BUNDLE_OUT: tmpOut }, stdio: 'pipe',
+  env: { ...process.env, SKILL_BUNDLE_OUT_DIR: tmpDir }, stdio: 'pipe',
 });
 assert.ok(
-  readFileSync(tmpOut).equals(readFileSync(bundle)),
+  readFileSync(path.join(tmpDir, 'ziwei.mjs')).equals(readFileSync(bundle)),
   'skill 打包产物已过期：请运行 npm run build:skill 并提交 .claude/skills/ziwei-doushu/scripts/ziwei.mjs',
 );
 

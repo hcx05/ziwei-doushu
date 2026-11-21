@@ -9,6 +9,9 @@ import type { SectionSpec } from '@/lib/reasoning/kinds';
 import {
   XIAOLIUREN_SECTIONS, XIAOLIUREN_VOCABULARY, ZIWEI_SECTION_KEYS, ZIWEI_VOCABULARY, ziweiSectionSet,
 } from '@/lib/ai/tasks';
+import {
+  BAZI_ABDUCTION_HOTSPOTS, BAZI_OUT_OF_SCOPE, BAZI_SECTION_SETS, BAZI_VOCABULARY,
+} from './bazi/tasks';
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
@@ -50,7 +53,17 @@ const xiaoliuren: DivinationSystem = {
   ],
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren];
+const bazi: DivinationSystem = {
+  id: 'bazi',
+  name: '八字（子平术）',
+  scope: '命',
+  vocabulary: BAZI_VOCABULARY,
+  sectionSets: BAZI_SECTION_SETS,
+  abductionHotspots: BAZI_ABDUCTION_HOTSPOTS,
+  outOfScope: BAZI_OUT_OF_SCOPE,
+};
+
+export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);
