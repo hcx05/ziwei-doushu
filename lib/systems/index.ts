@@ -12,6 +12,9 @@ import {
 import {
   BAZI_ABDUCTION_HOTSPOTS, BAZI_OUT_OF_SCOPE, BAZI_SECTION_SETS, BAZI_VOCABULARY,
 } from './bazi/tasks';
+import {
+  LIUYAO_ABDUCTION_HOTSPOTS, LIUYAO_OUT_OF_SCOPE, LIUYAO_SECTION_SETS, LIUYAO_VOCABULARY,
+} from './liuyao/tasks';
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
@@ -63,7 +66,17 @@ const bazi: DivinationSystem = {
   outOfScope: BAZI_OUT_OF_SCOPE,
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi];
+const liuyao: DivinationSystem = {
+  id: 'liuyao',
+  name: '六爻（纳甲筮法，附《周易》经文）',
+  scope: '事',
+  vocabulary: LIUYAO_VOCABULARY,
+  sectionSets: LIUYAO_SECTION_SETS,
+  abductionHotspots: LIUYAO_ABDUCTION_HOTSPOTS,
+  outOfScope: LIUYAO_OUT_OF_SCOPE,
+};
+
+export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);

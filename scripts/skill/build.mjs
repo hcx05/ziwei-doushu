@@ -2,6 +2,7 @@
  * 把各 Skill 的命令行工具打包成单文件：
  *   scripts/skill/ziwei-cli.ts → .claude/skills/ziwei-doushu/scripts/ziwei.mjs
  *   scripts/skill/bazi-cli.ts  → .claude/skills/bazi/scripts/bazi.mjs
+ *   scripts/skill/liuyao-cli.ts → .claude/skills/liuyao/scripts/liuyao.mjs
  * 打包后只需 Node 18+，不必 npm install —— 所以每个 skill 目录都可以直接拷走或打成 zip 上传。
  *
  *   npm run build:skill
@@ -20,6 +21,7 @@ const OUT_DIR = process.env.SKILL_BUNDLE_OUT_DIR;
 const TARGETS = [
   { entry: 'scripts/skill/ziwei-cli.ts', out: '.claude/skills/ziwei-doushu/scripts/ziwei.mjs' },
   { entry: 'scripts/skill/bazi-cli.ts', out: '.claude/skills/bazi/scripts/bazi.mjs' },
+  { entry: 'scripts/skill/liuyao-cli.ts', out: '.claude/skills/liuyao/scripts/liuyao.mjs' },
 ];
 
 for (const t of TARGETS) {
