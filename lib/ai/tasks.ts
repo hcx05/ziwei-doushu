@@ -1,48 +1,22 @@
 /**
- * lib/ai/tasks.ts —— AI 解读任务白名单与「推理分工」
+ * lib/ai/tasks.ts —— 紫微斗数（与小六壬）的解读任务与小节定义
  *
- * 设计依据：大语言模型擅长演绎（Deduction）与归纳（Induction），
- * 但溯因（Abduction，从观察「跳」到最佳解释）存在根本限制。
+ * 推理分工的通用部分（推理类型、UNCERTAINTY_MARK、规则文本、输出检查）在 lib/reasoning/，
+ * 所有体系共用；这里只放紫微斗数特有的小节结构与用语。
  *
- * 前提：本项目假设紫微斗数的规则成立，不讨论其真伪。在这个前提下：
- *   · 演绎：已知命盘 + 规则 → 推出结论（例：夫妻宫主星的象意）。交给 AI。
- *   · 归纳：把多条事实整理成共通的描述（例：三方性格综合）。交给 AI。
- *   · 溯因：在多种讯号之间取舍、定性、给出「最可能的解释」、推测具体事件、反推原因。
- *     可以做，但必须以 UNCERTAINTY_MARK 标明「仅供参考，模型在此类推理有能力限制」，
- *     并列出正反讯号与另一种解读，最终判断留给命主本人。
- *
- * 能力边界的原则：
- *   · 本仓库**做不到**的（没有工具或方法：国运、姓名学、风水布局、六神测字、
- *     语料里查不到的「倪师原话」）——不做。
- *   · 本仓库**做得到**、只是因溯因而被限制的——可以做，但必须标注仅供参考。
- *
- * 网站：前端只能从这里列出的任务中选一个，服务端（app/api/interpret）按任务自己组 prompt，
- * 不接受任意文本提问（自由追问只在 Claude Skill 里开放）。
+ * 前提：本项目假设紫微斗数的规则成立，不讨论其真伪。
+ * 能力边界：本仓库**做不到**的（没有工具或方法）不做；**做得到**、只是属于溯因的，
+ * 可以做，但必须以 UNCERTAINTY_MARK 标明「仅供参考，模型在此类推理有能力限制」。
  */
 
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
+import {
+  ASSUMPTION_MARK, REASONING_LABEL, UNCERTAINTY_MARK, type ReasoningKind, type SectionSpec,
+} from '@/lib/reasoning/kinds';
+import { buildReasoningRules, renderSections, type RulesVocabulary } from '@/lib/reasoning/rules';
 
-export type ReasoningKind = 'deduction' | 'induction' | 'abduction';
-
-export const REASONING_LABEL: Record<ReasoningKind, string> = {
-  deduction: '演绎',
-  induction: '归纳',
-  abduction: '溯因',
-};
-
-/** 溯因内容在输出中必须使用的开头标记（前端、测试都依赖这个字面量） */
-export const UNCERTAINTY_MARK = '⚠ 仅供参考（模型在此类推理有能力限制）：';
-
-/** 资料缺失或口径未定时的假设声明（不是模型推理的限制，而是输入本身的假设） */
-export const ASSUMPTION_MARK = '⚠ 假设：';
-
-export interface SectionSpec {
-  /** 小节标题（不含【】），AI 必须原样输出为 **【标题】** */
-  title: string;
-  /** 本小节要求 AI 做的事 */
-  instruction: string;
-  kind: ReasoningKind;
-}
+export { ASSUMPTION_MARK, REASONING_LABEL, UNCERTAINTY_MARK };
+export type { ReasoningKind, SectionSpec };
 
 export type TopicKey = 'overview' | 'love' | 'career' | 'wealth' | 'health' | 'personality';
 
@@ -196,7 +170,7 @@ function sihuaSections(siHua: string, viewLabel: string): SectionSpec[] {
 }
 
 /**
- * 流年解读的小节（Claude Skill 用；网站目前没有流年按钮）。
+ * 流年解读的小节。
  * 依据是命盘摘要里的【流年】与【当前大限四化落宫】，都由引擎确定性算出。
  */
 export const LIUNIAN_SECTIONS: SectionSpec[] = [
@@ -246,48 +220,14 @@ export const XIAOLIUREN_SECTIONS: SectionSpec[] = [
     instruction: '这一课放到命主所问的那件具体事情上最可能对应什么情况、另有哪几种可能；倪师没讲应期的课也可在此推测。' },
 ];
 
-// ────────────────── 任务校验与 prompt 组装 ──────────────────
+// ────────────────── prompt 组装 ──────────────────
 
-const TOPIC_KEYS = new Set<string>(TOPICS.map(t => t.key));
-const SIHUA_VALUES = new Set(['禄', '权', '科', '忌']);
 const VIEW_LABEL: Record<string, string> = { mingpan: '本命', daxian: '大限', liunian: '流年' };
-
-/** 把前端送来的任意值收窄成合法任务；不合法返回 null（服务端据此拒绝自由提问） */
-export function parseTask(raw: unknown): AiTask | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const t = raw as Record<string, unknown>;
-  if (t.type === 'topic' && typeof t.key === 'string' && TOPIC_KEYS.has(t.key)) {
-    return { type: 'topic', key: t.key as TopicKey };
-  }
-  if (t.type === 'palace' && Number.isInteger(t.branch) && (t.branch as number) >= 0 && (t.branch as number) <= 11) {
-    return { type: 'palace', branch: t.branch as number };
-  }
-  if (
-    t.type === 'sihua' &&
-    typeof t.starName === 'string' && /^[一-龥]{1,4}$/.test(t.starName) &&
-    typeof t.siHua === 'string' && SIHUA_VALUES.has(t.siHua) &&
-    typeof t.view === 'string' && t.view in VIEW_LABEL
-  ) {
-    return { type: 'sihua', starName: t.starName, siHua: t.siHua, view: t.view as 'mingpan' | 'daxian' | 'liunian' };
-  }
-  return null;
-}
 
 export interface BuiltTask {
   /** 发给 AI 的 user 消息 */
   prompt: string;
   sections: SectionSpec[];
-}
-
-function renderSections(sections: SectionSpec[]): string {
-  return sections
-    .map(s => {
-      const tag = s.kind === 'abduction'
-        ? `［溯因节：必须以「${UNCERTAINTY_MARK}」开头，按系统提示的溯因规则写］`
-        : `［${REASONING_LABEL[s.kind]}节］`;
-      return `**【${s.title}】**\n${tag}${s.instruction}`;
-    })
-    .join('\n\n');
 }
 
 function starDesc(palace: Palace): string {
@@ -334,20 +274,25 @@ export function buildTask(task: AiTask, chart: ZiweiChart): BuiltTask | null {
 
 // ────────────────── 系统提示里的推理分工规则 ──────────────────
 
-export const REASONING_RULES = [
-  '【推理分工规则（最高优先级）】',
-  '前提：假设紫微斗数的规则成立，不讨论其真伪，也不加「命理仅供娱乐」之类的免责话术。',
-  '每个小节都标了推理类型：',
-  '· 演绎节：已知命盘＋规则 → 推出结论。直接按规则写，句末注明依据。',
-  '· 归纳节：把前面已出现的事实整理成共通描述，不新增判断。',
-  '· 溯因节：在多种讯号之间取舍定性、给现实建议、推测具体事件、从命主经历反推原因、判断时辰等。',
-  '  可以给出你认为最可能的解读，但这类推理语言模型有能力限制，因此：',
-  `  1) 小节第一行必须以「${UNCERTAINTY_MARK}」开头，接着一句话说明这里为何难以确定（例如吉凶讯号并存、规则本身不决定取舍）。`,
-  '  2) 分别列出支持与相反的盘面讯号，每条注明依据。',
-  '  3) 先给出最可能的解读，再给出至少一种同样说得通的其他解读。',
-  '  4) 小节最后一句提醒：这只是参考，哪种解读更贴切，需由命主结合自身实际判断。',
-  '演绎节与归纳节里若需要做取舍或推测具体事件，把那部分移到溯因的写法并标注，不要混在演绎里当成定论。',
-].join('\n');
+/** 紫微斗数的规则用语 */
+export const ZIWEI_VOCABULARY: RulesVocabulary = {
+  systemName: '紫微斗数',
+  chartNoun: '命盘',
+  signalNoun: '盘面',
+  subject: '命主',
+  abductionExamples: '在多种讯号之间取舍定性、给现实建议、推测具体事件、从命主经历反推原因、判断时辰',
+};
+
+/** 小六壬的规则用语 */
+export const XIAOLIUREN_VOCABULARY: RulesVocabulary = {
+  systemName: '小六壬',
+  chartNoun: '课',
+  signalNoun: '课象',
+  subject: '问事者',
+  abductionExamples: '把课象对应到所问之事的具体情况、推测倪师没讲应期的课多久应验',
+};
+
+export const REASONING_RULES = buildReasoningRules(ZIWEI_VOCABULARY);
 
 /** 时辰不详时附在命盘摘要里的声明 */
 export const HOUR_UNKNOWN_NOTICE = [
@@ -356,3 +301,22 @@ export const HOUR_UNKNOWN_NOTICE = [
   `回答开头第一行必须写：「${ASSUMPTION_MARK}出生时辰不详，本盘按子时假设排出，以下所有内容都建立在这个假设上。」`,
   `若命主要求推断真正的出生时辰，那是溯因，按溯因规则以「${UNCERTAINTY_MARK}」标注。`,
 ].join('\n');
+
+// ────────────────── 小节集合（Skill 的 sections / check 命令与体系注册表共用） ──────────────────
+
+export const ZIWEI_SECTION_KEYS = [
+  ...TOPICS.map(t => t.key), 'palace', 'sihua', 'liunian', 'liuyue', 'liuri',
+] as const;
+
+/** 不依赖具体命盘的小节集合；sihua 需指定是哪一化（默认「忌」） */
+export function ziweiSectionSet(key: string, siHua = '忌'): SectionSpec[] | null {
+  if (key in TOPIC_SECTIONS) return TOPIC_SECTIONS[key as TopicKey].sections;
+  switch (key) {
+    case 'palace': return palaceSections();
+    case 'sihua': return sihuaSections(siHua, VIEW_LABEL.daxian);
+    case 'liunian': return LIUNIAN_SECTIONS;
+    case 'liuyue': return LIUYUE_SECTIONS;
+    case 'liuri': return LIURI_SECTIONS;
+    default: return null;
+  }
+}

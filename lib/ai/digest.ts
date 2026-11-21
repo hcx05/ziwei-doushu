@@ -1,7 +1,7 @@
 /**
  * lib/ai/digest.ts —— 命盘 → 给 AI 读的文本摘要
  *
- * 网站（app/api/interpret）与 Claude Skill（.claude/skills/ziwei-doushu）共用这一份，
+ * Claude Skill（.claude/skills/ziwei-doushu）与回归测试共用这一份，
  * 保证两边喂给模型的命盘事实完全一致。这里只放排盘引擎**确定性**算出的事实；
  * 解读规则见 lib/ai/tasks.ts。
  *
@@ -17,7 +17,7 @@ import { HOUR_UNKNOWN_NOTICE } from './tasks';
 export interface DigestOptions {
   /** 附上该公历年的流年命宫与流年四化落宫 */
   liunianYear?: number;
-  /** 附上公历 / 农历生日与四柱（网站默认关；本人在 Claude 对话里排盘时可开） */
+  /** 附上公历 / 农历生日与四柱（默认关） */
   includeBirth?: boolean;
 }
 

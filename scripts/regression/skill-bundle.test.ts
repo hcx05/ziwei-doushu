@@ -72,6 +72,21 @@ const sec = run('sections', 'all');
 assert.ok(sec.stdout.includes('**【命格定性】** ［溯因］') && sec.stdout.includes('## liunian'));
 for (const k of ['## liuyue', '## liuri', '## xiaoliuren']) assert.ok(sec.stdout.includes(k), `sections 缺 ${k}`);
 
+// ── 3b) 溯因标注检查 ───────────────────────────────────────
+const MARK = '⚠ 仅供参考（模型在此类推理有能力限制）：';
+const draft = '**【起课】**\n……\n\n**【课象】**\n……\n\n**【应期】**\n……\n\n**【对所问之事的含义】**\n可能有第三者。';
+const chk = spawnSync(process.execPath, [bundle, 'check', 'xiaoliuren'], { encoding: 'utf8', input: draft });
+assert.equal(chk.status, 1, '漏标的溯因节应让 check 以非零退出');
+assert.ok(chk.stdout.includes('对所问之事的含义'));
+const fix = spawnSync(process.execPath, [bundle, 'check', 'xiaoliuren', '--fix'], { encoding: 'utf8', input: draft });
+assert.ok(fix.stdout.includes(`${MARK}可能有第三者。`), 'check --fix 应补上标记');
+const ok = spawnSync(process.execPath, [bundle, 'check', 'xiaoliuren'], { encoding: 'utf8', input: fix.stdout });
+assert.equal(ok.status, 0, ok.stdout);
+const sk = run('sections', 'overview', '--skeleton');
+assert.ok(sk.stdout.includes(`**【命格定性】**（仅供参考）\n${MARK}`), 'sections --skeleton 应给出预填标记的骨架');
+assert.ok(run('rules', 'xiaoliuren').stdout.includes('假设小六壬的规则成立'));
+assert.equal(run('rules', 'nope').status, 2);
+
 // ── 4) SKILL.md ─────────────────────────────────────────────
 const md = readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
 const fm = md.match(/^---\nname: ([a-z0-9-]+)\ndescription: (.+)\n---\n/);
@@ -79,7 +94,7 @@ assert.ok(fm, 'SKILL.md 须以 name / description frontmatter 开头');
 assert.equal(fm[1], 'ziwei-doushu');
 assert.ok(fm[2].length <= 1024, 'description 不宜超过 1024 字符');
 for (const must of ['⚠ 仅供参考（模型在此类推理有能力限制）：', '⚠ 假设：', '溯因重灾区：可以回答，但必须标注',
-  '工具做不到，不做', '定盘、校正时辰', '先查再引', '小六壬', '同一个念', '流日', '不给分数']) {
+  '工具做不到，不做', '定盘、校正时辰', 'check', '先查再引', '小六壬', '同一个念', '流日', '不给分数']) {
   assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
 }
 

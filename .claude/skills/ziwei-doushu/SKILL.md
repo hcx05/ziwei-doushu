@@ -31,7 +31,7 @@ description: 紫微斗数排盘与解读（倪海厦《天纪》体系），含�
 
 资料缺失造成的假设（时辰不详按子时、晚子时、夏令时）用「⚠ 假设：」标出，那是输入的问题，不是推理的限制。
 
-完整规则可以随时用 `node scripts/ziwei.mjs rules` 查看，它和网站版共用同一份 `lib/ai/tasks.ts`。
+完整规则可以随时用 `node scripts/ziwei.mjs rules`（小六壬用 `rules xiaoliuren`）查看；规则文本由仓库的 `lib/reasoning/` 生成，所有体系共用。
 
 ## 二、溯因重灾区：可以回答，但必须标注
 
@@ -87,6 +87,23 @@ node scripts/ziwei.mjs sections xiaoliuren # 小六壬
 ```
 
 每个小节都标了［演绎］［归纳］［溯因］。照这个结构输出，标题写成 **【标题】** 单独成行；标为溯因的小节按第一节的写法，并在标题后加「（仅供参考）」。
+
+加上 `--skeleton` 会给出可以照填的骨架，溯因节已经预先写好标记开头：
+
+```bash
+node scripts/ziwei.mjs sections love --skeleton
+```
+
+### 3d. 回答前自检（按小节结构作答时必做）
+
+把写好的草稿交给 `check`，确认每个溯因节第一行都以「⚠ 仅供参考（模型在此类推理有能力限制）：」开头、小节没有漏掉：
+
+```bash
+node scripts/ziwei.mjs check love --file 草稿.md        # 也可用标准输入；sihua 加 --hua 禄|权|科|忌
+node scripts/ziwei.mjs check love --file 草稿.md --fix  # 输出补好标记的版本
+```
+
+`check` 报错就修正后再回答。`--fix` 只会在缺标记的溯因节前补上标记；补完后，仍要照第一节把正反讯号与另一种解读写全。
 
 命主没指定主题时，先做 `overview`，最后列出可以继续看的主题。
 
@@ -165,5 +182,5 @@ node scripts/ziwei.mjs classics 紫微 [--limit 10]     # 《紫微斗数全书�
 
 ## 六、说明
 
-- 本 skill 的排盘引擎、推理规则与网站版（`app/api/interpret`）是同一份代码：`lib/ziwei/`、`lib/ai/tasks.ts`、`lib/ai/digest.ts`；流月流日在 `lib/ziwei/liuyue.ts`，小六壬在 `lib/divination/xiaoliuren.ts`。工具源码在 `scripts/skill/ziwei-cli.ts`，用 `npm run build:skill` 重新打包。
+- 本 skill 的排盘引擎与推理规则来自仓库源码：`lib/ziwei/`、`lib/reasoning/`（通用推理分工与 `check`）、`lib/systems/`（体系注册表）、`lib/ai/tasks.ts`、`lib/ai/digest.ts`；流月流日在 `lib/ziwei/liuyue.ts`，小六壬在 `lib/divination/xiaoliuren.ts`。工具源码在 `scripts/skill/ziwei-cli.ts`，用 `npm run build:skill` 重新打包。
 - 倪师原话语料为 CC BY-NC-SA 4.0，不可商用；《紫微斗数全书》等古籍属公有领域。

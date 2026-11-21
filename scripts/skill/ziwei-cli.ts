@@ -5,9 +5,10 @@
  * 重新打包：npm run build:skill
  *
  * 子命令：
- *   chart     排盘，输出给模型读的命盘摘要（与网站 /api/interpret 同一份 buildDigest）
+ *   chart     排盘，输出给模型读的命盘摘要（lib/ai/digest.ts 的 buildDigest）
  *   sections  列出某个解读主题的小节与推理类型（演绎 / 归纳 / 溯因），来自 lib/ai/tasks.ts
- *   rules     输出推理分工规则全文
+ *   rules     输出推理分工规则全文（可指定体系：ziwei / xiaoliuren）
+ *   check     检查解读草稿：溯因节是否以「仅供参考」标记开头、小节是否齐全（--fix 自动补标记）
  *   quotes    搜索倪海厦《天纪·紫微斗数》原话（1848 条，带 B 站出处时间）
  *   classics  搜索《紫微斗数全书》等古籍原文
  *   liuyue    流月：斗君、流月命宫、流月四化落宫（不给 --month 则列出全年 12 个月）
@@ -25,8 +26,8 @@ import { searchClassics } from '../../lib/classics';
 import { buildDigest } from '../../lib/ai/digest';
 import {
   TOPICS, LIUNIAN_SECTIONS, LIUYUE_SECTIONS, LIURI_SECTIONS, XIAOLIUREN_SECTIONS,
-  ASSUMPTION_MARK, REASONING_LABEL, REASONING_RULES, UNCERTAINTY_MARK, buildTask,
-  type AiTask, type SectionSpec, type TopicKey,
+  ASSUMPTION_MARK, REASONING_LABEL, UNCERTAINTY_MARK, buildTask,
+  ziweiSectionSet, type AiTask, type SectionSpec, type TopicKey,
 } from '../../lib/ai/tasks';
 import { BRANCHES } from '../../lib/ziwei/constants';
 import { getLiuNianSiHua, getYearBranchIndex } from '../../lib/ziwei/sihua';
@@ -34,6 +35,10 @@ import { getLiuRi, getLiuYue, solarToLunar } from '../../lib/ziwei/liuyue';
 import { LIUREN_MEANING, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/divination/xiaoliuren';
 import type { SiHua, ZiweiChart } from '../../lib/ziwei/types';
 import type { BirthFormState } from '../../lib/ziwei/share';
+import { checkMarks, enforceMarks } from '../../lib/reasoning/check';
+import { buildReasoningRules, renderSkeleton } from '../../lib/reasoning/rules';
+import { findSectionSet, getSystem, SYSTEMS } from '../../lib/systems';
+import { readFileSync } from 'node:fs';
 // esbuild 以 text loader 内联；tsc 不认识 .jsonl，用 require 形式绕开类型检查
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const QUOTES_JSONL: string = require('../../docs/tianji-ziwei/entries.jsonl');
@@ -296,6 +301,11 @@ function cmdSections(args: Args) {
   for (const { label, task, sections } of tasks) {
     const list = sections ?? buildTask(task!, dummy)!.sections;
     console.log(`## ${label}\n`);
+    if (args.skeleton) {
+      const sk = task?.type === 'sihua' ? list.map(s => ({ ...s, title: s.title.replace(/^化忌/, '化X') })) : list;
+      console.log(renderSkeleton(sk) + '\n');
+      continue;
+    }
     for (const s of list) {
       const title = task?.type === 'sihua' ? s.title.replace(/^化忌/, '化X') : s.title;
       console.log(`- **【${title}】** ［${REASONING_LABEL[s.kind]}］${s.instruction}`);
@@ -303,6 +313,36 @@ function cmdSections(args: Args) {
     console.log('');
   }
   console.log(`溯因节可以下结论，但一律以「${UNCERTAINTY_MARK}」开头，规则见 \`node ziwei.mjs rules\`。`);
+}
+
+// ────────────────── check：溯因节是否已标注 ──────────────────
+
+function cmdCheck(args: Args) {
+  const key = args._[1];
+  if (!key) fail(`用法：check <小节集合> [--hua 禄|权|科|忌] [--file 草稿.md] [--fix]；草稿也可从标准输入读入。可用集合：${SYSTEMS.flatMap(s => Object.keys(s.sectionSets)).join(' / ')}`);
+  let found = findSectionSet(key);
+  if (key === 'sihua' && typeof args.hua === 'string') {
+    if (!['禄', '权', '科', '忌'].includes(args.hua)) fail('--hua 只能是 禄 / 权 / 科 / 忌');
+    found = { system: getSystem('ziwei')!, sections: ziweiSectionSet('sihua', args.hua)! };
+  }
+  if (!found) fail(`未知小节集合「${key}」`);
+  const text = typeof args.file === 'string' ? readFileSync(args.file, 'utf8') : readFileSync(0, 'utf8');
+  if (args.fix) {
+    process.stdout.write(enforceMarks(text, found.sections));
+    return;
+  }
+  const r = checkMarks(text, found.sections);
+  if (r.ok) { console.log('✓ 小节齐全，溯因节都已标注。'); return; }
+  if (r.unmarkedAbduction.length) console.log(`✗ 这些溯因节第一行没有以「${UNCERTAINTY_MARK}」开头：${r.unmarkedAbduction.join('、')}`);
+  if (r.missingSections.length) console.log(`✗ 缺少这些小节：${r.missingSections.join('、')}`);
+  process.exitCode = 1;
+}
+
+function cmdRules(args: Args) {
+  const id = args._[1] ?? 'ziwei';
+  const system = getSystem(id);
+  if (!system) fail(`未知体系「${id}」，可用：${SYSTEMS.map(s => s.id).join(' / ')}`);
+  console.log(buildReasoningRules(system.vocabulary));
 }
 
 // ────────────────── quotes ──────────────────
@@ -370,8 +410,9 @@ const HELP = `紫微斗数 Skill 工具
   node ziwei.mjs liuren --date 2026-11-21 --time 15:20            （起念当下的当地时间）
   node ziwei.mjs liuren --now --utc-offset 8
   node ziwei.mjs liuren --lunar-month 4 --lunar-day 5 --hour 戌
-  node ziwei.mjs sections [overview|love|career|wealth|health|personality|palace|sihua|liunian|liuyue|liuri|xiaoliuren|all]
-  node ziwei.mjs rules
+  node ziwei.mjs sections [overview|love|career|wealth|health|personality|palace|sihua|liunian|liuyue|liuri|xiaoliuren|all] [--skeleton]
+  node ziwei.mjs rules [ziwei|xiaoliuren]
+  node ziwei.mjs check overview --file 草稿.md [--fix]      （检查溯因节是否以标记开头；--fix 输出补好标记的版本）
   node ziwei.mjs quotes 化忌 夫妻 [--limit 20]
   node ziwei.mjs classics 紫微 [--limit 10]`;
 
@@ -380,7 +421,8 @@ try {
   switch (args._[0]) {
     case 'chart': cmdChart(args); break;
     case 'sections': cmdSections(args); break;
-    case 'rules': console.log(REASONING_RULES); break;
+    case 'rules': cmdRules(args); break;
+    case 'check': cmdCheck(args); break;
     case 'quotes': cmdQuotes(args); break;
     case 'classics': cmdClassics(args); break;
     case 'liuyue': cmdLiuyue(args); break;
