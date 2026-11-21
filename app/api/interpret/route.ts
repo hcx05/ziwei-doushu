@@ -19,10 +19,9 @@
  */
 
 import type { NextRequest } from 'next/server';
-import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
-import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
-import { detectPatterns } from '@/lib/ziwei/patterns';
-import { buildTask, parseTask, HOUR_UNKNOWN_NOTICE, REASONING_RULES, UNCERTAINTY_MARK } from '@/lib/ai/tasks';
+import type { ZiweiChart } from '@/lib/ziwei/types';
+import { buildTask, parseTask, REASONING_RULES, UNCERTAINTY_MARK } from '@/lib/ai/tasks';
+import { buildDigest } from '@/lib/ai/digest';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -171,78 +170,6 @@ function resolveConfig(): ProviderConfig {
   };
 }
 
-// ────────────────── 命盘 → 文本（脱敏） ──────────────────
-
-function palaceLine(palace: Palace): string {
-  const stars = palace.stars.length
-    ? palace.stars
-        .map(s => `${s.name}${s.siHua ? `化${s.siHua}` : ''}${s.brightnessRaw ? `·${s.brightnessRaw}` : ''}`)
-        .join('、')
-    : palace.borrowedStars?.length
-      ? `空宫（借对宫${palace.borrowedFromName ?? ''}：${palace.borrowedStars.join('、')}）`
-      : '空宫';
-
-  const tags: string[] = [];
-  if (palace.isMingGong) tags.push('命宫');
-  if (palace.isShenGong) tags.push('身宫');
-  if (palace.daXianAge) tags.push(`本宫大限${palace.daXianAge[0]}–${palace.daXianAge[1]}岁`);
-  if (palace.isCurrentDaXian) tags.push('★当前大限');
-  if (palace.selfSihua?.length) {
-    tags.push(`自化 ${palace.selfSihua.map(s => `${s.starName}化${s.siHua}`).join('、')}`);
-  }
-
-  const suffix = tags.length ? `（${tags.join('；')}）` : '';
-  return `${BRANCHES[palace.branch]}宫 ${palace.name}·${STEMS[palace.stem]}干：${stars}${suffix}`;
-}
-
-function buildDigest(chart: ZiweiChart): string {
-  const lines: string[] = [];
-
-  if (chart.birthInfo.hourUnknown) lines.push(HOUR_UNKNOWN_NOTICE, '');
-  lines.push(`性别：${chart.birthInfo.gender === 'female' ? '女' : '男'}`);
-  if (chart.yinYangGender) lines.push(`阴阳属性：${chart.yinYangGender}`);
-  lines.push(`五行局：${chart.wuxingJuName}`);
-  lines.push(`命宫在${BRANCHES[chart.mingGongBranch]}，身宫在${BRANCHES[chart.shenGongBranch]}`);
-  if (chart.mingZhu) lines.push(`命主：${chart.mingZhu}；身主：${chart.shenZhu ?? '—'}`);
-  lines.push(`当前虚岁：${chart.currentAge}（当前年份：${new Date().getFullYear()}）`);
-
-  lines.push('', '【十二宫】');
-  const palaces = [...chart.palaces].sort((a, b) => a.branch - b.branch);
-  for (const palace of palaces) lines.push(palaceLine(palace));
-
-  lines.push('', '【大限】');
-  for (const dx of chart.daXians) {
-    const sihua = dx.siHua
-      ? `｜${dx.stemName ?? ''}干四化：禄${dx.siHua.lu} 权${dx.siHua.quan} 科${dx.siHua.ke} 忌${dx.siHua.ji}`
-      : '';
-    const current = chart.daXians[chart.currentDaXianIndex] === dx ? ' ★当前' : '';
-    lines.push(`${dx.startAge}–${dx.endAge}岁 ${dx.palaceName}${sihua}${current}`);
-  }
-
-  const patterns = detectPatterns(chart);
-  if (patterns.length) {
-    lines.push('', '【引擎识别出的格局】');
-    for (const p of patterns.slice(0, 8)) {
-      lines.push(`${p.name}（${p.level}）：${p.description.slice(0, 60)}`);
-    }
-  }
-
-  // 默认不发：姓名 / 出生地 / 经纬度 / 生日 / 四柱。
-  // 需要「精准流年」时才在 .env.local 打开 PRIVACY_INCLUDE_BIRTH=1。
-  if (process.env.PRIVACY_INCLUDE_BIRTH === '1') {
-    const b = chart.birthInfo;
-    const l = chart.lunarInfo;
-    lines.push('', '【生辰（用户已授权发送）】');
-    lines.push(`公历：${b.year}-${b.month}-${b.day}，时辰支序号 ${b.hour}`);
-    lines.push(
-      `农历：${l.lunarYear}年${l.isLeapMonth ? '闰' : ''}${Math.abs(l.lunarMonth)}月${l.lunarDay}日`,
-    );
-    if (l.fourPillars) lines.push(`四柱：${l.fourPillars.join(' ')}`);
-  }
-
-  return lines.join('\n');
-}
-
 // ────────────────── system prompt ──────────────────
 
 function buildSystemPrompt(chart: ZiweiChart): string {
@@ -262,7 +189,10 @@ function buildSystemPrompt(chart: ZiweiChart): string {
     REASONING_RULES,
     '',
     '──── 命盘数据（已脱敏，不含姓名与生辰）────',
-    buildDigest(chart),
+    buildDigest(chart, {
+      liunianYear: new Date().getFullYear(),
+      includeBirth: process.env.PRIVACY_INCLUDE_BIRTH === '1',
+    }),
   ].join('\n');
 }
 

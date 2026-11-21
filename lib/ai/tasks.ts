@@ -191,6 +191,23 @@ function sihuaSections(siHua: string, viewLabel: string): SectionSpec[] {
   ];
 }
 
+/**
+ * 流年解读的小节（Claude Skill 用；网站目前没有流年按钮）。
+ * 依据是命盘摘要里的【流年】与【当前大限四化落宫】，都由引擎确定性算出。
+ */
+export const LIUNIAN_SECTIONS: SectionSpec[] = [
+  { title: '流年命宫', kind: 'deduction',
+    instruction: '流年命宫落在本命哪一宫、该宫星曜，按规则推出的年度主题象意。' },
+  { title: '流年四化落宫', kind: 'deduction',
+    instruction: '流年禄权科忌各落本命哪一宫，按规则逐条说明影响的领域。' },
+  { title: '与当前大限叠加', kind: 'deduction',
+    instruction: '流年四化与当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲象意，不推测具体事件。' },
+  { title: '需留意的领域', kind: 'abduction',
+    instruction: '在上述讯号中，今年哪些领域较值得留意。' },
+  { title: '实际建议', kind: 'abduction',
+    instruction: '基于以上象意，可供命主参考的方向。' },
+];
+
 // ────────────────── 任务校验与 prompt 组装 ──────────────────
 
 const TOPIC_KEYS = new Set<string>(TOPICS.map(t => t.key));

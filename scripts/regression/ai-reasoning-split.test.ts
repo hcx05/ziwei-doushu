@@ -81,6 +81,8 @@ const unknown = generateChart(formToBirthInfo({
 assert.equal(unknown.birthInfo.hourUnknown, true, '时辰不详必须随命盘带出 hourUnknown');
 assert.equal(chart.birthInfo.hourUnknown, undefined, '已知时辰不应带 hourUnknown');
 assert.ok(HOUR_UNKNOWN_NOTICE.includes(UNCERTAINTY_MARK) && HOUR_UNKNOWN_NOTICE.includes('子时'));
-assert.ok(route.includes('hourUnknown') && route.includes('HOUR_UNKNOWN_NOTICE'), '摘要须在时辰不详时附上声明');
+const digest = read('lib/ai/digest.ts');
+assert.ok(route.includes('buildDigest('), '/api/interpret 须用共用的 buildDigest');
+assert.ok(digest.includes('hourUnknown') && digest.includes('HOUR_UNKNOWN_NOTICE'), '摘要须在时辰不详时附上声明');
 
 console.log('✓ AI 推理分工：白名单任务、溯因节须标不确定、无自由追问、时辰不详已声明');
