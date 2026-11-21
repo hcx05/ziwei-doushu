@@ -5,15 +5,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        先确认：开源版**不含**任何 `/api/*` 后端接口（AI 解读、合盘分析），这些功能出现 404 是预期行为，需要你自己实现，见 README「快速开始」。排盘本身不需要 API Key。
+        本 fork 不含网站界面与 `/api/*` 接口，只有排盘引擎与 Claude Skill。
   - type: textarea
     id: steps
     attributes:
       label: 复现步骤
       placeholder: |
-        1. npm ci
-        2. npm run dev
-        3. 打开 /chart，选 …… 点 ……
+        1. node .claude/skills/ziwei-doushu/scripts/ziwei.mjs chart --date …… --time …… --gender ……
+        2. 输出中哪一项不对 ……
     validations:
       required: true
   - type: textarea

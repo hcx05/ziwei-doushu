@@ -33,7 +33,7 @@ import { getLiuNianSiHua, getYearBranchIndex } from '../../lib/ziwei/sihua';
 import { getLiuRi, getLiuYue, solarToLunar } from '../../lib/ziwei/liuyue';
 import { LIUREN_MEANING, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/divination/xiaoliuren';
 import type { SiHua, ZiweiChart } from '../../lib/ziwei/types';
-import type { BirthFormState } from '../../components/BirthForm';
+import type { BirthFormState } from '../../lib/ziwei/share';
 // esbuild 以 text loader 内联；tsc 不认识 .jsonl，用 require 形式绕开类型检查
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const QUOTES_JSONL: string = require('../../docs/tianji-ziwei/entries.jsonl');

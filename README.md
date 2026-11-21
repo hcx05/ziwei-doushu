@@ -42,7 +42,7 @@
 > | 归纳 | 把多条事实整理成共通描述（三方性格综合、预防清单……） | AI |
 > | 溯因 | 在吉凶讯号间取舍定性、给现实建议、推测具体事件、从已发生的事反推原因、判断时辰 | AI 可以给结论，但以「⚠ 仅供参考（模型在此类推理有能力限制）：」开头，列出正反讯号与另一种解读 |
 >
-> - **网站**：只跑白名单任务（主题 / 宫位 / 四化），prompt 由服务端组装，不接受任意文本提问；「命格定性」「实际建议」等溯因小节界面上标「仅供参考」。合盘 AI 分析的后端仓库里本来就没有（做不到），`/heming` 是不经 AI 的双盘对照。
+> - **网站**：本 fork 已移除网站界面与 `/api/interpret`，只保留排盘引擎与 Claude Skill。
 > - **Claude Skill**：可以自由提问，反推原因、校正时辰、两人合不合、推测哪年发生什么都可以回答，但一律标注仅供参考。
 > - 勾选「时辰不详」时，命盘带 `hourUnknown`，AI 必须先以「⚠ 假设：」声明本盘按子时排出（这是输入的假设，不是推理限制）。
 >
@@ -68,7 +68,7 @@
 | 三 | [快速开始](#三快速开始) | 克隆到跑起来 |
 | 四 | [排盘引擎](#四排盘引擎) | 能做到什么、文件怎么分、古籍数据 |
 | 五 | [倪师《天纪·紫微斗数》原话](#五倪师天纪紫微斗数原话) | 14 讲 + 2 段补充、1848 条，一图看全，每条可回放 |
-| 六 | [界面是一份 Demo](#六界面是一份-demo) | 不是线上那套，差距写明 |
+| 六 | [界面（本 fork 已移除）](#六界面本-fork-已移除) | 只保留引擎与 Claude Skill |
 | 七 | [开源边界](#七开源边界什么不在里面) | 什么开源、什么不开源 |
 | 八 | [维护节奏与贡献](#八维护节奏与贡献) | 同步节奏、issue / PR 口径 |
 | 九 | [协议](#九协议) | 代码 MIT / 数据 CC BY 4.0 / 古籍公版 / 倪师原话非商用 |
@@ -126,6 +126,8 @@
 | `clock-adjust.ts` | 钟表读数换成标准时间（夏令时 / 当年时区不同） |
 | `lunar-solar.ts` | 农历 / 公历互转与闰月边界 clamp |
 | `school-data.ts` / `school-tables.generated.ts` / `school-config.ts` | 星曜亮度流派数据与对照表、闰月与晚子时口径配置 |
+| `share.ts` | 出生资料（字符串输入）→ `BirthInfo`，含晚子时换日 |
+| `liuyue.ts` | 流月（斗君）与流日 |
 | `shier-shen.ts` | 十二神煞 |
 | `yunxian-context.ts` | 运限上下文（含童限） |
 
@@ -301,14 +303,8 @@ Expand-Archive combined.zip
 git clone https://github.com/Renhuai123/ziwei-doushu.git
 cd ziwei-doushu
 
-# 安装依赖
+# 安装依赖（只在开发引擎、跑测试时需要；使用 Claude Skill 不必安装）
 npm install
-
-# 配置环境变量（只看排盘可以跳过；AI 配置仅在你自己实现了 /api/* 接口时才用得上）
-cp .env.example .env.local
-
-# 启动开发服务器
-npm run dev
 ```
 
 本地验证：
@@ -320,7 +316,7 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)）。
 
-> **注意：开源版不含后端 API 路由。**排盘、命盘展示、合盘起盘都在浏览器里用本仓库的引擎完成，**不需要任何 API Key**。AI 解读（`/api/interpret`）需要你自己实现接口；没实现之前会直接提示「开源版不含该接口」，配置 API Key 也不会变成可用（#30 就是这个原因）。本 fork 已带一份 `/api/interpret`（见页首「AI 推理分工」）；合盘 AI 分析已按同一原则移除，`/heming` 只做双盘对照。
+> **注意**：本 fork 不含网站界面与任何后端 API。排盘以 `lib/ziwei/` 引擎完成，解读通过 Claude Skill（见页首）进行，不需要 API Key。
 
 ---
 
@@ -350,10 +346,8 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 | `constants.ts` | 天干地支、十四主星、辅星常量 |
 | `sihua.ts` | 四化飞星系统（禄权科忌），含各天干四化对照表 |
 | `patterns.ts` | **1100+ 行格局知识库**：紫府同宫、日月并明、七杀朝斗等经典格局判定规则 |
-| `heming-knowledge.ts` | 合盘方法论：倪师体系下双盘比对逻辑 |
 | `types.ts` | TypeScript 类型定义 |
 | `cities.ts` | 中国城市经纬度，用于真太阳时校正 |
-| `famous.ts` | 历史名人命盘示例数据 |
 | `school-data.ts` / `school-tables.generated.ts` / `school-config.ts` | 星曜亮度流派数据与对照表、闰月与晚子时口径配置 |
 | `shier-shen.ts` | 十二神煞（本命按生年支起、流年层按流年支起） |
 | `true-solar-time.ts` | 真太阳时校正（经度差 + 均时差） |
@@ -367,10 +361,6 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 - **骨髓赋**（`gusuifu.ts`）— 紫微斗数核心歌诀
 - **紫微斗数全集**（`quanji.ts`）— 清代古本
 - **紫微斗数全书**（`quanshu.ts`）— 陈希夷传本
-
-### 4.4 SEO 知识图谱（`lib/seo/`）
-
-14 主星 × 12 宫位的结构化知识数据，可用于内容生成或知识库构建。
 
 ---
 
@@ -386,21 +376,11 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 ---
 
-## 六、界面是一份 Demo
+## 六、界面（本 fork 已移除）
 
-界面代码在 `app/` 与 `components/`。仓库里的界面是**一套最小可运行示例**，作用是把排盘引擎跑起来、把盘画出来，方便你在它基础上做自己的产品。**线上商业版的界面不在开源范围内**，两者差距很大：
+原仓库的 Demo 界面（`app/`、`components/`）与 `/api/interpret` 在本 fork 中已删除，只保留排盘引擎（`lib/`）与 Claude Skill（`.claude/skills/ziwei-doushu/`）。需要界面请参考上游仓库。
 
-| 页面 / 组件 | 本仓库（Demo） | 线上商业版 |
-|------|------|------|
-| 排盘页 `app/chart/page.tsx` | 75 行 | 1227 行 |
-| 解读面板 `InsightPanel` | 467 行 | 5088 行 |
-| 命盘方格 `ChartBoard` | 285 行 | 1334 行 |
-| 宫位格 `PalaceCell` | 201 行 | 1192 行 |
-| 合盘页 `app/heming/page.tsx` | 368 行 | 1937 行 |
-
-**Demo 能跑通的**：出生信息表单、命盘方格与宫位详情、本命 / 大限 / 流年切换、古籍阅读器（全文搜索）、命理百科（14 主星 × 12 宫位）、亮暗主题、移动端适配。
-
-**Demo 里没有的**：线上重做过的交互界面、AI 流式解读、合盘图谱、分享卡片，以及**断语内容本身**（`db-analysis.ts` 是占位实现）。也就是说，Demo 画得出盘，但给不出线上那套解读。
+后续扩充计划（八字、六爻、五运六气、择日、太乙、皇极等，推理分工通用化）见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
 
 ---
 
@@ -408,10 +388,10 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 | | 内容 |
 |---|---|
-| ✅ **开源** | 排盘引擎（`lib/ziwei/`）、古籍公版原文（`lib/classics/`）、SEO 知识图谱（`lib/seo/`）、Demo 界面、51.8 万样本数据集、13 维解读数据集 v4.0 |
-| ❌ **不开源** | 断语库（`lib/ziwei/db-analysis.ts` 是占位，线上是上万行的 13 主题断语）、AI 解读 prompt、后端 API（`/api/interpret` 等）、用户系统（登录 / 会员 / 支付）、服务端安全（签名、防刷、水印）、部署配置 |
+| ✅ **开源** | 排盘引擎（`lib/ziwei/`）、古籍公版原文（`lib/classics/`）、推理分工规则（`lib/ai/`）、Claude Skill、51.8 万样本数据集、13 维解读数据集 v4.0 |
+| ❌ **不开源** | 上游线上版的断语库、后端 API、用户系统（登录 / 会员 / 支付）、服务端安全（签名、防刷、水印）、部署配置 |
 
-如果你需要 AI 解读能力，可以参考 `lib/ziwei/patterns.ts` 和 `heming-knowledge.ts` 里的知识库，结合任意 LLM 自行构建 prompt。
+AI 解读请使用本 fork 的 Claude Skill；规则见 `lib/ai/tasks.ts`。
 
 ---
 
@@ -431,7 +411,7 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 | 内容 | 协议 | 简单说 |
 |------|------|--------|
-| **代码**（`lib/`、`app/`、`components/`） | [MIT License](./LICENSE) | 拿去随便用，保留 LICENSE 文件即可 |
+| **代码**（`lib/`、`scripts/`、`.claude/skills/`） | [MIT License](./LICENSE) | 拿去随便用，保留 LICENSE 文件即可 |
 | **数据**（Releases 中的 51.8 万样本数据集 v3.0、13 维解读数据集 v4.0） | [CC BY 4.0](./DATASET-LICENSE) · 要求 attribution | 商用也行，**注明数据来源即可** |
 | **古籍原文**（骨髓赋、紫微斗数全集 / 全书等） | Public Domain | 古书都是公有领域，不存在版权 |
 | **倪师原话**（[`docs/tianji-ziwei/`](./docs/tianji-ziwei/)） | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md) | 可以引用、转载，注明出处；**不许商用**，改编后用同样协议 |
@@ -448,11 +428,8 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 ### 技术栈
 
-- **框架**：Next.js 16（App Router）
-- **语言**：TypeScript
-- **样式**：Tailwind CSS + CSS Variables 设计系统
+- **语言**：TypeScript（Node 18+；Skill 工具由 esbuild 打包成单文件）
 - **排盘**：基于 [iztro](https://github.com/SylarLong/iztro) + lunar-javascript
-- **动画**：Framer Motion
 
 ### 联系
 

@@ -4,33 +4,11 @@
  * 四化挂在 Star.siHua 上（如 { name: '天机', siHua: '科' }），盘上没有叫「化科」的星。
  * 早先府相朝垣「命宫见禄」、阳梁昌禄 / 机月同梁「再会化科」、杀破狼「三方有化禄或化权」
  * 用 hasStar / sanFangAllStars 查「化X」星名，永远查不到，这几条加分项从来不会出现。
- *
- * patterns.ts 带 `server-only`（仓库里没装这个包，Next 构建时才有），这里先把它解析成空模块再 import。
  */
 import assert from 'node:assert/strict';
-import * as nodeModule from 'node:module';
 import { generateChart } from '../../lib/ziwei/algorithm';
+import { detectPatterns } from '../../lib/ziwei/patterns';
 import type { ZiweiChart, SiHua } from '../../lib/ziwei/types';
-
-// module.registerHooks：Node 22.15+ / 23.5+；@types/node 20 还没有它的声明，这里自带最小类型
-type HookResult = { url?: string; format?: string; source?: string; shortCircuit?: boolean };
-const { registerHooks } = nodeModule as unknown as {
-  registerHooks(hooks: {
-    resolve(specifier: string, context: unknown, next: (s: string, c: unknown) => HookResult): HookResult;
-    load(url: string, context: unknown, next: (u: string, c: unknown) => HookResult): HookResult;
-  }): void;
-};
-const SERVER_ONLY_STUB = 'data:text/javascript,';
-registerHooks({
-  resolve(specifier, context, nextResolve) {
-    if (specifier === 'server-only') return { url: SERVER_ONLY_STUB, shortCircuit: true };
-    return nextResolve(specifier, context);
-  },
-  load(url, context, nextLoad) {
-    if (url === SERVER_ONLY_STUB) return { format: 'commonjs', source: '', shortCircuit: true };
-    return nextLoad(url, context);
-  },
-});
 
 function sanFangHasSiHua(chart: ZiweiChart, hua: SiHua): boolean {
   const m = chart.mingGongBranch;
@@ -39,7 +17,6 @@ function sanFangHasSiHua(chart: ZiweiChart, hua: SiHua): boolean {
 }
 
 async function main() {
-const { detectPatterns } = await import('../../lib/ziwei/patterns');
 
 // 盘上不存在名为「化X」的星
 const sample = generateChart({ year: 1988, month: 10, day: 8, hour: 7, gender: 'male' });

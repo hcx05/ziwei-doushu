@@ -68,17 +68,16 @@ Engine code lives in `lib/ziwei/` (entry point: `generateChart()` in `algorithm.
 git clone https://github.com/Renhuai123/ziwei-doushu.git
 cd ziwei-doushu
 npm ci
-npm run dev          # charting demo at http://localhost:3000/chart
 
 npm run typecheck    # TypeScript check
 npm test             # charting regression tests
 ```
 
-**No API key is needed for charting.** The open-source version contains **no backend routes**: AI interpretation (`/api/interpret`) and compatibility analysis (`/api/heming`) return 404 until you implement them yourself.
+**This fork has removed the web UI and all API routes.** It keeps the charting engine (`lib/`) and the Claude Skill (`.claude/skills/ziwei-doushu/`). See `docs/ROADMAP-multi-system.md` for the expansion plan.
 
 ## What is not included
 
-The interpretation database (`lib/ziwei/db-analysis.ts` is a placeholder), AI prompts, all `/api/*` backend routes, user accounts, payments, and deployment configuration.
+The upstream interpretation database, any web UI or `/api/*` backend routes, user accounts, payments, and deployment configuration.
 
 ## Interpretation dataset v4.0 (674,976 charts × 13 topics, 2026-10-15)
 
@@ -111,7 +110,7 @@ Download from [Releases](https://github.com/Renhuai123/ziwei-doushu/releases/tag
 
 | Part | License |
 |---|---|
-| Code (`lib/`, `app/`, `components/`) | [MIT](./LICENSE) |
+| Code (`lib/`, `scripts/`, `.claude/skills/`) | [MIT](./LICENSE) |
 | Sample dataset (Releases) | [CC BY 4.0](./DATASET-LICENSE): commercial use OK with attribution |
 | Classical texts | Public domain |
 | Ni Haixia quotes (`docs/tianji-ziwei/`) | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md): **non-commercial only** |

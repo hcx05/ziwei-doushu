@@ -28,7 +28,6 @@ await build({
   charset: 'utf8',
   tsconfig: path.join(root, 'tsconfig.json'),
   loader: { '.jsonl': 'text' },
-  alias: { 'server-only': path.join(root, 'scripts/skill/empty.js') },
   banner: {
     js: [
       '// 由 scripts/skill/build.mjs 生成，请勿手改。源码：scripts/skill/ziwei-cli.ts',

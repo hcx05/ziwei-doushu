@@ -1,6 +1,21 @@
-import type { BirthFormState } from '@/components/BirthForm';
 import type { BirthInfo } from './types';
 import { branchFromSolarMinutes, resolveZiweiDayOffset, shiftGregorianDate } from './true-solar-time';
+
+
+/** 出生资料的原始输入（字符串形式，与 CLI 参数一一对应） */
+export interface BirthFormState {
+  name: string;
+  year: string;
+  month: string;
+  day: string;
+  clockHour: string;
+  clockMinute: string;
+  unknownTime: boolean;
+  province: string;
+  city: string;
+  longitude: number;
+  gender: 'male' | 'female';
+}
 
 /** 根据北京时间 + 经度计算真太阳时时辰支 (0-11) */
 export function calcTrueSolarBranch(clockHour: number, clockMinute: number, longitude: number): number {
@@ -45,46 +60,5 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
     city: form.city || undefined,
     longitude: form.province ? form.longitude : undefined,
     ...(form.unknownTime ? { hourUnknown: true } : {}),
-  };
-}
-
-/** BirthFormState → URLSearchParams（用于分享链接） */
-export function formToSearchParams(form: BirthFormState): URLSearchParams {
-  const p = new URLSearchParams();
-  if (form.name) p.set('n', form.name);
-  p.set('y', form.year);
-  p.set('m', form.month);
-  p.set('d', form.day);
-  if (form.unknownTime) {
-    p.set('u', '1');
-  } else {
-    p.set('h', form.clockHour);
-    p.set('mi', form.clockMinute);
-  }
-  if (form.province) p.set('p', form.province);
-  if (form.city) p.set('c', form.city);
-  if (form.longitude && form.longitude !== 120) p.set('lo', String(form.longitude));
-  p.set('g', form.gender === 'male' ? 'm' : 'f');
-  return p;
-}
-
-/** URLSearchParams → Partial<BirthFormState>，不完整时返回 null */
-export function searchParamsToForm(params: URLSearchParams): Partial<BirthFormState> | null {
-  const year = params.get('y');
-  const month = params.get('m');
-  const day = params.get('d');
-  if (!year || !month || !day) return null;
-  return {
-    name: params.get('n') || '',
-    year,
-    month,
-    day,
-    unknownTime: params.get('u') === '1',
-    clockHour: params.get('h') || '8',
-    clockMinute: params.get('mi') || '0',
-    province: params.get('p') || '',
-    city: params.get('c') || '',
-    longitude: parseFloat(params.get('lo') || '120'),
-    gender: params.get('g') === 'f' ? 'female' : 'male',
   };
 }

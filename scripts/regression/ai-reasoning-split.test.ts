@@ -3,13 +3,12 @@
  *
  * 前提：假设紫微斗数规则成立。工具做不到的不做；做得到但属溯因的可以做，必须注明
  * 「仅供参考，模型在此类推理有能力限制」。钉住以下几点：
- *   1) 网站服务端只接受白名单任务，自由文本提问一律拒绝（自由提问只在 Claude Skill 开放）；
+ *   1) 任务解析只接受白名单任务（parseTask）；
  *   2) 每个任务的小节都有推理类型，溯因小节的 prompt 必须要求以 UNCERTAINTY_MARK 开头；
- *   3) 自由追问入口（输入框、ChatPanel）不再存在；
- *   4) 时辰不详时，命盘带 hourUnknown，AI 收到的摘要必须声明「按子时假设」。
+ *   3) 时辰不详时，命盘带 hourUnknown，AI 收到的摘要必须声明「按子时假设」。
  */
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import {
   ASSUMPTION_MARK, buildTask, parseTask, REASONING_RULES, TOPICS, UNCERTAINTY_MARK, HOUR_UNKNOWN_NOTICE,
 } from '../../lib/ai/tasks';
@@ -28,11 +27,6 @@ for (const bad of [
   assert.equal(parseTask(bad), null, `应拒绝：${JSON.stringify(bad)}`);
 }
 assert.deepEqual(parseTask({ type: 'topic', key: 'love', extra: 'x' }), { type: 'topic', key: 'love' });
-
-const route = read('app/api/interpret/route.ts');
-assert.ok(route.includes('parseTask('), '/api/interpret 必须用 parseTask 校验任务');
-assert.ok(!/body\.messages/.test(route), '/api/interpret 不应再读取前端送来的对话 messages');
-assert.ok(route.includes('REASONING_RULES'), 'system prompt 必须带推理分工规则');
 
 // ── 2) 推理类型与不确定性要求 ───────────────────────────────
 const info = formToBirthInfo({
@@ -69,13 +63,7 @@ assert.ok(UNCERTAINTY_MARK.includes('仅供参考') && UNCERTAINTY_MARK.includes
 assert.ok(REASONING_RULES.includes('可以给出你认为最可能的解读'), '溯因节可以下结论（但须标注）');
 assert.ok(!REASONING_RULES.includes('不判断出生时辰是否正确'), '已放宽：时辰判断可做，但须标注');
 
-// ── 3) 自由追问入口已移除 ───────────────────────────────────
-assert.ok(!existsSync(new URL('../../components/ChatPanel.tsx', import.meta.url)), 'ChatPanel（自由对话）应已移除');
-const panel = read('components/InsightPanel.tsx');
-assert.ok(!/<input\s[^>]*type="text"/.test(panel), 'InsightPanel 不应再有自由追问输入框');
-assert.ok(!panel.includes('messages: apiMessages'), 'InsightPanel 不应再把自由文本送给 AI');
-
-// ── 4) 时辰不详 ─────────────────────────────────────────────
+// ── 3) 时辰不详 ─────────────────────────────────────────────
 const unknown = generateChart(formToBirthInfo({
   year: '1990', month: '6', day: '15', clockHour: '', clockMinute: '', gender: 'male',
   unknownTime: true, name: '', province: '', city: '', longitude: 120,
@@ -84,7 +72,6 @@ assert.equal(unknown.birthInfo.hourUnknown, true, '时辰不详必须随命盘�
 assert.equal(chart.birthInfo.hourUnknown, undefined, '已知时辰不应带 hourUnknown');
 assert.ok(HOUR_UNKNOWN_NOTICE.includes(`${ASSUMPTION_MARK}出生时辰不详`) && HOUR_UNKNOWN_NOTICE.includes('子时'));
 const digest = read('lib/ai/digest.ts');
-assert.ok(route.includes('buildDigest('), '/api/interpret 须用共用的 buildDigest');
 assert.ok(digest.includes('hourUnknown') && digest.includes('HOUR_UNKNOWN_NOTICE'), '摘要须在时辰不详时附上声明');
 
-console.log('✓ AI 推理分工：白名单任务、溯因节须标「仅供参考」、网站无自由追问、时辰不详已声明');
+console.log('✓ AI 推理分工：白名单任务、溯因节须标「仅供参考」、时辰不详已声明');
