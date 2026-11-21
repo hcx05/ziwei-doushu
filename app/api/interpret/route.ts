@@ -6,9 +6,9 @@
  *   POST { chart: ZiweiChart, mode: 'simple', source: string } 简单版（只改写已生成的专业版）
  *   ← text/event-stream，每帧 `data: {"delta":{"text":"…"}}`，结尾 `data: [DONE]`
  *
- * 推理分工（见 lib/ai/tasks.ts）：AI 只做演绎与归纳；溯因（取舍、定性、反推原因）
- * 不交给 AI 下结论。因此本接口**不接受自由提问**——task 必须是白名单里的主题 /
- * 宫位 / 四化，prompt 由服务端自己组；保留下来的溯因小节必须由 AI 标明不确定性。
+ * 推理分工（见 lib/ai/tasks.ts）：溯因小节（取舍、定性、现实建议）可以写，但必须标明
+ * 「仅供参考，模型在此类推理有能力限制」。网站**不接受自由提问**——task 必须是白名单里的
+ * 主题 / 宫位 / 四化，prompt 由服务端自己组（自由提问只在 Claude Skill 里开放）。
  *
  * 隐私约定：默认**只发送排盘结果**（十二宫星曜 / 四化 / 大限 / 格局），
  * 不发送姓名、出生地、经纬度、公历生日、四柱。需要时用 PRIVACY_INCLUDE_BIRTH=1 打开。
@@ -20,7 +20,7 @@
 
 import type { NextRequest } from 'next/server';
 import type { ZiweiChart } from '@/lib/ziwei/types';
-import { buildTask, parseTask, REASONING_RULES, UNCERTAINTY_MARK } from '@/lib/ai/tasks';
+import { ASSUMPTION_MARK, buildTask, parseTask, REASONING_RULES, UNCERTAINTY_MARK } from '@/lib/ai/tasks';
 import { buildDigest } from '@/lib/ai/digest';
 
 export const runtime = 'nodejs';
@@ -207,7 +207,7 @@ const SIMPLE_SYSTEM = [
   '3. 每个小节先用一句大白话说结论，再用两三句解释「为什么」，可以打比方、举生活场景。',
   '4. 专业术语第一次出现时用括号顺带解释，例如：命宫（代表你自己）。',
   '5. 不得改变原意，不得新增或删除命理判断，不得编造星曜、宫位、四化。',
-  `   原文中以「${UNCERTAINTY_MARK}」开头的句子必须保留这个开头，并用白话讲清楚「这里为什么说不准」；`,
+  `   原文中以「${UNCERTAINTY_MARK}」或「${ASSUMPTION_MARK}」开头的句子必须保留这个开头，并用白话讲清楚「这里为什么只能参考」；`,
   '   原文用「倾向」「可能」的地方不得改写成肯定语气，原文列出的另一种解读也要保留。',
   '6. 每段不超过三行，不用表格、不用代码块、不用罗列符号。',
   '7. 全文控制在 600 字以内。',
@@ -266,7 +266,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   const built = task ? buildTask(task, chart) : null;
   if (!isSimple && !built) {
     return failWith(
-      '本站不提供自由提问：「为什么会发生某事」「我的时辰对不对」这类问题属于溯因推理，AI 不擅长，已不再交给 AI 回答。请从上方选择主题、点选宫位或四化。',
+      '本站不提供自由提问，请从上方选择主题、点选宫位或四化。',
     );
   }
 

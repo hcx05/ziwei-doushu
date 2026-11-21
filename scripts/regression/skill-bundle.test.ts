@@ -37,7 +37,7 @@ for (const must of ['【十二宫】', '命宫在丑', '【当前大限（', '�
 
 const unknown = run('chart', '--date', '1990-06-15', '--unknown-time', '--gender', '男');
 assert.equal(unknown.status, 0, unknown.stderr);
-assert.ok(unknown.stdout.includes('⚠ 不确定：出生时辰不详，本盘按子时假设排出'));
+assert.ok(unknown.stdout.includes('⚠ 假设：出生时辰不详，本盘按子时假设排出'));
 
 const bad = run('chart', '--date', '1990-02-30', '--time', '01:00', '--gender', '男');
 assert.equal(bad.status, 2);
@@ -65,6 +65,9 @@ const lr = run('liuri', '--date', '1990-06-15', '--time', '10:30', '--gender', '
 assert.equal(lr.status, 0, lr.stderr);
 assert.ok(lr.stdout.includes('倪师口径') && lr.stdout.includes('通行口径'));
 
+const rules = run('rules');
+assert.ok(rules.stdout.includes('⚠ 仅供参考（模型在此类推理有能力限制）：'));
+
 const sec = run('sections', 'all');
 assert.ok(sec.stdout.includes('**【命格定性】** ［溯因］') && sec.stdout.includes('## liunian'));
 for (const k of ['## liuyue', '## liuri', '## xiaoliuren']) assert.ok(sec.stdout.includes(k), `sections 缺 ${k}`);
@@ -75,7 +78,8 @@ const fm = md.match(/^---\nname: ([a-z0-9-]+)\ndescription: (.+)\n---\n/);
 assert.ok(fm, 'SKILL.md 须以 name / description frontmatter 开头');
 assert.equal(fm[1], 'ziwei-doushu');
 assert.ok(fm[2].length <= 1024, 'description 不宜超过 1024 字符');
-for (const must of ['⚠ 不确定：', '溯因重灾区', '定盘、校正时辰', '先查再引', '小六壬', '同一个念', '流日']) {
+for (const must of ['⚠ 仅供参考（模型在此类推理有能力限制）：', '⚠ 假设：', '溯因重灾区：可以回答，但必须标注',
+  '工具做不到，不做', '定盘、校正时辰', '先查再引', '小六壬', '同一个念', '流日', '不给分数']) {
   assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
 }
 

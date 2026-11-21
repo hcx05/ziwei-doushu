@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
-import { TOPICS, UNCERTAINTY_MARK, buildTask, type AiTask, type TopicKey } from '@/lib/ai/tasks';
+import { ASSUMPTION_MARK, TOPICS, UNCERTAINTY_MARK, buildTask, type AiTask, type TopicKey } from '@/lib/ai/tasks';
 
 type Version = 'pro' | 'simple';
 
@@ -53,8 +53,9 @@ function AiContent({
     <div className="space-y-0.5">
       {lines.map((line, i) => {
         const sectionMatch = line.match(/^\*\*【(.+?)】\*\*$/);
-        if (!sectionMatch && line.trim().startsWith(UNCERTAINTY_MARK.trim())) {
-          // 溯因小节的不确定性声明：单独高亮，提醒读者这里需要自己判断
+        const plain = line.trim().replace(/^\*\*/, '');
+        if (!sectionMatch && (plain.startsWith(UNCERTAINTY_MARK) || plain.startsWith(ASSUMPTION_MARK))) {
+          // 溯因「仅供参考」声明与时辰假设声明：单独高亮，提醒读者这里需要自己判断
           return (
             <div
               key={i}
@@ -77,10 +78,10 @@ function AiContent({
               {abductionTitles.includes(sectionMatch[1]) && (
                 <span
                   className="ml-1.5 rounded px-1 py-px align-middle"
-                  title="溯因：需要在多种讯号间取舍或给出现实建议，AI 在这类推理上不可靠，请自行判断"
+                  title="溯因：需要在多种讯号间取舍或给出现实建议，模型在这类推理上有能力限制，仅供参考"
                   style={{ fontSize: 9, color: '#d97706', border: '1px solid rgba(217,119,6,0.4)' }}
                 >
-                  溯因·需自行判断
+                  仅供参考
                 </span>
               )}
             </div>
@@ -342,7 +343,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
 
   /**
    * 跑一个白名单任务：永远先出专业版；若当前处于「简单版」视图，再自动补一份通俗版。
-   * 没有自由提问——「为什么会发生某事」「时辰对不对」这类溯因问题不交给 AI。
+   * 网站没有自由提问（只在 Claude Skill 里开放），只跑白名单任务。
    */
   const runTask = async (task: AiTask, label: string) => {
     if (loadingRef.current) return;
@@ -598,7 +599,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
       {/* ── 说明（自由追问已移除）── */}
       <div className="flex-shrink-0 px-3 pb-3 pt-2" style={{ borderTop: '1px solid var(--t-border)' }}>
         <div className="text-[9px] leading-relaxed text-center" style={{ color: 'var(--t-faint)' }}>
-          AI 只负责按规则推演与整理；标「溯因·需自行判断」的小节涉及取舍与现实建议，AI 在这类推理上不可靠，请结合自身实际判断。
+          AI 按规则推演与整理；标「仅供参考」的小节涉及取舍与现实建议，模型在这类推理上有能力限制，请结合自身实际判断。
           <br />
           不提供自由追问。命盘仅用于本次生成，服务器不保存。
         </div>

@@ -25,7 +25,7 @@ import { searchClassics } from '../../lib/classics';
 import { buildDigest } from '../../lib/ai/digest';
 import {
   TOPICS, LIUNIAN_SECTIONS, LIUYUE_SECTIONS, LIURI_SECTIONS, XIAOLIUREN_SECTIONS,
-  REASONING_LABEL, REASONING_RULES, UNCERTAINTY_MARK, buildTask,
+  ASSUMPTION_MARK, REASONING_LABEL, REASONING_RULES, UNCERTAINTY_MARK, buildTask,
   type AiTask, type SectionSpec, type TopicKey,
 } from '../../lib/ai/tasks';
 import { BRANCHES } from '../../lib/ziwei/constants';
@@ -181,7 +181,7 @@ function transformsText(chart: ZiweiChart, t: Record<SiHua, string>): string {
 
 function hourCaveat(chart: ZiweiChart): string[] {
   return chart.birthInfo.hourUnknown
-    ? [`${UNCERTAINTY_MARK}出生时辰不详，斗君（流月起点）依赖出生时辰，以下流月 / 流日宫位都建立在「子时」假设上。`]
+    ? [`${ASSUMPTION_MARK}出生时辰不详，斗君（流月起点）依赖出生时辰，以下流月 / 流日宫位都建立在「子时」假设上。`]
     : [];
 }
 
@@ -258,7 +258,7 @@ function cmdLiuren(args: Args) {
     [lm, ld, hb] = [lunar.month, lunar.day, clockToBranch(hh, mm)];
     header = `公历 ${y}-${mo}-${d} ${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')} → 农历${lunar.isLeapMonth ? '闰' : ''}${lm}月${ld}日 ${BRANCHES[hb]}时`;
     if (lunar.isLeapMonth) notes.push('闰月按月份数字起课');
-    if (hh === 23) notes.push(`${UNCERTAINTY_MARK}23 点属晚子时：本课按当天的农历日起；倪师未讲晚子时是否换日，若按次日起课结果可能不同`);
+    if (hh === 23) notes.push(`${ASSUMPTION_MARK}23 点属晚子时：本课按当天的农历日起；倪师未讲晚子时是否换日，若按次日起课结果可能不同`);
   }
 
   const r = xiaoLiuRen(lm, ld, hb);
@@ -302,7 +302,7 @@ function cmdSections(args: Args) {
     }
     console.log('');
   }
-  console.log(`溯因节一律以「${UNCERTAINTY_MARK}」开头，规则见 \`node ziwei.mjs rules\`。`);
+  console.log(`溯因节可以下结论，但一律以「${UNCERTAINTY_MARK}」开头，规则见 \`node ziwei.mjs rules\`。`);
 }
 
 // ────────────────── quotes ──────────────────

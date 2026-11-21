@@ -7,16 +7,17 @@
  * 前提：本项目假设紫微斗数的规则成立，不讨论其真伪。在这个前提下：
  *   · 演绎：已知命盘 + 规则 → 推出结论（例：夫妻宫主星的象意）。交给 AI。
  *   · 归纳：把多条事实整理成共通的描述（例：三方性格综合）。交给 AI。
- *   · 溯因：在多种讯号之间取舍、定性、给出「最可能的解释」或现实建议。
- *     不交给 AI 下结论。保留的小节必须由 AI 明确标出不确定性，
- *     最终判断留给命主本人。
+ *   · 溯因：在多种讯号之间取舍、定性、给出「最可能的解释」、推测具体事件、反推原因。
+ *     可以做，但必须以 UNCERTAINTY_MARK 标明「仅供参考，模型在此类推理有能力限制」，
+ *     并列出正反讯号与另一种解读，最终判断留给命主本人。
  *
- * 已移除的溯因重灾区功能：
- *   · 自由追问 / 聊天（使用者可以问「为什么会发生 X」「我的时辰对不对」）
- *   · 合盘 AI 分析（缘分匹配度等综合评判）
+ * 能力边界的原则：
+ *   · 本仓库**做不到**的（没有工具或方法：国运、姓名学、风水布局、六神测字、
+ *     语料里查不到的「倪师原话」）——不做。
+ *   · 本仓库**做得到**、只是因溯因而被限制的——可以做，但必须标注仅供参考。
  *
- * 前端只能从这里列出的任务中选一个，服务端（app/api/interpret）按任务自己组 prompt，
- * 不接受任意文本提问。
+ * 网站：前端只能从这里列出的任务中选一个，服务端（app/api/interpret）按任务自己组 prompt，
+ * 不接受任意文本提问（自由追问只在 Claude Skill 里开放）。
  */
 
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
@@ -29,8 +30,11 @@ export const REASONING_LABEL: Record<ReasoningKind, string> = {
   abduction: '溯因',
 };
 
-/** 溯因小节在输出中必须使用的开头标记（前端、测试都依赖这个字面量） */
-export const UNCERTAINTY_MARK = '⚠ 不确定：';
+/** 溯因内容在输出中必须使用的开头标记（前端、测试都依赖这个字面量） */
+export const UNCERTAINTY_MARK = '⚠ 仅供参考（模型在此类推理有能力限制）：';
+
+/** 资料缺失或口径未定时的假设声明（不是模型推理的限制，而是输入本身的假设） */
+export const ASSUMPTION_MARK = '⚠ 假设：';
 
 export interface SectionSpec {
   /** 小节标题（不含【】），AI 必须原样输出为 **【标题】** */
@@ -85,7 +89,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '三方联动', kind: 'deduction',
         instruction: '夫妻宫三方四正的星曜与四化，按规则说明对感情的影响。' },
       { title: '当前大限感情运', kind: 'deduction',
-        instruction: '当前大限四化落入或冲照夫妻宫的情况，按规则推出的走向。只讲象意，不推测具体事件。' },
+        instruction: '当前大限四化落入或冲照夫妻宫的情况，按规则推出的走向。只讲规则推出的象意；具体事件的推测放到溯因节。' },
       { title: '实际建议', kind: 'abduction',
         instruction: '基于以上象意，可供命主参考的方向。' },
     ],
@@ -100,7 +104,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '财帛宫联动', kind: 'deduction',
         instruction: '财帛宫与官禄宫的星曜、四化关系，按规则说明财路来源的象意。' },
       { title: '当前大限事业运', kind: 'deduction',
-        instruction: '当前大限四化与官禄宫的关系，按规则推出的走向。只讲象意，不推测具体事件。' },
+        instruction: '当前大限四化与官禄宫的关系，按规则推出的走向。只讲规则推出的象意；具体事件的推测放到溯因节。' },
       { title: '实际建议', kind: 'abduction',
         instruction: '基于以上象意，可供命主参考的方向与行业类型。' },
     ],
@@ -115,7 +119,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '田宅宫（财库）', kind: 'deduction',
         instruction: '田宅宫星曜与四化，按规则推出的积蓄与不动产象意。' },
       { title: '当前大限财运', kind: 'deduction',
-        instruction: '当前大限四化与财帛、田宅的关系，按规则推出的走向。只讲象意，不推测具体事件。' },
+        instruction: '当前大限四化与财帛、田宅的关系，按规则推出的走向。只讲规则推出的象意；具体事件的推测放到溯因节。' },
       { title: '理财建议', kind: 'abduction',
         instruction: '基于以上象意，可供命主参考的理财方向（不承诺收益、不推荐具体标的）。' },
     ],
@@ -185,7 +189,7 @@ function sihuaSections(siHua: string, viewLabel: string): SectionSpec[] {
     { title: '三方四正飞化路径', kind: 'deduction',
       instruction: '按规则说明对落宫三方四正（对宫、两个三合宫）的联动影响。' },
     { title: '当前运势影响', kind: 'deduction',
-      instruction: `在${viewLabel}的时间维度下，按规则推出的象意。只讲象意，不推测会发生的具体事件。` },
+      instruction: `在${viewLabel}的时间维度下，按规则推出的象意。只讲规则推出的象意；具体事件的推测放到溯因节。` },
     { title: '实际建议', kind: 'abduction',
       instruction: '基于以上象意，可供命主参考的方向。' },
   ];
@@ -201,7 +205,7 @@ export const LIUNIAN_SECTIONS: SectionSpec[] = [
   { title: '流年四化落宫', kind: 'deduction',
     instruction: '流年禄权科忌各落本命哪一宫，按规则逐条说明影响的领域。' },
   { title: '与当前大限叠加', kind: 'deduction',
-    instruction: '流年四化与当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲象意，不推测具体事件。' },
+    instruction: '流年四化与当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲规则推出的象意；具体事件的推测放到溯因节。' },
   { title: '需留意的领域', kind: 'abduction',
     instruction: '在上述讯号中，今年哪些领域较值得留意。' },
   { title: '实际建议', kind: 'abduction',
@@ -215,7 +219,7 @@ export const LIUYUE_SECTIONS: SectionSpec[] = [
   { title: '流月四化落宫', kind: 'deduction',
     instruction: '流月禄权科忌各落本命哪一宫，按规则逐条说明影响的领域。' },
   { title: '与流年大限叠加', kind: 'deduction',
-    instruction: '流月四化与流年、当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲象意，不推测具体事件。' },
+    instruction: '流月四化与流年、当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲规则推出的象意；具体事件的推测放到溯因节。' },
   { title: '需留意的领域', kind: 'abduction',
     instruction: '在上述讯号中，这个月哪些领域较值得留意。' },
 ];
@@ -225,7 +229,7 @@ export const LIURI_SECTIONS: SectionSpec[] = [
   { title: '流日命宫', kind: 'deduction',
     instruction: '流日命宫落在本命哪一宫（倪师口径为主，若与通行口径不同须一并说明），该宫星曜的象意。' },
   { title: '流日四化落宫', kind: 'deduction',
-    instruction: '流日（日干）禄权科忌各落本命哪一宫，按规则说明影响的领域。只讲象意，不推测具体事件。' },
+    instruction: '流日（日干）禄权科忌各落本命哪一宫，按规则说明影响的领域。只讲规则推出的象意；具体事件的推测放到溯因节。' },
   { title: '需留意的领域', kind: 'abduction',
     instruction: '在上述讯号中，当天哪些领域较值得留意。' },
 ];
@@ -235,11 +239,11 @@ export const XIAOLIUREN_SECTIONS: SectionSpec[] = [
   { title: '起课', kind: 'deduction',
     instruction: '起课所用的农历月、日、时辰，以及月、日、时各落哪一课，最终课象是什么。' },
   { title: '课象', kind: 'deduction',
-    instruction: '只引用工具给出的倪师原话说明这一课的含义，附出处，不另行发挥。' },
+    instruction: '引用工具给出的倪师原话说明这一课的含义，附出处；延伸说明放到溯因节。' },
   { title: '应期', kind: 'deduction',
-    instruction: '倪师原话里有时间说法的（大安约一周、小吉约两周、速喜马上）照引；没有的就说没有。' },
+    instruction: '倪师原话里有时间说法的（大安约一周、小吉约两周、速喜马上）照引；倪师没讲的，说明没有原话依据。' },
   { title: '对所问之事的含义', kind: 'abduction',
-    instruction: '这一课放到命主所问的那件具体事情上，可能对应哪几种情况。' },
+    instruction: '这一课放到命主所问的那件具体事情上最可能对应什么情况、另有哪几种可能；倪师没讲应期的课也可在此推测。' },
 ];
 
 // ────────────────── 任务校验与 prompt 组装 ──────────────────
@@ -336,19 +340,19 @@ export const REASONING_RULES = [
   '每个小节都标了推理类型：',
   '· 演绎节：已知命盘＋规则 → 推出结论。直接按规则写，句末注明依据。',
   '· 归纳节：把前面已出现的事实整理成共通描述，不新增判断。',
-  `· 溯因节：需要在多种讯号之间取舍、定性，或从象意跳到现实建议。这类推理语言模型并不可靠，因此：`,
-  `  1) 小节第一行必须以「${UNCERTAINTY_MARK}」开头，用一句话说明为何这里无法确定（例如吉凶讯号并存、规则本身不决定取舍）。`,
+  '· 溯因节：在多种讯号之间取舍定性、给现实建议、推测具体事件、从命主经历反推原因、判断时辰等。',
+  '  可以给出你认为最可能的解读，但这类推理语言模型有能力限制，因此：',
+  `  1) 小节第一行必须以「${UNCERTAINTY_MARK}」开头，接着一句话说明这里为何难以确定（例如吉凶讯号并存、规则本身不决定取舍）。`,
   '  2) 分别列出支持与相反的盘面讯号，每条注明依据。',
-  '  3) 只用「倾向」「可能」「较偏向」等措辞，并至少给出另一种同样说得通的解读。',
-  '  4) 小节最后一句提醒：哪种解读更贴切，需由命主结合自身实际判断。',
-  '  5) 不推测具体会发生的事件，不判断出生时辰是否正确，不从命主现实经历反推盘面原因。',
-  '演绎节与归纳节里若发现自己需要做取舍，停下来，改为如实列出各条讯号，不要下结论。',
+  '  3) 先给出最可能的解读，再给出至少一种同样说得通的其他解读。',
+  '  4) 小节最后一句提醒：这只是参考，哪种解读更贴切，需由命主结合自身实际判断。',
+  '演绎节与归纳节里若需要做取舍或推测具体事件，把那部分移到溯因的写法并标注，不要混在演绎里当成定论。',
 ].join('\n');
 
 /** 时辰不详时附在命盘摘要里的声明 */
 export const HOUR_UNKNOWN_NOTICE = [
   '【重要：出生时辰不详】',
   '命主没有提供出生时辰，本盘是按「子时」这个假设排出的；命宫、身宫、各宫位置与大限都依赖这个假设。',
-  `回答开头第一行必须写：「${UNCERTAINTY_MARK}出生时辰不详，本盘按子时假设排出，以下所有内容都建立在这个假设上。」`,
-  '不要尝试推断真正的出生时辰。',
+  `回答开头第一行必须写：「${ASSUMPTION_MARK}出生时辰不详，本盘按子时假设排出，以下所有内容都建立在这个假设上。」`,
+  `若命主要求推断真正的出生时辰，那是溯因，按溯因规则以「${UNCERTAINTY_MARK}」标注。`,
 ].join('\n');

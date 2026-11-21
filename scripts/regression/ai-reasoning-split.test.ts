@@ -1,17 +1,17 @@
 /**
  * AI 推理分工回归（见 lib/ai/tasks.ts）
  *
- * 前提：假设紫微斗数规则成立。AI 只做演绎与归纳；溯因（取舍、定性、反推原因）
- * 不交给 AI 下结论。钉住以下几点：
- *   1) 服务端只接受白名单任务，自由文本提问一律拒绝；
- *   2) 每个任务的小节都有推理类型，溯因小节的 prompt 必须要求「⚠ 不确定：」开头；
+ * 前提：假设紫微斗数规则成立。工具做不到的不做；做得到但属溯因的可以做，必须注明
+ * 「仅供参考，模型在此类推理有能力限制」。钉住以下几点：
+ *   1) 网站服务端只接受白名单任务，自由文本提问一律拒绝（自由提问只在 Claude Skill 开放）；
+ *   2) 每个任务的小节都有推理类型，溯因小节的 prompt 必须要求以 UNCERTAINTY_MARK 开头；
  *   3) 自由追问入口（输入框、ChatPanel）不再存在；
  *   4) 时辰不详时，命盘带 hourUnknown，AI 收到的摘要必须声明「按子时假设」。
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import {
-  buildTask, parseTask, REASONING_RULES, TOPICS, UNCERTAINTY_MARK, HOUR_UNKNOWN_NOTICE,
+  ASSUMPTION_MARK, buildTask, parseTask, REASONING_RULES, TOPICS, UNCERTAINTY_MARK, HOUR_UNKNOWN_NOTICE,
 } from '../../lib/ai/tasks';
 import { generateChart } from '../../lib/ziwei/algorithm';
 import { formToBirthInfo } from '../../lib/ziwei/share';
@@ -65,7 +65,9 @@ assert.equal(overview.sections.find(s => s.title === '命格定性')?.kind, 'abd
 assert.equal(overview.sections.find(s => s.title === '主星解读')?.kind, 'deduction');
 const career = buildTask({ type: 'topic', key: 'career' }, chart)!;
 assert.equal(career.sections.find(s => s.title === '实际建议')?.kind, 'abduction');
-assert.ok(REASONING_RULES.includes('不判断出生时辰是否正确'));
+assert.ok(UNCERTAINTY_MARK.includes('仅供参考') && UNCERTAINTY_MARK.includes('模型在此类推理有能力限制'));
+assert.ok(REASONING_RULES.includes('可以给出你认为最可能的解读'), '溯因节可以下结论（但须标注）');
+assert.ok(!REASONING_RULES.includes('不判断出生时辰是否正确'), '已放宽：时辰判断可做，但须标注');
 
 // ── 3) 自由追问入口已移除 ───────────────────────────────────
 assert.ok(!existsSync(new URL('../../components/ChatPanel.tsx', import.meta.url)), 'ChatPanel（自由对话）应已移除');
@@ -80,9 +82,9 @@ const unknown = generateChart(formToBirthInfo({
 }));
 assert.equal(unknown.birthInfo.hourUnknown, true, '时辰不详必须随命盘带出 hourUnknown');
 assert.equal(chart.birthInfo.hourUnknown, undefined, '已知时辰不应带 hourUnknown');
-assert.ok(HOUR_UNKNOWN_NOTICE.includes(UNCERTAINTY_MARK) && HOUR_UNKNOWN_NOTICE.includes('子时'));
+assert.ok(HOUR_UNKNOWN_NOTICE.includes(`${ASSUMPTION_MARK}出生时辰不详`) && HOUR_UNKNOWN_NOTICE.includes('子时'));
 const digest = read('lib/ai/digest.ts');
 assert.ok(route.includes('buildDigest('), '/api/interpret 须用共用的 buildDigest');
 assert.ok(digest.includes('hourUnknown') && digest.includes('HOUR_UNKNOWN_NOTICE'), '摘要须在时辰不详时附上声明');
 
-console.log('✓ AI 推理分工：白名单任务、溯因节须标不确定、无自由追问、时辰不详已声明');
+console.log('✓ AI 推理分工：白名单任务、溯因节须标「仅供参考」、网站无自由追问、时辰不详已声明');
