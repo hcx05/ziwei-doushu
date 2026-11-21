@@ -48,7 +48,7 @@
 >
 > 每个小节属于哪种推理、溯因规则怎么写，见 [`lib/ai/tasks.ts`](./lib/ai/tasks.ts)；回归测试见 `scripts/regression/ai-reasoning-split.test.ts`。
 
-> **注：八字、六爻、五运六气、择日、太乙、皇极经世、梅花易数、大六壬 Skill（本 fork 新增）**
+> **注：八字、六爻、五运六气、择日、太乙、皇极经世、梅花易数、大六壬、奇门遁甲 Skill（本 fork 新增）**
 >
 > - [`.claude/skills/bazi/`](./.claude/skills/bazi/SKILL.md)：八字（子平术）排盘与解读，含十神、藏干、月令旺衰、合冲刑害、大运、流年。四柱另以独立算法（儒略日、Meeus 太阳黄经）交叉校验。日主强弱、用神一律按溯因标注。
 > - [`.claude/skills/liuyao/`](./.claude/skills/liuyao/SKILL.md)：六爻（纳甲筮法）起卦装卦，附《周易》卦辞爻辞原文（校勘见 [`docs/zhouyi-collation.md`](./docs/zhouyi-collation.md)）。断吉凶、应期、把经文套到所问之事一律按溯因标注。
@@ -58,6 +58,7 @@
 > - [`.claude/skills/huangji/`](./.claude/skills/huangji/SKILL.md)：皇极经世元会运世定位，附《皇极经世书》「以运经世」逐年原文查询（公元前 2367 年至公元 963 年）。原书没有对后世的预言，时势推论一律按溯因标注。
 > - [`.claude/skills/meihua/`](./.claude/skills/meihua/SKILL.md)：梅花易数（年月日时、物数、两数、后天端法起卦），算出互卦、变卦、体用生克、卦气旺衰，附书中十八类占法原文。书中十三个占例逐一核对（见 [`docs/meihua-liuren-collation.md`](./docs/meihua-liuren-collation.md)）。综合吉凶、应期、类象对应一律按溯因标注。
 > - [`.claude/skills/liuren/`](./.claude/skills/liuren/SKILL.md)：大六壬（依《六壬大全》九宗门）起课：天地盘、四课、三传、十二天将、遁干、六亲。七百二十课全部起出，与原书「昴星十六课」「别责九课」「井栏六日」逐课吻合。取类神、断吉凶、应期一律按溯因标注。
+> - [`.claude/skills/qimen/`](./.claude/skills/qimen/SKILL.md)：奇门遁甲（时家转盘，依《遁甲演义》），定局用拆补法并列出置闰法对照（见 [`docs/qimen-collation.md`](./docs/qimen-collation.md)）。书中两个完整排盘例与二十条格局算例逐一吻合。取用神、断吉凶、择方择时一律按溯因标注。
 >
 > 后续体系规划见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
 

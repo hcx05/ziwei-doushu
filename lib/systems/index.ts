@@ -33,6 +33,9 @@ import {
 import {
   LIUREN_ABDUCTION_HOTSPOTS, LIUREN_OUT_OF_SCOPE, LIUREN_SECTION_SETS, LIUREN_VOCABULARY,
 } from './liuren/tasks';
+import {
+  QIMEN_ABDUCTION_HOTSPOTS, QIMEN_OUT_OF_SCOPE, QIMEN_SECTION_SETS, QIMEN_VOCABULARY,
+} from './qimen/tasks';
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
@@ -154,7 +157,17 @@ const liuren: DivinationSystem = {
   outOfScope: LIUREN_OUT_OF_SCOPE,
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri, taiyi, huangji, meihua, liuren];
+const qimen: DivinationSystem = {
+  id: 'qimen',
+  name: '奇門遁甲（《遁甲演義》時家轉盤）',
+  scope: '事',
+  vocabulary: QIMEN_VOCABULARY,
+  sectionSets: QIMEN_SECTION_SETS,
+  abductionHotspots: QIMEN_ABDUCTION_HOTSPOTS,
+  outOfScope: QIMEN_OUT_OF_SCOPE,
+};
+
+export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri, taiyi, huangji, meihua, liuren, qimen];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);
