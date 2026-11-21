@@ -9,6 +9,11 @@ export interface BirthInfo {
   city?: string;       // 出生城市
   longitude?: number;  // 出生地经度（用于真太阳时校正）
   /**
+   * 用户勾选了「时辰不详」。此时 hour 固定为 0（子时）只是一个**假设**，
+   * 不是推断结果；AI 解读必须据此声明不确定性（见 lib/ai/tasks.ts）。
+   */
+  hourUnknown?: boolean;
+  /**
    * 原始输入（用户在表单里实际填的时间），已知出生时间时始终保留。
    * 例：用户输入 5/9 23:55 → year/month/day 会被改成 5/10（次日子时），
    *     而这里保存原始的 { year:Y, month:5, day:9, clockHour:23, clockMinute:55 }，

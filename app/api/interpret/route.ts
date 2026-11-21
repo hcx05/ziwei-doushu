@@ -1,9 +1,14 @@
 /**
  * app/api/interpret —— 本地 AI 解读接口（自建，非官方开源部分）
  *
- * 前端（components/InsightPanel.tsx、components/ChatPanel.tsx）只认这一份契约：
- *   POST { chart: ZiweiChart, messages: { role, content }[] }
+ * 前端（components/InsightPanel.tsx）只认这一份契约：
+ *   POST { chart: ZiweiChart, task: AiTask }                   专业版
+ *   POST { chart: ZiweiChart, mode: 'simple', source: string } 简单版（只改写已生成的专业版）
  *   ← text/event-stream，每帧 `data: {"delta":{"text":"…"}}`，结尾 `data: [DONE]`
+ *
+ * 推理分工（见 lib/ai/tasks.ts）：AI 只做演绎与归纳；溯因（取舍、定性、反推原因）
+ * 不交给 AI 下结论。因此本接口**不接受自由提问**——task 必须是白名单里的主题 /
+ * 宫位 / 四化，prompt 由服务端自己组；保留下来的溯因小节必须由 AI 标明不确定性。
  *
  * 隐私约定：默认**只发送排盘结果**（十二宫星曜 / 四化 / 大限 / 格局），
  * 不发送姓名、出生地、经纬度、公历生日、四柱。需要时用 PRIVACY_INCLUDE_BIRTH=1 打开。
@@ -17,6 +22,7 @@ import type { NextRequest } from 'next/server';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import { detectPatterns } from '@/lib/ziwei/patterns';
+import { buildTask, parseTask, HOUR_UNKNOWN_NOTICE, REASONING_RULES, UNCERTAINTY_MARK } from '@/lib/ai/tasks';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -192,6 +198,7 @@ function palaceLine(palace: Palace): string {
 function buildDigest(chart: ZiweiChart): string {
   const lines: string[] = [];
 
+  if (chart.birthInfo.hourUnknown) lines.push(HOUR_UNKNOWN_NOTICE, '');
   lines.push(`性别：${chart.birthInfo.gender === 'female' ? '女' : '男'}`);
   if (chart.yinYangGender) lines.push(`阴阳属性：${chart.yinYangGender}`);
   lines.push(`五行局：${chart.wuxingJuName}`);
@@ -249,6 +256,10 @@ function buildSystemPrompt(chart: ZiweiChart): string {
     '4. 语气沉稳克制，不做绝对化预言；健康只谈调养方向、不下诊断；财务不承诺收益、不推荐具体标的。',
     '5. 简体中文，每段不超过三行，不要表格、不要代码块、不要重复用户的问题。',
     '6. 若命盘信息不足以回答，就直说「此宫无主星，需借对宫」之类，不要硬编。',
+    '7. 本次没有提供倪师原话资料，不要用引号逐字「引用」倪师原话；可以说「按倪师体系」。',
+    '8. 小节标题后面方括号里的「［演绎节］」「［溯因节：…］」是给你的指示，不要输出到正文。',
+    '',
+    REASONING_RULES,
     '',
     '──── 命盘数据（已脱敏，不含姓名与生辰）────',
     buildDigest(chart),
@@ -266,6 +277,8 @@ const SIMPLE_SYSTEM = [
   '3. 每个小节先用一句大白话说结论，再用两三句解释「为什么」，可以打比方、举生活场景。',
   '4. 专业术语第一次出现时用括号顺带解释，例如：命宫（代表你自己）。',
   '5. 不得改变原意，不得新增或删除命理判断，不得编造星曜、宫位、四化。',
+  `   原文中以「${UNCERTAINTY_MARK}」开头的句子必须保留这个开头，并用白话讲清楚「这里为什么说不准」；`,
+  '   原文用「倾向」「可能」的地方不得改写成肯定语气，原文列出的另一种解读也要保留。',
   '6. 每段不超过三行，不用表格、不用代码块、不用罗列符号。',
   '7. 全文控制在 600 字以内。',
 ].join('\n');
@@ -289,26 +302,21 @@ function explainUpstream(status: number, bodyText: string): string {
 
 // ────────────────── 主流程 ──────────────────
 
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
 export async function POST(req: NextRequest): Promise<Response> {
   // 1. 解析请求
   let chart: ZiweiChart | null = null;
-  let history: ChatMessage[] = [];
+  let rawTask: unknown = null;
   let isSimple = false;
   let sourceText = '';
   try {
     const body = (await req.json()) as {
       chart?: ZiweiChart;
-      messages?: ChatMessage[];
+      task?: unknown;
       mode?: string;
       source?: string;
     };
     chart = body.chart ?? null;
-    history = Array.isArray(body.messages) ? body.messages : [];
+    rawTask = body.task ?? null;
     isSimple = body.mode === 'simple';
     sourceText = typeof body.source === 'string' ? body.source.trim() : '';
   } catch {
@@ -321,6 +329,15 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   if (isSimple && !sourceText) {
     return failWith('没有拿到要改写的专业版内容，请等专业版生成完再切「简单版」。');
+  }
+
+  // 只接受白名单任务；自由提问属于溯因重灾区，已移除
+  const task = isSimple ? null : parseTask(rawTask);
+  const built = task ? buildTask(task, chart) : null;
+  if (!isSimple && !built) {
+    return failWith(
+      '本站不提供自由提问：「为什么会发生某事」「我的时辰对不对」这类问题属于溯因推理，AI 不擅长，已不再交给 AI 回答。请从上方选择主题、点选宫位或四化。',
+    );
   }
 
   // 2. 访问口令（没配 ACCESS_CODE 则跳过）
@@ -357,26 +374,15 @@ export async function POST(req: NextRequest): Promise<Response> {
     ]);
   }
 
-  // 5. 组上下文（专业版最多带 12 轮，防止 token 膨胀；简单版只送原文做改写）
-  const messages: { role: 'user' | 'assistant'; content: string }[] = isSimple
-    ? [{ role: 'user' as const, content: `请把下面这段命理解读改写成「简单版」：\n\n${sourceText.slice(0, 6000)}` }]
-    : history
-        .filter(
-          m =>
-            m &&
-            (m.role === 'user' || m.role === 'assistant') &&
-            typeof m.content === 'string' &&
-            m.content.trim().length > 0,
-        )
-        .slice(-12)
-        .map(m => ({ role: m.role, content: m.content.slice(0, 4000) }));
-
-  while (messages.length > 0 && messages[0].role === 'assistant') messages.shift();
+  // 5. 组上下文：每次只送一个任务，不带对话历史（没有多轮追问）
+  const messages: { role: 'user'; content: string }[] = isSimple
+    ? [{ role: 'user', content: `请把下面这段命理解读改写成「简单版」：\n\n${sourceText.slice(0, 6000)}` }]
+    : [{ role: 'user', content: built!.prompt }];
 
   const payload = {
     model: cfg.model,
     stream: true,
-    temperature: isSimple ? 0.6 : 0.7,
+    temperature: isSimple ? 0.6 : 0.5,
     max_tokens: isSimple ? 1600 : 2200,
     messages: [
       { role: 'system', content: isSimple ? SIMPLE_SYSTEM : buildSystemPrompt(chart) },

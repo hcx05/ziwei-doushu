@@ -114,10 +114,10 @@ const FEATURES = [
     title: '深度解盘\n不止于算',
     subtitle: '倪海厦体系知识库 × Claude AI',
     points: [
-      '命格分析：从命宫主星出发，结合三方四正，给出全面的性格与人生格局判断',
-      '六大维度解读：事业方向、感情婚姻、财运模式、健康注意、家庭关系、子女缘分',
-      '大限流年追踪：当前10年大限重点、今年流年宫位的具体提示与行动建议',
-      '自由追问：针对你的命盘直接提问，「今年能换工作吗」「什么时候结婚运最好」',
+      '命格分析：从命宫主星出发，结合三方四正，按倪海厦体系的规则逐条推演',
+      '六大维度解读：命格、感情、事业、财运、健康、性格，点选宫位或四化即可单独解读',
+      'AI 只做演绎与归纳；需要取舍定性的小节标明「溯因·需自行判断」，并说明为何不确定',
+      '不提供自由追问：「为什么会发生」「时辰准不准」这类溯因问题，AI 并不可靠',
     ],
   },
   {
@@ -983,11 +983,11 @@ export default function HomePage() {
                 紫微合盘
               </h2>
               <p className="text-sm leading-relaxed mb-8 max-w-lg mx-auto" style={{ color: c.textSecond }}>
-                输入两个人的出生信息，AI 基于倪海厦体系分析夫妻宫互参、命宫兼容性与三方四正交互，<br className="hidden md:block" />
-                给出感情匹配度、合伙可行性与最佳相处建议。
+                输入两个人的出生信息，并列两张命盘的命宫、夫妻宫、福德宫等关键宫位，<br className="hidden md:block" />
+                由你自己对照判断。匹配度这类综合评判属于溯因推理，不交给 AI。
               </p>
               <div className="flex justify-center gap-3 flex-wrap mb-6">
-                {['感情匹配度分析', '合伙创业评估', '亲子缘分解读', '婚前相性评估'].map(item => (
+                {['命宫对照', '夫妻宫对照', '福德宫对照', '财官迁对照'].map(item => (
                   <span key={item} style={{
                     fontSize: '12px', padding: '5px 14px', borderRadius: '20px',
                     background: theme === 'dark' ? 'rgba(212,168,67,0.08)' : 'rgba(212,168,67,0.12)',
@@ -1008,7 +1008,7 @@ export default function HomePage() {
                   color: c.goldSolid,
                   cursor: 'pointer',
                 }}>
-                开始合盘分析
+                开始双盘对照
               </motion.button>
             </FadeIn>
           </div>
