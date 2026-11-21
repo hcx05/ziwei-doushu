@@ -13,39 +13,15 @@
  */
 import { randomInt } from 'node:crypto';
 import { Solar } from 'lunar-javascript';
-import { buildLiuyao, parseYaoDigits, timeCast, tossCoins, type CastMoment, type YaoValue } from '../../lib/systems/liuyao/engine';
+import { buildLiuyao, parseYaoDigits, timeCast, tossCoins, type YaoValue } from '../../lib/systems/liuyao/engine';
 import { buildLiuyaoDigest } from '../../lib/systems/liuyao/digest';
 import { LIUYAO_SECTION_SETS, LIUYAO_VOCABULARY } from '../../lib/systems/liuyao/tasks';
 import { ZHOUYI } from '../../lib/systems/liuyao/zhouyi.data';
 import { BRANCHES } from '../../lib/systems/bazi/constants';
 import { buildReasoningRules, renderSkeleton } from '../../lib/reasoning/rules';
 import { ASSUMPTION_MARK, REASONING_LABEL, UNCERTAINTY_MARK } from '../../lib/reasoning/kinds';
-import { fail, parseArgs, runCheck, str, type Args } from './common';
+import { clockBranch, fail, parseArgs, parseMoment, runCheck, str, type Args } from './common';
 
-function parseMoment(args: Args): CastMoment {
-  if (args.now) {
-    const offArg = str(args['utc-offset']) ?? fail('--now 须同时给 --utc-offset（起卦当地的时区，如 8 或 -5），不能用服务器时区代替');
-    const off = Number(offArg);
-    if (!Number.isFinite(off) || off < -12 || off > 14) fail(`--utc-offset 应为 -12 ~ +14，收到「${offArg}」`);
-    const t = new Date(Date.now() + off * 3600_000);
-    return { year: t.getUTCFullYear(), month: t.getUTCMonth() + 1, day: t.getUTCDate(), hour: t.getUTCHours(), minute: t.getUTCMinutes(), utcOffset: off };
-  }
-  const ds = str(args.date) ?? fail('缺少起卦时间：用 --date YYYY-MM-DD --time HH:MM（起卦当下的当地时间），或 --now --utc-offset 8');
-  const dm = ds.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/) ?? fail(`--date 格式应为 YYYY-MM-DD，收到「${ds}」`);
-  const ts = str(args.time) ?? fail('缺少 --time HH:MM');
-  const tm = ts.match(/^(\d{1,2}):(\d{2})$/) ?? fail(`--time 格式应为 HH:MM，收到「${ts}」`);
-  const [y, mo, d, hh, mm] = [Number(dm[1]), Number(dm[2]), Number(dm[3]), Number(tm[1]), Number(tm[2])];
-  const probe = new Date(Date.UTC(y, mo - 1, d));
-  if (probe.getUTCFullYear() !== y || probe.getUTCMonth() !== mo - 1 || probe.getUTCDate() !== d) fail(`日期不存在：${ds}`);
-  if (y < 1901 || y > 2099) fail('年份应在 1901–2099 之间');
-  if (hh > 23 || mm > 59) fail(`--time 超出范围：${ts}`);
-  const offArg = str(args['utc-offset']);
-  const off = offArg === undefined ? undefined : Number(offArg);
-  if (off !== undefined && (!Number.isFinite(off) || off < -12 || off > 14)) fail(`--utc-offset 应为 -12 ~ +14，收到「${offArg}」`);
-  return { year: y, month: mo, day: d, hour: hh, minute: mm, utcOffset: off };
-}
-
-const clockBranch = (h: number) => Math.floor(((h + 1) % 24) / 2);
 
 function cmdCast(args: Args) {
   const moment = parseMoment(args);

@@ -13,6 +13,11 @@ declare module 'lunar-javascript' {
     getDayZhi(): string;
     getEightChar(): EightChar;
     getPrevJie(wholeDay?: boolean): JieQi;
+    // ── 梅花、六壬（2026-11-21 补：lib/systems/meihua、lib/systems/liuren 用） ──
+    /** 以立春换年的年支（getYearZhi 以春节换年） */
+    getYearZhiByLiChun(): string;
+    /** 上一个「气」（中气：雨水、春分……大寒）；六壬月将用 */
+    getPrevQi(wholeDay?: boolean): JieQi;
     getNextJie(wholeDay?: boolean): JieQi;
     /** 换算成公历(2026-08-05 补声明:lib/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
     getSolar(): Solar;

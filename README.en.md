@@ -73,7 +73,7 @@ npm run typecheck    # TypeScript check
 npm test             # charting regression tests
 ```
 
-**This fork has removed the web UI and all API routes.** It keeps the charting engines (`lib/`) and the Claude Skills: `ziwei-doushu`, `bazi` (Four Pillars), `liuyao` (Six Lines, with the Zhouyi text), `wuyun-liuqi` (Five Movements and Six Qi), `zeri` (almanac day selection), `taiyi` (Taiyi annual chart, for world and state affairs), and `huangji` (Shao Yong's cosmic chronology, with the original year-by-year text), all under `.claude/skills/`. Each skill must mark abductive conclusions as uncertain. See `docs/ROADMAP-multi-system.md` for the expansion plan.
+**This fork has removed the web UI and all API routes.** It keeps the charting engines (`lib/`) and the Claude Skills: `ziwei-doushu`, `bazi` (Four Pillars), `liuyao` (Six Lines, with the Zhouyi text), `wuyun-liuqi` (Five Movements and Six Qi), `zeri` (almanac day selection), `taiyi` (Taiyi annual chart, for world and state affairs), `huangji` (Shao Yong's cosmic chronology, with the original year-by-year text), `meihua` (Plum Blossom numerology) and `liuren` (Da Liu Ren), all under `.claude/skills/`. Each skill must mark abductive conclusions as uncertain. See `docs/ROADMAP-multi-system.md` for the expansion plan.
 
 ## What is not included
 

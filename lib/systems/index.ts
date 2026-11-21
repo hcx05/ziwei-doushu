@@ -27,6 +27,12 @@ import {
 import {
   HUANGJI_ABDUCTION_HOTSPOTS, HUANGJI_OUT_OF_SCOPE, HUANGJI_SECTION_SETS, HUANGJI_VOCABULARY,
 } from './huangji/tasks';
+import {
+  MEIHUA_ABDUCTION_HOTSPOTS, MEIHUA_OUT_OF_SCOPE, MEIHUA_SECTION_SETS, MEIHUA_VOCABULARY,
+} from './meihua/tasks';
+import {
+  LIUREN_ABDUCTION_HOTSPOTS, LIUREN_OUT_OF_SCOPE, LIUREN_SECTION_SETS, LIUREN_VOCABULARY,
+} from './liuren/tasks';
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
@@ -128,7 +134,27 @@ const huangji: DivinationSystem = {
   outOfScope: HUANGJI_OUT_OF_SCOPE,
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri, taiyi, huangji];
+const meihua: DivinationSystem = {
+  id: 'meihua',
+  name: '梅花易數（《梅花易數》體用法）',
+  scope: '事',
+  vocabulary: MEIHUA_VOCABULARY,
+  sectionSets: MEIHUA_SECTION_SETS,
+  abductionHotspots: MEIHUA_ABDUCTION_HOTSPOTS,
+  outOfScope: MEIHUA_OUT_OF_SCOPE,
+};
+
+const liuren: DivinationSystem = {
+  id: 'liuren',
+  name: '大六壬（《六壬大全》九宗門）',
+  scope: '事',
+  vocabulary: LIUREN_VOCABULARY,
+  sectionSets: LIUREN_SECTION_SETS,
+  abductionHotspots: LIUREN_ABDUCTION_HOTSPOTS,
+  outOfScope: LIUREN_OUT_OF_SCOPE,
+};
+
+export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri, taiyi, huangji, meihua, liuren];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);

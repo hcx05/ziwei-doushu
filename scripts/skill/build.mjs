@@ -7,6 +7,8 @@
  *   scripts/skill/zeri-cli.ts   → .claude/skills/zeri/scripts/zeri.mjs
  *   scripts/skill/taiyi-cli.ts  → .claude/skills/taiyi/scripts/taiyi.mjs
  *   scripts/skill/huangji-cli.ts → .claude/skills/huangji/scripts/huangji.mjs
+ *   scripts/skill/meihua-cli.ts  → .claude/skills/meihua/scripts/meihua.mjs
+ *   scripts/skill/liuren-cli.ts  → .claude/skills/liuren/scripts/liuren.mjs
  * 打包后只需 Node 18+，不必 npm install —— 所以每个 skill 目录都可以直接拷走或打成 zip 上传。
  *
  *   npm run build:skill
@@ -30,6 +32,8 @@ const TARGETS = [
   { entry: 'scripts/skill/zeri-cli.ts', out: '.claude/skills/zeri/scripts/zeri.mjs' },
   { entry: 'scripts/skill/taiyi-cli.ts', out: '.claude/skills/taiyi/scripts/taiyi.mjs' },
   { entry: 'scripts/skill/huangji-cli.ts', out: '.claude/skills/huangji/scripts/huangji.mjs' },
+  { entry: 'scripts/skill/meihua-cli.ts', out: '.claude/skills/meihua/scripts/meihua.mjs' },
+  { entry: 'scripts/skill/liuren-cli.ts', out: '.claude/skills/liuren/scripts/liuren.mjs' },
 ];
 
 for (const t of TARGETS) {

@@ -12,6 +12,7 @@ import type { BirthFormState } from '../../lib/ziwei/share';
 import { readFileSync } from 'node:fs';
 import { checkMarks, enforceMarks } from '../../lib/reasoning/check';
 import { UNCERTAINTY_MARK, type SectionSpec } from '../../lib/reasoning/kinds';
+import type { CastMoment } from '../../lib/systems/liuyao/engine';
 
 export type Args = { _: string[]; [k: string]: string | boolean | string[] };
 
@@ -135,3 +136,33 @@ export function runCheck(args: Args, sections: SectionSpec[]): void {
   if (r.missingSections.length) console.log(`✗ 缺少这些小节：${r.missingSections.join('、')}`);
   process.exitCode = 1;
 }
+
+
+// ── 起卦（起课）时刻：六爻、梅花、六壬共用 ─────────────────
+
+/** --date/--time（当地时间，可加 --utc-offset）或 --now --utc-offset */
+export function parseMoment(args: Args): CastMoment {
+  if (args.now) {
+    const offArg = str(args['utc-offset']) ?? fail('--now 须同时给 --utc-offset（起卦当地的时区，如 8 或 -5），不能用服务器时区代替');
+    const off = Number(offArg);
+    if (!Number.isFinite(off) || off < -12 || off > 14) fail(`--utc-offset 应为 -12 ~ +14，收到「${offArg}」`);
+    const t = new Date(Date.now() + off * 3600_000);
+    return { year: t.getUTCFullYear(), month: t.getUTCMonth() + 1, day: t.getUTCDate(), hour: t.getUTCHours(), minute: t.getUTCMinutes(), utcOffset: off };
+  }
+  const ds = str(args.date) ?? fail('缺少起卦时间：用 --date YYYY-MM-DD --time HH:MM（起卦当下的当地时间），或 --now --utc-offset 8');
+  const dm = ds.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/) ?? fail(`--date 格式应为 YYYY-MM-DD，收到「${ds}」`);
+  const ts = str(args.time) ?? fail('缺少 --time HH:MM');
+  const tm = ts.match(/^(\d{1,2}):(\d{2})$/) ?? fail(`--time 格式应为 HH:MM，收到「${ts}」`);
+  const [y, mo, d, hh, mm] = [Number(dm[1]), Number(dm[2]), Number(dm[3]), Number(tm[1]), Number(tm[2])];
+  const probe = new Date(Date.UTC(y, mo - 1, d));
+  if (probe.getUTCFullYear() !== y || probe.getUTCMonth() !== mo - 1 || probe.getUTCDate() !== d) fail(`日期不存在：${ds}`);
+  if (y < 1901 || y > 2099) fail('年份应在 1901–2099 之间');
+  if (hh > 23 || mm > 59) fail(`--time 超出范围：${ts}`);
+  const offArg = str(args['utc-offset']);
+  const off = offArg === undefined ? undefined : Number(offArg);
+  if (off !== undefined && (!Number.isFinite(off) || off < -12 || off > 14)) fail(`--utc-offset 应为 -12 ~ +14，收到「${offArg}」`);
+  return { year: y, month: mo, day: d, hour: hh, minute: mm, utcOffset: off };
+}
+
+/** 钟表小时 → 时支序号（子 0 … 亥 11） */
+export const clockBranch = (h: number) => Math.floor(((h + 1) % 24) / 2);
