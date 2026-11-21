@@ -51,7 +51,7 @@
 
 > **注：Claude Skill 版本**
 >
-> [`.claude/skills/ziwei-doushu/`](./.claude/skills/ziwei-doushu/SKILL.md) 是同一套引擎与推理规则的 Claude Skill：在 Claude 里直接说「帮我看看命，1990-06-15 10:30 女，杭州」即可。Claude 用打包好的工具确定性排盘（含真太阳时、农历、海外时区、大限与流年四化落宫），按小节的演绎 / 归纳 / 溯因标注解读，引用倪师原话前先在 1848 条语料里检索，查不到就不引；反推原因、校正时辰、两人合不合这类溯因问题不给结论。
+> [`.claude/skills/ziwei-doushu/`](./.claude/skills/ziwei-doushu/SKILL.md) 是同一套引擎与推理规则的 Claude Skill：在 Claude 里直接说「帮我看看命，1990-06-15 10:30 女，杭州」即可。Claude 用打包好的工具确定性排盘（含真太阳时、农历、海外时区、大限 / 流年 / 流月 / 流日四化落宫，以及按倪师起法的小六壬），按小节的演绎 / 归纳 / 溯因标注解读，引用倪师原话前先在 1848 条语料里检索，查不到就不引；反推原因、校正时辰、两人合不合这类溯因问题不给结论。
 >
 > - **Claude Code**：在本仓库目录里开 Claude Code 就会自动载入；想在所有项目里用，把 `.claude/skills/ziwei-doushu` 整个文件夹拷到 `~/.claude/skills/`。
 > - **Claude 网页 / 桌面版**：把 `ziwei-doushu` 文件夹打成 zip，在设置里的 Skills 上传（需开启代码执行；入口名称以当前设置页为准）。

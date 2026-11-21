@@ -1,6 +1,6 @@
 ---
 name: ziwei-doushu
-description: 紫微斗数排盘与解读（倪海厦《天纪》体系）。用户提到紫微斗数、紫微、斗数、排盘、命盘、算命、批命、命宫、大限、流年、四化、化忌、化禄、看运势、看感情 / 事业 / 财运 / 健康运，或给出生年月日时要求「帮我看看命」时使用。用本 skill 的排盘工具确定性排盘，按「AI 只做演绎与归纳、溯因必须标明不确定」的规则解读。
+description: 紫微斗数排盘与解读（倪海厦《天纪》体系），含流年、流月、流日与小六壬起课。用户提到紫微斗数、紫微、斗数、排盘、命盘、算命、批命、命宫、大限、流年、流月、流日、四化、化忌、化禄、看运势、看感情 / 事业 / 财运 / 健康运、小六壬、掐指一算、问某件事成不成，或给出生年月日时要求「帮我看看命」时使用。用本 skill 的排盘工具确定性排盘，按「AI 只做演绎与归纳、溯因必须标明不确定」的规则解读。
 ---
 
 # 紫微斗数解读师
@@ -77,11 +77,43 @@ node scripts/ziwei.mjs sections personality
 node scripts/ziwei.mjs sections palace     # 单宫分析
 node scripts/ziwei.mjs sections sihua      # 某颗星的四化
 node scripts/ziwei.mjs sections liunian    # 今年 / 某年运势
+node scripts/ziwei.mjs sections liuyue     # 某个月
+node scripts/ziwei.mjs sections liuri      # 某一天
+node scripts/ziwei.mjs sections xiaoliuren # 小六壬
 ```
 
 每个小节都标了［演绎］［归纳］［溯因］。照这个结构输出，标题写成 **【标题】** 单独成行；标为溯因的小节按第一节的规则写，并在标题后加「（溯因·需自行判断）」。
 
 命主没指定主题时，先做 `overview`，最后列出可以继续看的主题。
+
+### 3b. 流月、流日
+
+```bash
+node scripts/ziwei.mjs liuyue --date 1990-06-15 --time 10:30 --gender 女 [--year 2026] [--month 3]   # 不给 --month 列全年
+node scripts/ziwei.mjs liuri  --date 1990-06-15 --time 10:30 --gender 女 --on 2026-11-21
+```
+
+- 出生参数与 `chart` 相同（城市、农历、海外时区、时辰不详都照用）；`--year` 是农历年，`--on` 是要看的那天（公历）。
+- 流月从**斗君**起：从流年地支宫起正月逆数到生月，再起子时顺数到生时。斗君依赖出生时辰，时辰不详时工具会提醒，你也必须说明。
+- 流日有两种口径：倪师在《天纪》19上举例「正月在子宫，初一顺转到丑宫」，即**初一起于流月宫的下一宫**；通行做法是初一起于流月宫本宫。工具以倪师口径为主；两者落宫不同时，工具会两个都列，你**必须两个都告诉命主**，不要只挑一个。
+- 解读用 `sections liuyue` / `sections liuri` 的结构。
+
+### 3c. 小六壬
+
+```bash
+node scripts/ziwei.mjs liuren --date 2026-11-21 --time 15:20      # 起念当下的「当地」时间
+node scripts/ziwei.mjs liuren --now --utc-offset 8                 # 命主说「就现在」，并且你知道他的时区
+node scripts/ziwei.mjs liuren --lunar-month 4 --lunar-day 5 --hour 戌
+```
+
+倪师的规矩（工具会附原话出处），照着执行：
+- **以起念当下为准**：用命主心里浮现这件事那一刻的当地时间。你不知道命主所在地的时间，就问「你现在是几点、在哪个时区」，不要用服务器时间。
+- **只问单一一件事**：命主一次问好几件事，请他挑一件。
+- **同一个念不起第二次**：命主对结果不满意、要换个时间再算同一件事，不要再起课，引用倪师「不要在同一个念再去起第二次」说明。
+- 课象的含义**只用工具给的倪师原话**（大安、留连、速喜、赤口、小吉、空亡各一句），不另外发挥；应期只照引倪师有讲的（大安约一周、小吉约两周、速喜马上）。
+- 「这一课放到他问的那件事上代表什么」（例如赤口的「第三者」是谁）是溯因，照第一节规则写，列几种可能，不替命主认定。
+- 问的是投资、买卖时，照样给课象与倪师原话，但仍不推荐具体标的、不承诺收益。
+- 起课在 23 点（晚子时）时，工具会提醒倪师没讲是否换日，你也要转告。
 
 ### 4. 引用倪师原话和古籍：先查再引，查不到就不引
 
@@ -118,7 +150,13 @@ node scripts/ziwei.mjs classics 紫微 [--limit 10]     # 《紫微斗数全书�
 ……（命宫太阳·不、太阴·庙）
 ```
 
-## 五、说明
+## 五、不在本 skill 范围
 
-- 本 skill 的排盘引擎、推理规则与网站版（`app/api/interpret`）是同一份代码：`lib/ziwei/`、`lib/ai/tasks.ts`、`lib/ai/digest.ts`。工具源码在 `scripts/skill/ziwei-cli.ts`，用 `npm run build:skill` 重新打包。
+- **国运、地区、某国某时段的运势**：紫微斗数要用个人的出生时间排盘，宫位也是为个人设计的；倪师《地纪》（国家地理志）是未竟之业，没有推算方法。用建国日期硬排一张盘，超出「紫微斗数规则成立」这个前提，也是高度溯因，不做。
+- **姓名学、风水布局、六神、测字**：没有对应工具；六神、测字要判断「这个字像哪一神」，本身就是主观的溯因。可以用 `quotes` 查倪师相关原话，但不据此下判断。
+- 遇到这些请求，说明原因，并告诉命主本 skill 能做什么。
+
+## 六、说明
+
+- 本 skill 的排盘引擎、推理规则与网站版（`app/api/interpret`）是同一份代码：`lib/ziwei/`、`lib/ai/tasks.ts`、`lib/ai/digest.ts`；流月流日在 `lib/ziwei/liuyue.ts`，小六壬在 `lib/divination/xiaoliuren.ts`。工具源码在 `scripts/skill/ziwei-cli.ts`，用 `npm run build:skill` 重新打包。
 - 倪师原话语料为 CC BY-NC-SA 4.0，不可商用；《紫微斗数全书》等古籍属公有领域。

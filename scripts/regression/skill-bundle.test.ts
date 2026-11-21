@@ -52,8 +52,22 @@ assert.ok(q.stdout.includes('「斗数批六亲本来就比较差一点。」'))
 assert.ok(q.stdout.includes('https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=1527'));
 assert.ok(!q.stdout.includes('cleaned'), '语料清洗标记不应出现在输出里');
 
+const liuren = run('liuren', '--lunar-month', '4', '--lunar-day', '5', '--hour', '戌');
+assert.equal(liuren.status, 0, liuren.stderr);
+assert.ok(liuren.stdout.includes('**空亡**') && liuren.stdout.includes('你可以断念了'));
+assert.equal(run('liuren', '--now').status, 2, 'liuren --now 未给时区应报错（不能用服务器时区代替命主的当地时间）');
+
+const ly = run('liuyue', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--year', '2026', '--month', '3');
+assert.equal(ly.status, 0, ly.stderr);
+assert.ok(ly.stdout.includes('斗君（流年正月）在未宫') && ly.stdout.includes('## 农历3月（壬干）'));
+
+const lr = run('liuri', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--on', '2026-11-21');
+assert.equal(lr.status, 0, lr.stderr);
+assert.ok(lr.stdout.includes('倪师口径') && lr.stdout.includes('通行口径'));
+
 const sec = run('sections', 'all');
 assert.ok(sec.stdout.includes('**【命格定性】** ［溯因］') && sec.stdout.includes('## liunian'));
+for (const k of ['## liuyue', '## liuri', '## xiaoliuren']) assert.ok(sec.stdout.includes(k), `sections 缺 ${k}`);
 
 // ── 4) SKILL.md ─────────────────────────────────────────────
 const md = readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
@@ -61,7 +75,7 @@ const fm = md.match(/^---\nname: ([a-z0-9-]+)\ndescription: (.+)\n---\n/);
 assert.ok(fm, 'SKILL.md 须以 name / description frontmatter 开头');
 assert.equal(fm[1], 'ziwei-doushu');
 assert.ok(fm[2].length <= 1024, 'description 不宜超过 1024 字符');
-for (const must of ['⚠ 不确定：', '溯因重灾区', '定盘、校正时辰', '先查再引']) {
+for (const must of ['⚠ 不确定：', '溯因重灾区', '定盘、校正时辰', '先查再引', '小六壬', '同一个念', '流日']) {
   assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
 }
 

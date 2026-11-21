@@ -208,6 +208,40 @@ export const LIUNIAN_SECTIONS: SectionSpec[] = [
     instruction: '基于以上象意，可供命主参考的方向。' },
 ];
 
+/** 流月解读（Claude Skill 用）。依据：斗君、流月命宫、流月四化，均由 lib/ziwei/liuyue.ts 确定性算出 */
+export const LIUYUE_SECTIONS: SectionSpec[] = [
+  { title: '流月命宫', kind: 'deduction',
+    instruction: '流月命宫落在本命哪一宫、该宫星曜，按规则推出的当月主题象意。' },
+  { title: '流月四化落宫', kind: 'deduction',
+    instruction: '流月禄权科忌各落本命哪一宫，按规则逐条说明影响的领域。' },
+  { title: '与流年大限叠加', kind: 'deduction',
+    instruction: '流月四化与流年、当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲象意，不推测具体事件。' },
+  { title: '需留意的领域', kind: 'abduction',
+    instruction: '在上述讯号中，这个月哪些领域较值得留意。' },
+];
+
+/** 流日解读（Claude Skill 用） */
+export const LIURI_SECTIONS: SectionSpec[] = [
+  { title: '流日命宫', kind: 'deduction',
+    instruction: '流日命宫落在本命哪一宫（倪师口径为主，若与通行口径不同须一并说明），该宫星曜的象意。' },
+  { title: '流日四化落宫', kind: 'deduction',
+    instruction: '流日（日干）禄权科忌各落本命哪一宫，按规则说明影响的领域。只讲象意，不推测具体事件。' },
+  { title: '需留意的领域', kind: 'abduction',
+    instruction: '在上述讯号中，当天哪些领域较值得留意。' },
+];
+
+/** 小六壬（Claude Skill 用）。课象由 lib/divination/xiaoliuren.ts 起出，含义只用倪师原话 */
+export const XIAOLIUREN_SECTIONS: SectionSpec[] = [
+  { title: '起课', kind: 'deduction',
+    instruction: '起课所用的农历月、日、时辰，以及月、日、时各落哪一课，最终课象是什么。' },
+  { title: '课象', kind: 'deduction',
+    instruction: '只引用工具给出的倪师原话说明这一课的含义，附出处，不另行发挥。' },
+  { title: '应期', kind: 'deduction',
+    instruction: '倪师原话里有时间说法的（大安约一周、小吉约两周、速喜马上）照引；没有的就说没有。' },
+  { title: '对所问之事的含义', kind: 'abduction',
+    instruction: '这一课放到命主所问的那件具体事情上，可能对应哪几种情况。' },
+];
+
 // ────────────────── 任务校验与 prompt 组装 ──────────────────
 
 const TOPIC_KEYS = new Set<string>(TOPICS.map(t => t.key));
