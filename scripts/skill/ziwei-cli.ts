@@ -13,6 +13,7 @@
  *   classics  搜索《紫微斗數全書》等古籍原文
  *   liuyue    流月：斗君、流月命宮、流月四化落宮（不給 --month 則列出全年 12 個月）
  *   liuri     流日：某一公曆日的流日命宮、流日四化落宮
+ *   years     逐年流年：每年所在大限、流年命宮、流年四化的三盤疊宮；--palace 只列碰到該宮的四化
  *   liuren    小六壬：按農曆月日時起課，含義只給倪師原話
  */
 
@@ -27,6 +28,7 @@ import {
 } from '../../lib/systems/ziwei/tasks';
 import { BRANCHES } from '../../lib/systems/ziwei/constants';
 import { getLiuNianSiHua, getYearBranchIndex } from '../../lib/systems/ziwei/sihua';
+import { LAYER_PALACE_NAMES, locate, normalizePalaceName, transformsWithLayers, yearContext, yearHits, type Layer } from '../../lib/systems/ziwei/layers';
 import { getLiuRi, getLiuYue, solarToLunar } from '../../lib/systems/ziwei/liuyue';
 import { LIUREN_MEANING, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/systems/ziwei/xiaoliuren';
 import type { SiHua, ZiweiChart } from '../../lib/systems/ziwei/types';
@@ -57,20 +59,11 @@ function cmdChart(args: Args) {
 
 // ────────────────── liuyue / liuri ──────────────────
 
-const SIHUA_ORDER: SiHua[] = ['祿', '權', '科', '忌'];
-
-function palaceLabel(chart: ZiweiChart, branch: number): string {
+function palaceLabel(chart: ZiweiChart, branch: number, layers: Layer[] = []): string {
   const p = chart.palaces.find(x => x.branch === branch);
   if (!p) return `${BRANCHES[branch]}宮`;
   const stars = p.stars.filter(s => s.type === 'major').map(s => `${s.name}${s.siHua ? '化' + s.siHua : ''}`).join('、');
-  return `${BRANCHES[branch]}宮（本命${p.name}：${stars || (p.borrowedStars?.length ? '空宮，借對宮' + p.borrowedStars.join('、') : '空宮')}）`;
-}
-
-function transformsText(chart: ZiweiChart, t: Record<SiHua, string>): string {
-  return SIHUA_ORDER.map(h => {
-    const p = chart.palaces.find(x => x.stars.some(s => s.name === t[h]));
-    return `化${h}${t[h]}（${p ? `落${BRANCHES[p.branch]}宮·${p.name}` : '本盤未安此星'}）`;
-  }).join('；');
+  return `${BRANCHES[branch]}宮（${locate(chart, branch, layers)}；主星：${stars || (p.borrowedStars?.length ? '空宮，借對宮' + p.borrowedStars.join('、') : '空宮')}）`;
 }
 
 function hourCaveat(chart: ZiweiChart): string[] {
@@ -91,12 +84,16 @@ function cmdLiuyue(args: Args) {
   for (const n of [...notes, ...hourCaveat(chart)]) console.log(`- ${n}`);
   const first = getLiuYue(chart, year, 1);
   console.log(`- 斗君（流年正月）在${BRANCHES[first.douJun]}宮：從流年${BRANCHES[yb]}宮起正月逆數到生月，再起子時順數到生時`);
-  console.log(`- 流年命宮：${palaceLabel(chart, yb)}；流年四化：${transformsText(chart, ln.transforms)}\n`);
+  const ctx = yearContext(chart, year);
+  console.log(`- 所在大限：${ctx.daXianLabel}${ctx.daXianBranch !== undefined ? `（大限命宮在${BRANCHES[ctx.daXianBranch]}宮）` : ''}`);
+  console.log(`- 流年命宮：${palaceLabel(chart, yb, ctx.layers)}；流年四化：${transformsWithLayers(chart, ln.transforms, ctx.layers)}`);
+  console.log('- 宮名依次為本命／大限／流年／流月；看某月某事，看流月四化落在流月、流年的哪一宮\n');
   for (const m of months) {
     const ly = getLiuYue(chart, year, m, { isLeapMonth: !!args.leap });
+    const layers: Layer[] = [...ctx.layers, { label: '流月', mingBranch: ly.branch }];
     console.log(`## 農曆${args.leap ? '閏' : ''}${m}月（${ly.stemName}干）`);
-    console.log(`- 流月命宮：${palaceLabel(chart, ly.branch)}`);
-    console.log(`- 流月四化：${transformsText(chart, ly.transforms)}\n`);
+    console.log(`- 流月命宮：${palaceLabel(chart, ly.branch, layers)}`);
+    console.log(`- 流月四化：${transformsWithLayers(chart, ly.transforms, layers)}\n`);
   }
 }
 
@@ -111,15 +108,55 @@ function cmdLiuri(args: Args) {
 
   console.log(`# 流日 ${on}（農曆 ${lunar.year} 年${lunar.isLeapMonth ? '閏' : ''}${lunar.month}月${lunar.day}日）\n`);
   for (const n of [...notes, ...hourCaveat(chart)]) console.log(`- ${n}`);
-  console.log(`- 流年（${ln.stemName}${BRANCHES[yb]}年）命宮：${palaceLabel(chart, yb)}；流年四化：${transformsText(chart, ln.transforms)}`);
-  console.log(`- 流月（${liuyue.month}月，${liuyue.stemName}干）命宮：${palaceLabel(chart, liuyue.branch)}；流月四化：${transformsText(chart, liuyue.transforms)}`);
-  console.log(`- 流日命宮（倪師口徑：初一起於流月宮的下一宮）：${palaceLabel(chart, info.branch)}`);
+  const ctx = yearContext(chart, lunar.year);
+  const monthLayers: Layer[] = [...ctx.layers, { label: '流月', mingBranch: liuyue.branch }];
+  const dayLayers: Layer[] = [...monthLayers, { label: '流日', mingBranch: info.branch }];
+  console.log('- 宮名依次為本命／大限／流年／流月／流日（流日以倪師口徑）');
+  console.log(`- 流年（${ln.stemName}${BRANCHES[yb]}年）命宮：${palaceLabel(chart, yb, ctx.layers)}；流年四化：${transformsWithLayers(chart, ln.transforms, ctx.layers)}`);
+  console.log(`- 流月（${liuyue.month}月，${liuyue.stemName}干）命宮：${palaceLabel(chart, liuyue.branch, monthLayers)}；流月四化：${transformsWithLayers(chart, liuyue.transforms, monthLayers)}`);
+  console.log(`- 流日命宮（倪師口徑：初一起於流月宮的下一宮）：${palaceLabel(chart, info.branch, dayLayers)}`);
   if (info.branchCommon !== info.branch) {
-    console.log(`  - 通行口徑（初一起於流月宮本宮）則為：${palaceLabel(chart, info.branchCommon)}。兩種口徑不同，解讀時須一併說明。`);
+    console.log(`  - 通行口徑（初一起於流月宮本宮）則為：${palaceLabel(chart, info.branchCommon, monthLayers)}。兩種口徑不同，解讀時須一併說明。`);
   }
   console.log(info.transforms
-    ? `- 流日四化（${info.stemName}日干）：${transformsText(chart, info.transforms)}`
+    ? `- 流日四化（${info.stemName}日干）：${transformsWithLayers(chart, info.transforms, dayLayers)}`
     : '- 流日四化：日干換算失敗');
+}
+
+// ────────────────── years（逐年掃描）──────────────────
+
+function cmdYears(args: Args) {
+  const { chart, notes } = buildChartFromArgs(args);
+  const now = new Date().getFullYear();
+  const from = str(args.from) ? Number(args.from) : now;
+  const to = str(args.to) ? Number(args.to) : from + 9;
+  if (!Number.isInteger(from) || !Number.isInteger(to) || to < from) fail('--from、--to 應為年份，且 --to 不小於 --from');
+  if (to - from > 40) fail('一次最多掃 41 年');
+  const palaceArg = str(args.palace);
+  const palace = palaceArg ? (normalizePalaceName(palaceArg) ?? fail(`認不得宮名「${palaceArg}」；可用：${LAYER_PALACE_NAMES.join('、')}`)) : undefined;
+
+  console.log(`# 逐年流年（${from}–${to}）${palace ? `：與${palace}宮有關的四化` : ''}\n`);
+  for (const n of notes) console.log(`- ${n}`);
+  if (chart.birthInfo.hourUnknown) console.log(`- ${ASSUMPTION_MARK}出生時辰不詳，大限、流年各宮位置都建立在「子時」假設上。`);
+  console.log('- 宮名依次為本命／大限／流年。這裡只列規則事實（哪顆化落在哪一層的哪一宮），哪一年「會發生什麼」屬於溯因。');
+  const isLifelong = (h: string) => h.startsWith('生年') && h.includes('本命');
+  if (palace) {
+    console.log(`- 「入」＝四化落在該層的${palace}宮；「沖」＝化忌落在該層${palace}宮的對宮。`);
+    const lifelong = yearHits(chart, yearContext(chart, from), palace).filter(isLifelong);
+    console.log(`- 終身不變（生年四化對本命${palace}）：${lifelong.length ? lifelong.join('；') : '無'}；以下各年不再重複列出。`);
+  }
+  console.log('');
+  for (let y = from; y <= to; y++) {
+    const ctx = yearContext(chart, y);
+    console.log(`## ${y}（${ctx.liuNian.stemName}${BRANCHES[ctx.liuNianBranch]}年）虛歲 ${ctx.age}｜大限 ${ctx.daXianLabel}${ctx.daXianBranch !== undefined ? `（命宮在${BRANCHES[ctx.daXianBranch]}）` : ''}`);
+    console.log(`- 流年命宮：${BRANCHES[ctx.liuNianBranch]}宮（${locate(chart, ctx.liuNianBranch, ctx.layers)}）`);
+    console.log(`- 流年四化：${transformsWithLayers(chart, ctx.liuNian.transforms, ctx.layers)}`);
+    if (palace) {
+      const hits = yearHits(chart, ctx, palace).filter(h => !isLifelong(h));
+      console.log(`- 涉及${palace}：${hits.length ? hits.join('；') : '無'}`);
+    }
+    console.log('');
+  }
 }
 
 // ────────────────── liuren（小六壬）──────────────────
@@ -287,6 +324,7 @@ const HELP = `紫微斗數 Skill 工具
   node ziwei.mjs chart --date 1992-03-04 --time 23:10 --gender 男 --utc-offset -5 --longitude -74.0   （海外出生）
   node ziwei.mjs liuyue --date 1990-06-15 --time 10:30 --gender 女 [--year 2026] [--month 3]
   node ziwei.mjs liuri  --date 1990-06-15 --time 10:30 --gender 女 --on 2026-11-21
+  node ziwei.mjs years  --date 1990-06-15 --time 10:30 --gender 女 [--from 2026 --to 2035] [--palace 夫妻]   （逐年流年；--palace 只列碰到該宮的四化）
   node ziwei.mjs liuren --date 2026-11-21 --time 15:20            （起念當下的當地時間）
   node ziwei.mjs liuren --now --utc-offset 8
   node ziwei.mjs liuren --lunar-month 4 --lunar-day 5 --hour 戌
@@ -307,6 +345,7 @@ try {
     case 'classics': cmdClassics(args); break;
     case 'liuyue': cmdLiuyue(args); break;
     case 'liuri': cmdLiuri(args); break;
+    case 'years': cmdYears(args); break;
     case 'liuren': cmdLiuren(args); break;
     default: console.log(HELP);
   }

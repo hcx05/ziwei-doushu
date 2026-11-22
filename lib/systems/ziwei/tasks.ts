@@ -48,7 +48,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '三方四正', kind: 'deduction',
         instruction: '財帛、官祿、遷移三宮的星曜與四化，按規則逐條說明它們與命宮的聯動。只陳述規則推出的內容，不做整體評判。' },
       { title: '當前大限', kind: 'deduction',
-        instruction: '當前大限宮位的星曜與大限四化，按規則推出的運勢方向。' },
+        instruction: '當前大限命宮（本命哪一宮）的星曜，大限四化各落大限盤哪一宮（看工具的三盤疊宮，不要自己數宮），按規則推出的運勢方向。' },
       { title: '優勢與注意', kind: 'abduction',
         instruction: '在上述訊號中，哪些較可能是天賦優勢、哪些較可能是需要注意的功課。' },
     ],
@@ -63,7 +63,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '三方聯動', kind: 'deduction',
         instruction: '夫妻宮三方四正的星曜與四化，按規則說明對感情的影響。' },
       { title: '當前大限感情運', kind: 'deduction',
-        instruction: '當前大限四化落入或沖照夫妻宮的情況，按規則推出的走向。只講規則推出的象意；具體事件的推測放到溯因節。' },
+        instruction: '大限四化落入或化忌沖照「大限夫妻」與「本命夫妻」的情況（層宮名以工具的三盤疊宮為準），按規則推出的走向；問某一年再看流年四化對「流年夫妻」，找年份用 years --palace 夫妻。只講規則推出的象意；具體事件的推測放到溯因節。' },
       { title: '實際建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的方向。' },
     ],
@@ -78,7 +78,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '財帛宮聯動', kind: 'deduction',
         instruction: '財帛宮與官祿宮的星曜、四化關係，按規則說明財路來源的象意。' },
       { title: '當前大限事業運', kind: 'deduction',
-        instruction: '當前大限四化與官祿宮的關係，按規則推出的走向。只講規則推出的象意；具體事件的推測放到溯因節。' },
+        instruction: '大限四化落入或化忌沖照「大限官祿」與「本命官祿」的情況（層宮名以工具的三盤疊宮為準），按規則推出的走向；問某一年再看流年四化對「流年官祿」，找年份用 years --palace 官祿。只講規則推出的象意；具體事件的推測放到溯因節。' },
       { title: '實際建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的方向與行業類型。' },
     ],
@@ -93,7 +93,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '田宅宮（財庫）', kind: 'deduction',
         instruction: '田宅宮星曜與四化，按規則推出的積蓄與不動產象意。' },
       { title: '當前大限財運', kind: 'deduction',
-        instruction: '當前大限四化與財帛、田宅的關係，按規則推出的走向。只講規則推出的象意；具體事件的推測放到溯因節。' },
+        instruction: '大限四化落入或化忌沖照「大限財帛」「大限田宅」與本命財帛、田宅的情況（層宮名以工具的三盤疊宮為準），按規則推出的走向；問某一年再看流年四化對流年財帛、田宅。只講規則推出的象意；具體事件的推測放到溯因節。' },
       { title: '理財建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的理財方向（不承諾收益、不推薦具體標的）。' },
     ],
@@ -171,15 +171,15 @@ function sihuaSections(siHua: string, viewLabel: string): SectionSpec[] {
 
 /**
  * 流年解讀的小節。
- * 依據是命盤摘要裡的【流年】與【當前大限四化落宮】，都由引擎確定性算出。
+ * 依據是命盤摘要裡的【某年所在大限】【流年】與【三盤疊宮】，都由引擎確定性算出。
  */
 export const LIUNIAN_SECTIONS: SectionSpec[] = [
   { title: '流年命宮', kind: 'deduction',
-    instruction: '流年命宮落在本命哪一宮、該宮星曜，按規則推出的年度主題象意。' },
+    instruction: '流年命宮落在本命、大限各哪一宮，該宮星曜，按規則推出的年度主題象意。' },
   { title: '流年四化落宮', kind: 'deduction',
-    instruction: '流年祿權科忌各落本命哪一宮，按規則逐條說明影響的領域。' },
+    instruction: '流年祿權科忌各落流年盤哪一宮（主看），以及同一宮在大限、本命盤是哪一宮，按規則逐條說明影響的領域。' },
   { title: '與當前大限疊加', kind: 'deduction',
-    instruction: '流年四化與當前大限四化同落或沖照的宮位，按規則說明疊加的象意。只講規則推出的象意；具體事件的推測放到溯因節。' },
+    instruction: '流年四化與該年所在大限的四化同落或化忌沖照的宮位，以及落在三層同名宮（例如同時是大限夫妻、流年夫妻）的情況，按規則說明疊加的象意。只講規則推出的象意；具體事件的推測放到溯因節。' },
   { title: '需留意的領域', kind: 'abduction',
     instruction: '在上述訊號中，今年哪些領域較值得留意。' },
   { title: '實際建議', kind: 'abduction',
@@ -189,11 +189,11 @@ export const LIUNIAN_SECTIONS: SectionSpec[] = [
 /** 流月解讀（Claude Skill 用）。依據：斗君、流月命宮、流月四化，均由 lib/systems/ziwei/liuyue.ts 確定性算出 */
 export const LIUYUE_SECTIONS: SectionSpec[] = [
   { title: '流月命宮', kind: 'deduction',
-    instruction: '流月命宮落在本命哪一宮、該宮星曜，按規則推出的當月主題象意。' },
+    instruction: '流月命宮落在本命、大限、流年各哪一宮，該宮星曜，按規則推出的當月主題象意。' },
   { title: '流月四化落宮', kind: 'deduction',
-    instruction: '流月祿權科忌各落本命哪一宮，按規則逐條說明影響的領域。' },
+    instruction: '流月祿權科忌各落流月盤哪一宮（主看），以及同一宮在流年、大限、本命盤是哪一宮，按規則逐條說明影響的領域。' },
   { title: '與流年大限疊加', kind: 'deduction',
-    instruction: '流月四化與流年、當前大限四化同落或沖照的宮位，按規則說明疊加的象意。只講規則推出的象意；具體事件的推測放到溯因節。' },
+    instruction: '流月四化與流年、該年大限的四化同落或化忌沖照的宮位，按規則說明疊加的象意。只講規則推出的象意；具體事件的推測放到溯因節。' },
   { title: '需留意的領域', kind: 'abduction',
     instruction: '在上述訊號中，這個月哪些領域較值得留意。' },
 ];
@@ -201,9 +201,9 @@ export const LIUYUE_SECTIONS: SectionSpec[] = [
 /** 流日解讀（Claude Skill 用） */
 export const LIURI_SECTIONS: SectionSpec[] = [
   { title: '流日命宮', kind: 'deduction',
-    instruction: '流日命宮落在本命哪一宮（倪師口徑為主，若與通行口徑不同須一併說明），該宮星曜的象意。' },
+    instruction: '流日命宮落在本命、流年、流月各哪一宮（倪師口徑為主，若與通行口徑不同須一併說明），該宮星曜的象意。' },
   { title: '流日四化落宮', kind: 'deduction',
-    instruction: '流日（日干）祿權科忌各落本命哪一宮，按規則說明影響的領域。只講規則推出的象意；具體事件的推測放到溯因節。' },
+    instruction: '流日（日干）祿權科忌各落流日盤哪一宮（主看），以及同一宮在流月、流年盤是哪一宮，按規則說明影響的領域。只講規則推出的象意；具體事件的推測放到溯因節。' },
   { title: '需留意的領域', kind: 'abduction',
     instruction: '在上述訊號中，當天哪些領域較值得留意。' },
 ];

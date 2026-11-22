@@ -31,7 +31,8 @@ const run = (...args: string[]) => spawnSync(process.execPath, [bundle, ...args]
 
 const chart = run('chart', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--city', '杭州', '--year', '2026');
 assert.equal(chart.status, 0, chart.stderr);
-for (const must of ['【十二宮】', '命宮在丑', '【當前大限（', '【流年 2026（丙午年）】', '流年四化：化祿天同', '真太陽時校正', '夏令時']) {
+for (const must of ['【十二宮】', '命宮在丑', '【2026 年所在大限】36–45歲，大限命宮在戌宮（即當前大限）', '【流年 2026（丙午年）】', '流年四化：化祿天同',
+  '化忌廉貞（落申宮：本命疾厄／大限夫妻／流年福德）', '【三盤疊宮（2026 年）】', '申宮：本命疾厄／大限夫妻／流年福德', '真太陽時校正', '夏令時']) {
   assert.ok(chart.stdout.includes(must), `排盤輸出缺少「${must}」`);
 }
 
@@ -71,6 +72,15 @@ assert.ok(ly.stdout.includes('斗君（流年正月）在未宮') && ly.stdout.i
 const lr = run('liuri', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--on', '2026-11-21');
 assert.equal(lr.status, 0, lr.stderr);
 assert.ok(lr.stdout.includes('倪師口徑') && lr.stdout.includes('通行口徑'));
+
+const yrs = run('years', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--from', '2026', '--to', '2028', '--palace', '婚姻');
+assert.equal(yrs.status, 0, yrs.stderr);
+for (const must of ['## 2026（丙午年）虛歲 37｜大限 36–45歲（命宮在戌）', '涉及夫妻：流年化祿天同入本命夫妻；流年化忌廉貞入大限夫妻',
+  '終身不變（生年四化對本命夫妻）：生年化忌天同入本命夫妻', '## 2028（戊申年）']) {
+  assert.ok(yrs.stdout.includes(must), `years 輸出缺少「${must}」`);
+}
+assert.equal(run('years', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--palace', '不存在').status, 2);
+assert.ok(ly.stdout.includes('流月命宮：') && ly.stdout.includes('／流月命宮；主星'), '流月輸出要帶各層宮名');
 
 const rules = run('rules');
 assert.ok(rules.stdout.includes('⚠ 僅供參考（模型在此類推理有能力限制）：'));

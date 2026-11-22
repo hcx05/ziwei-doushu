@@ -11,11 +11,12 @@
 import type { Palace, SiHua, ZiweiChart } from '@/lib/systems/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/systems/ziwei/constants';
 import { detectPatterns } from '@/lib/systems/ziwei/patterns';
-import { getDaXianSiHua, getLiuNianSiHua, getYearBranchIndex } from '@/lib/systems/ziwei/sihua';
+import { getDaXianSiHua } from '@/lib/systems/ziwei/sihua';
+import { locate, natalTransforms, overlayTable, transformsWithLayers, yearContext } from '@/lib/systems/ziwei/layers';
 import { HOUR_UNKNOWN_NOTICE } from './tasks';
 
 export interface DigestOptions {
-  /** 附上該公曆年的流年命宮與流年四化落宮 */
+  /** 附上該年所在大限、流年命宮、四化落宮與三盤疊宮 */
   liunianYear?: number;
   /** 附上公曆 / 農曆生日與四柱（默認關） */
   includeBirth?: boolean;
@@ -45,20 +46,6 @@ function palaceLine(palace: Palace): string {
   return `${BRANCHES[palace.branch]}宮 ${palace.name}·${STEMS[palace.stem]}干：${stars}${suffix}`;
 }
 
-/** 某顆星落在本命盤哪一宮 */
-function palaceOfStar(chart: ZiweiChart, starName: string): Palace | undefined {
-  return chart.palaces.find(p => p.stars.some(s => s.name === starName));
-}
-
-/** 「祿天同（落子宮·夫妻宮）」這樣的四化落宮描述 */
-function transformsLine(chart: ZiweiChart, transforms: Record<SiHua, string>): string {
-  return SIHUA_ORDER.map(h => {
-    const star = transforms[h];
-    const p = palaceOfStar(chart, star);
-    return `化${h}${star}（${p ? `落${BRANCHES[p.branch]}宮·${p.name}` : '本盤未安此星'}）`;
-  }).join('；');
-}
-
 export function buildDigest(chart: ZiweiChart, opts: DigestOptions = {}): string {
   const lines: string[] = [];
 
@@ -85,22 +72,30 @@ export function buildDigest(chart: ZiweiChart, opts: DigestOptions = {}): string
     lines.push(`${dx.startAge}–${dx.endAge}歲 ${dx.palaceName}${sihua}${current}`);
   });
 
-  const curSh = chart.currentDaXianIndex >= 0 ? getDaXianSiHua(chart, chart.currentDaXianIndex) : null;
-  if (curSh) {
-    lines.push('', `【當前大限（${curSh.stemName}干）四化落宮】`, transformsLine(chart, curSh.transforms));
-  }
-
   if (opts.liunianYear) {
-    const y = opts.liunianYear;
-    const ln = getLiuNianSiHua(y);
-    const yb = getYearBranchIndex(y);
-    const lnMing = chart.palaces.find(p => p.branch === yb);
+    const ctx = yearContext(chart, opts.liunianYear);
+    const y = ctx.year;
+    const isCurrent = ctx.daXianIndex === chart.currentDaXianIndex;
+    lines.push('', `【${y} 年所在大限】${ctx.daXianLabel}${ctx.daXianBranch !== undefined ? `，大限命宮在${BRANCHES[ctx.daXianBranch]}宮` : ''}${isCurrent ? '（即當前大限）' : ''}；該年虛歲 ${ctx.age}`);
+    if (ctx.daXianSiHua) {
+      lines.push(`大限四化（${ctx.daXianSiHua.stemName}干）：${transformsWithLayers(chart, ctx.daXianSiHua.transforms, ctx.layers)}`);
+    }
     lines.push(
       '',
-      `【流年 ${y}（${ln.stemName}${BRANCHES[yb]}年）】`,
-      `流年命宮：${BRANCHES[yb]}宮（本命${lnMing?.name ?? '—'}）`,
-      `流年四化：${transformsLine(chart, ln.transforms)}`,
+      `【流年 ${y}（${ctx.liuNian.stemName}${BRANCHES[ctx.liuNianBranch]}年）】`,
+      `流年命宮：${BRANCHES[ctx.liuNianBranch]}宮（${locate(chart, ctx.liuNianBranch, ctx.layers)}）`,
+      `流年四化：${transformsWithLayers(chart, ctx.liuNian.transforms, ctx.layers)}`,
+      `生年四化：${transformsWithLayers(chart, natalTransforms(chart), ctx.layers)}`,
+      '',
+      `【三盤疊宮（${y} 年）】每宮依次為本命、大限、流年的宮名；看某年某事，看四化落在大限、流年的哪一宮`,
+      ...overlayTable(chart, ctx.layers),
     );
+  } else {
+    const curSh = chart.currentDaXianIndex >= 0 ? getDaXianSiHua(chart, chart.currentDaXianIndex) : null;
+    if (curSh) {
+      const layers = [{ label: '大限', mingBranch: chart.daXians[chart.currentDaXianIndex].palaceBranch }];
+      lines.push('', `【當前大限（${curSh.stemName}干）四化落宮】`, transformsWithLayers(chart, curSh.transforms, layers));
+    }
   }
 
   const patterns = detectPatterns(chart);
