@@ -34,7 +34,7 @@ export const TAIYI_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '三基五福大遊', kind: 'deduction',
       instruction: '君基、臣基、民基、五福、大遊太乙的位置，照工具輸出。' },
     { title: '年勢判斷', kind: 'abduction',
-      instruction: '綜合上述局象，判斷這一年主客勢力、治亂的傾向；列出支持與相反的局象，並給另一種讀法。' },
+      instruction: '綜合上述局象，判斷這一年主客勢力、治亂的傾向，並給另一種讀法。' },
     { title: '分野與世事對應', kind: 'abduction',
       instruction: '只在提問者問到時寫：把宮位分野對應到現代地區、把局象對應到可能的世事；至少兩種對應，說明附會性質。' },
   ],

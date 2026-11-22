@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 import { REASONING_RULES, ZIWEI_VOCABULARY } from '../../lib/systems/ziwei/tasks';
 
-// ── 1) 紫微规则全文钉住（2026-11-21 起加「回复写法」：先回答所问、不贴计算过程） ──
+// ── 1) 紫微规则全文钉住（2026-11-21 起加「回复写法」；2026-11-22 溯因节精简为结论＋另一种读法，依评测结果） ──
 const ZIWEI_RULES_BEFORE = [
   '【推理分工规则（最高优先级）】',
   '前提：假设紫微斗数的规则成立，不讨论其真伪，也不加「命理仅供娱乐」之类的免责话术。',
@@ -28,16 +28,16 @@ const ZIWEI_RULES_BEFORE = [
   '· 归纳节：把已出现的事实整理成共通描述，不新增判断。',
   '· 溯因节：在多种讯号之间取舍定性、给现实建议、推测具体事件、从命主经历反推原因、判断时辰等。',
   '  可以给出你认为最可能的解读，但这类推理语言模型有能力限制，因此：',
-  '  1) 小节第一行必须以「⚠ 仅供参考（模型在此类推理有能力限制）：」开头，接着一句话说明这里为何难以确定（例如吉凶讯号并存、规则本身不决定取舍）。',
-  '  2) 支持与相反的盘面讯号各写一两条，用白话说明依据，不列推导过程。',
-  '  3) 先给出最可能的解读，再用一句话给出另一种同样说得通的解读。',
-  '  4) 小节最后一句提醒：这只是参考，哪种解读更贴切，需由命主结合自身实际判断。',
+  '  1) 小节第一行必须以「⚠ 仅供参考（模型在此类推理有能力限制）：」开头，紧接着直接写最可能的结论，一两句白话。',
+  '  2) 下一行用一句话写另一种同样说得通的读法，以「另一种读法：」开头。',
+  '  3) 不列支持、相反的盘面讯号，不写推导过程，不加「这只是参考……」之类的套话；每个溯因小节最多 3 行。命主想看依据时再展开。',
   '演绎节与归纳节里若需要做取舍或推测具体事件，把那部分移到溯因的写法并标注，不要混在演绎里当成定论。',
   '【回复写法】',
-  '· 先回答所问：回复一开头就回答命主问的那件事，用白话；不要先讲排盘、起卦或计算过程。',
-  '· 不贴过程：算式、起局起卦步骤、取用过程、排盘表格、工具原始输出都不写进回复，依据用一句话带过。命主追问「怎么算的」时再展开。',
+  '· 先回答所问：回复第一句就是结论（例如「你的喜用神是土、金」「这件事偏难成」），用白话；不要以命盘概要、干支、宫位或排盘说明开头。',
+  '· 不贴过程：算式、起局起卦步骤、取用过程、排盘表格、工具原始输出都不写进回复。依据只写一句，不分点、不列清单，也不另开「依据」「各年依据」之类的小节。命主追问「怎么算的」时再展开。',
   '· 只写相关的小节：演绎、归纳节可以省略，或并成末尾一句「依据」；凡是吉凶、成败、定性、应期、具体事件等溯因结论，必须写在对应的溯因小节标题下并标注，不能写在标题外。',
   '· 工具输出的「⚠ 假设：」要转告，用一句白话说即可。',
+  '· 一个问题通常一个溯因小节就够；全篇最后可加一句「想看依据可以再问」，只说一次。',
 ].join('\n');
 assert.equal(REASONING_RULES, ZIWEI_RULES_BEFORE, '紫微斗数推理规则全文');
 assert.equal(buildReasoningRules(ZIWEI_VOCABULARY), ZIWEI_RULES_BEFORE);
@@ -107,9 +107,21 @@ assert.ok(checkMarks(enforceMarks(emptyBody, overview), overview).unmarkedAbduct
 // 小节按需取用：只写所问相关的一节也合法；但写了的溯因节仍须标注
 assert.ok(checkMarks(`**【优势与注意】**（仅供参考）\n${UNCERTAINTY_MARK}……`, overview).ok, '只写一节不算错');
 assert.deepEqual(checkMarks('**【优势与注意】**\n讯号并存。', overview).unmarkedAbduction, ['优势与注意']);
+// 溯因节篇幅：结论＋另一种读法通过；贴讯号清单的超过三行要报出来
+{
+  const short = `**【优势与注意】**（仅供参考）\n${UNCERTAINTY_MARK}做事稳、贵人多。\n另一种读法：早年辛苦、中年后顺。\n\n依据：命宫太阳化禄。`;
+  assert.ok(checkMarks(short, overview).ok, '两行的溯因节合规（依据行不计）');
+  const long = `**【优势与注意】**（仅供参考）\n${UNCERTAINTY_MARK}讯号并存。\n最可能的读法：做事稳。支持：太阳化禄。\n也说得通的读法：早年辛苦。\n这只是参考，哪种更贴切，需由你结合自身实际判断。`;
+  const r = checkMarks(long, overview);
+  assert.deepEqual([r.ok, r.unmarkedAbduction, r.tooLongAbduction], [false, [], ['优势与注意']], '旧式四行写法要报篇幅过长');
+  const trad = short.replace(UNCERTAINTY_MARK, '⚠ 僅供參考（模型在此類推理有能力限制）：');
+  assert.ok(checkMarks(trad, overview).ok, '繁体标记同样认可');
+  const listed = short.replace('依据：命宫太阳化禄。', '依据：\n- 命宫太阳化禄\n- 太阴化科\n- 天魁同宫');
+  assert.deepEqual(checkMarks(listed, overview).tooLongAbduction, ['优势与注意'], '分点列依据要算进篇幅');
+}
 // 骨架先回答所问：不含演绎节标题，只列溯因节
 const sk = renderSkeleton(overview);
-assert.ok(!sk.includes('**【主星解读】**') && sk.includes('**【命格定性】**（仅供参考）') && sk.includes('依据：'));
+assert.ok(!sk.includes('**【主星解读】**') && sk.includes('**【命格定性】**（仅供参考）') && sk.includes('另一种读法：') && sk.includes('依据：'));
 
 // 每个 skill 的 SKILL.md 都写明回复写法：先回答所问、不贴过程
 for (const dir of readdirSync(path.join(root, '.claude/skills'))) {

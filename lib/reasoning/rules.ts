@@ -1,7 +1,7 @@
 /**
  * lib/reasoning/rules.ts —— 推理分工规则文本（各体系共用，只替换体系相关的名词）
  */
-import { REASONING_LABEL, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, REASONING_LABEL, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
 
 export interface RulesVocabulary {
   /** 体系名，用于前提句：「假设 X 的规则成立」 */
@@ -27,16 +27,16 @@ export function buildReasoningRules(v: RulesVocabulary): string {
     '· 归纳节：把已出现的事实整理成共通描述，不新增判断。',
     `· 溯因节：${v.abductionExamples}等。`,
     '  可以给出你认为最可能的解读，但这类推理语言模型有能力限制，因此：',
-    `  1) 小节第一行必须以「${UNCERTAINTY_MARK}」开头，接着一句话说明这里为何难以确定（例如吉凶讯号并存、规则本身不决定取舍）。`,
-    `  2) 支持与相反的${v.signalNoun}讯号各写一两条，用白话说明依据，不列推导过程。`,
-    '  3) 先给出最可能的解读，再用一句话给出另一种同样说得通的解读。',
-    `  4) 小节最后一句提醒：这只是参考，哪种解读更贴切，需由${v.subject}结合自身实际判断。`,
+    `  1) 小节第一行必须以「${UNCERTAINTY_MARK}」开头，紧接着直接写最可能的结论，一两句白话。`,
+    '  2) 下一行用一句话写另一种同样说得通的读法，以「另一种读法：」开头。',
+    `  3) 不列支持、相反的${v.signalNoun}讯号，不写推导过程，不加「这只是参考……」之类的套话；每个溯因小节最多 ${ABDUCTION_MAX_LINES} 行。${v.subject}想看依据时再展开。`,
     '演绎节与归纳节里若需要做取舍或推测具体事件，把那部分移到溯因的写法并标注，不要混在演绎里当成定论。',
     '【回复写法】',
-    `· 先回答所问：回复一开头就回答${v.subject}问的那件事，用白话；不要先讲排盘、起卦或计算过程。`,
-    `· 不贴过程：算式、起局起卦步骤、取用过程、排盘表格、工具原始输出都不写进回复，依据用一句话带过。${v.subject}追问「怎么算的」时再展开。`,
+    `· 先回答所问：回复第一句就是结论（例如「你的喜用神是土、金」「这件事偏难成」），用白话；不要以${v.chartNoun}概要、干支、宫位或排盘说明开头。`,
+    `· 不贴过程：算式、起局起卦步骤、取用过程、排盘表格、工具原始输出都不写进回复。依据只写一句，不分点、不列清单，也不另开「依据」「各年依据」之类的小节。${v.subject}追问「怎么算的」时再展开。`,
     '· 只写相关的小节：演绎、归纳节可以省略，或并成末尾一句「依据」；凡是吉凶、成败、定性、应期、具体事件等溯因结论，必须写在对应的溯因小节标题下并标注，不能写在标题外。',
     '· 工具输出的「⚠ 假设：」要转告，用一句白话说即可。',
+    '· 一个问题通常一个溯因小节就够；全篇最后可加一句「想看依据可以再问」，只说一次。',
     ...(v.extraRules ?? []),
   ].join('\n');
 }
@@ -54,13 +54,13 @@ export function renderSections(sections: SectionSpec[]): string {
 }
 
 /**
- * 给模型照填的骨架：先回答所问。只列溯因节（已预先写好标记开头），演绎内容并成末尾一句依据；
+ * 给模型照填的骨架：先回答所问。只列溯因节（已预先写好标记开头，每节结论加另一种读法），演绎内容并成末尾一句依据；
  * 与所问无关的小节删掉即可。
  */
 export function renderSkeleton(sections: SectionSpec[]): string {
   return [
     '（开头就回答所问；只保留与所问有关的小节，不贴计算过程）',
-    ...sections.filter(s => s.kind === 'abduction').map(s => `**【${s.title}】**（仅供参考）\n${UNCERTAINTY_MARK}……`),
+    ...sections.filter(s => s.kind === 'abduction').map(s => `**【${s.title}】**（仅供参考）\n${UNCERTAINTY_MARK}……（结论，一两句）\n另一种读法：……`),
     '依据：……（一句话，引用工具得出的结论）',
   ].join('\n\n');
 }

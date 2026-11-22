@@ -2,13 +2,15 @@
  * lib/reasoning/check.ts —— 输出端的确定性检查：溯因节有没有标注
  *
  * 标注原本只靠提示词要求；模型漏写时没有任何补救。这里提供：
- *   · checkMarks()：找出缺标记的溯因节（小节按需取用，不要求逐节都写）；
+ *   · checkMarks()：找出缺标记的溯因节（小节按需取用，不要求逐节都写），以及正文超过 ABDUCTION_MAX_LINES 行的溯因节；
  *   · enforceMarks()：在缺标记的溯因节第一行前补上 UNCERTAINTY_MARK（不改动其他内容）。
  *
  * 只认 **【标题】** 这种小节标题（标题后允许跟「（仅供参考）」等说明）。
  * 溯因节的第一个非空行可以先是一行 ASSUMPTION_MARK 假设声明，之后的第一行必须以 UNCERTAINTY_MARK 开头。
  */
-import { ASSUMPTION_MARK, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, UNCERTAINTY_MARK, UNCERTAINTY_MARK_TRAD, type SectionSpec } from './kinds';
+
+const isMarked = (line: string) => line.trim().startsWith(UNCERTAINTY_MARK) || line.trim().startsWith(UNCERTAINTY_MARK_TRAD);
 
 const HEADING = /^\s*\*\*【([^】]+)】\*\*.*$/;
 
@@ -38,6 +40,8 @@ function firstClaimLine(lines: string[], b: Block): number {
 export interface MarkReport {
   /** 是溯因节，但第一行没有以 UNCERTAINTY_MARK 开头 */
   unmarkedAbduction: string[];
+  /** 溯因节正文（不计空行、假设声明行）超过 ABDUCTION_MAX_LINES 行：多半又贴了讯号清单或推导过程 */
+  tooLongAbduction: string[];
   ok: boolean;
 }
 
@@ -46,13 +50,16 @@ export function checkMarks(text: string, sections: SectionSpec[]): MarkReport {
   const blocks = splitBlocks(lines);
   const byTitle = new Map(blocks.map(b => [b.title, b]));
   const unmarkedAbduction: string[] = [];
+  const tooLongAbduction: string[] = [];
   for (const s of sections) {
     const b = byTitle.get(s.title);
     if (!b || s.kind !== 'abduction') continue;
     const i = firstClaimLine(lines, b);
-    if (i < 0 || !lines[i].trim().startsWith(UNCERTAINTY_MARK)) unmarkedAbduction.push(s.title);
+    if (i < 0 || !isMarked(lines[i])) unmarkedAbduction.push(s.title);
+    const body = lines.slice(b.bodyStart, b.bodyEnd).map(l => l.trim()).filter(l => l && !l.startsWith(ASSUMPTION_MARK) && !/^依据|^依據|^```/.test(l));
+    if (body.length > ABDUCTION_MAX_LINES) tooLongAbduction.push(s.title);
   }
-  return { unmarkedAbduction, ok: !unmarkedAbduction.length };
+  return { unmarkedAbduction, tooLongAbduction, ok: !unmarkedAbduction.length && !tooLongAbduction.length };
 }
 
 /** 给缺标记的溯因节补上标记；已标记的、非溯因的小节原样保留 */
@@ -63,7 +70,7 @@ export function enforceMarks(text: string, sections: SectionSpec[]): string {
   for (const b of splitBlocks(lines)) {
     if (!abductive.has(b.title)) continue;
     const i = firstClaimLine(lines, b);
-    if (i >= 0 && lines[i].trim().startsWith(UNCERTAINTY_MARK)) continue;
+    if (i >= 0 && isMarked(lines[i])) continue;
     if (i < 0) inserts.push({ at: b.bodyStart, line: `${UNCERTAINTY_MARK}本节属于溯因推理。` });
     else inserts.push({ at: i });
   }

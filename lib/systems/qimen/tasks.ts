@@ -30,7 +30,7 @@ export const QIMEN_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '用神宮', kind: 'abduction',
       instruction: '按所問之事選用神（日干、時干、某門、某星），說明選它的理由與另一種取法，再看它所在宮的門星神干。' },
     { title: '吉凶判斷', kind: 'abduction',
-      instruction: '綜合用神宮與格局判斷所問之事的傾向；列出支持與相反的訊號，並給另一種讀法。' },
+      instruction: '綜合用神宮與格局判斷所問之事的傾向，並給另一種讀法。' },
     { title: '方位與時機', kind: 'abduction',
       instruction: '只在問事者問到時寫：按吉門、三奇、三遁所在宮建議方位或時辰，並說明這是傾向不是保證。' },
   ],

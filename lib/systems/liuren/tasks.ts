@@ -30,7 +30,7 @@ export const LIUREN_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '生克事實', kind: 'deduction',
       instruction: '三傳與日干、日支的生克，三傳之間的生克遞進，三傳是否落空；只陳述規則推出的事實，不下吉凶。' },
     { title: '吉凶判斷', kind: 'abduction',
-      instruction: '先說明取哪一神為類神及理由，再綜合課傳、天將判斷所問之事的傾向；列出支持與相反的訊號，並給另一種讀法。' },
+      instruction: '先說明取哪一神為類神及理由，再綜合課傳、天將判斷所問之事的傾向，並給另一種讀法。' },
     { title: '應期', kind: 'abduction',
       instruction: '按三傳、類神、旬空出空等通行應期法推測時間，並給另一種可能。' },
   ],

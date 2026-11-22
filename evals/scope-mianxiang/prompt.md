@@ -1,6 +1,6 @@
 ---
 name: scope-mianxiang
-description: 看面相：工具組不做，不應拿別的體系頂替
+description: 看面相：沒有技能會觸發（技能管不到一般回答），只檢查沒有拿排盤工具冒充面相
 tags: [overlap, scope]
 runs: 2
 max_turns: 15

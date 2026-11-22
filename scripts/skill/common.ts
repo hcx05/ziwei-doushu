@@ -11,7 +11,7 @@ import { shiftGregorianDate } from '../../lib/calendar/true-solar-time';
 import type { BirthFormState } from '../../lib/systems/ziwei/share';
 import { readFileSync } from 'node:fs';
 import { checkMarks, enforceMarks } from '../../lib/reasoning/check';
-import { UNCERTAINTY_MARK, type SectionSpec } from '../../lib/reasoning/kinds';
+import { ABDUCTION_MAX_LINES, UNCERTAINTY_MARK, type SectionSpec } from '../../lib/reasoning/kinds';
 import type { CastMoment } from '../../lib/systems/liuyao/engine';
 
 export type Args = { _: string[]; [k: string]: string | boolean | string[] };
@@ -131,8 +131,9 @@ export function runCheck(args: Args, sections: SectionSpec[]): void {
     return;
   }
   const r = checkMarks(text, sections);
-  if (r.ok) { console.log('✓ 溯因节都已标注。'); return; }
-  console.log(`✗ 这些溯因节第一行没有以「${UNCERTAINTY_MARK}」开头：${r.unmarkedAbduction.join('、')}`);
+  if (r.ok) { console.log('✓ 溯因节都已标注，篇幅也在限制内。'); return; }
+  if (r.unmarkedAbduction.length) console.log(`✗ 这些溯因节第一行没有以「${UNCERTAINTY_MARK}」开头：${r.unmarkedAbduction.join('、')}`);
+  if (r.tooLongAbduction.length) console.log(`✗ 这些溯因节超过 ${ABDUCTION_MAX_LINES} 行（只写结论与「另一种读法」，不列讯号、不贴过程）：${r.tooLongAbduction.join('、')}`);
   process.exitCode = 1;
 }
 

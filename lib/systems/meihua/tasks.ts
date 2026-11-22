@@ -30,7 +30,7 @@ export const MEIHUA_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '書中占法', kind: 'deduction',
       instruction: '按所問類別逐字引用工具給出的「某某占」原文，再照原文規則指出本卦體用屬於哪一句；類別對不上時寫「人事占」並說明。' },
     { title: '吉凶判斷', kind: 'abduction',
-      instruction: '綜合用、互、變的生克與旺衰判斷吉凶，說明先後（用為始、互為中、變為終）；列出支持與相反的訊號，並給另一種讀法。' },
+      instruction: '綜合用、互、變的生克與旺衰判斷吉凶，說明先後（用為始、互為中、變為終），並給另一種讀法。' },
     { title: '應期', kind: 'abduction',
       instruction: '按成卦之數與書中「行半、坐倍、立如數」或生克之卦的卦氣推測時間，並給另一種可能。' },
     { title: '類象與爻辭', kind: 'abduction',
