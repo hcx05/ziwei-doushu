@@ -116,6 +116,12 @@ for (const dir of readdirSync(path.join(root, '.claude/skills'))) {
   const md = readFileSync(path.join(root, '.claude/skills', dir, 'SKILL.md'), 'utf8');
   assert.ok(/回复写法（先回答所问，不贴过程）|回覆寫法（先回答所問，不貼過程）/.test(md), `${dir}/SKILL.md 缺少回复写法`);
 }
+// 外掛市集（/plugin marketplace add）列出的 skill 與 .claude/skills 下的資料夾一一對應，新增體系不會漏裝
+{
+  const market = JSON.parse(readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
+  const listed = (market.plugins[0].skills as string[]).map(s => path.basename(s)).sort();
+  assert.deepEqual(listed, readdirSync(path.join(root, '.claude/skills')).sort(), 'marketplace.json 的 skills 清單與 .claude/skills 不一致');
+}
 for (const sys of SYSTEMS) assert.ok(buildReasoningRules(sys.vocabulary).includes('【回复写法】'), `${sys.id}：规则须含回复写法`);
 
 console.log(`✓ 推理层：紫微规则全文钉住（含回复写法）；${SYSTEMS.length} 个体系登记齐全；溯因标注检查与补标正确`);

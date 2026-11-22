@@ -66,8 +66,15 @@
 >
 > [`.claude/skills/ziwei-doushu/`](./.claude/skills/ziwei-doushu/SKILL.md) 是同一套引擎与推理规则的 Claude Skill：在 Claude 里直接说「帮我看看命，1990-06-15 10:30 女，杭州」即可。Claude 用打包好的工具确定性排盘（含真太阳时、农历、海外时区、大限 / 流年 / 流月 / 流日四化落宫，以及按倪师起法的小六壬），按小节的演绎 / 归纳 / 溯因标注解读，引用倪师原话前先在 1848 条语料里检索，查不到就不引。反推原因、校正时辰、两人合不合这类溯因问题可以回答，但注明仅供参考；国运、姓名学、风水、六神测字等工具做不到的不做。
 >
-> - **Claude Code**：在本仓库目录里开 Claude Code 就会自动载入；想在所有项目里用，把 `.claude/skills/ziwei-doushu` 整个文件夹拷到 `~/.claude/skills/`。
-> - **Claude 网页 / 桌面版**：把 `ziwei-doushu` 文件夹打成 zip，在设置里的 Skills 上传（需开启代码执行；入口名称以当前设置页为准）。
+> **安装全部十个 skill**
+>
+> - **Claude Code（任何项目都能用）**：在 Claude Code 里输入下面两行，之后每个项目都会载入。
+>   ```
+>   /plugin marketplace add hcx05/ziwei-doushu
+>   /plugin install chinese-divination@ziwei-doushu
+>   ```
+>   在本仓库目录里开 Claude Code 则不必安装，会自动载入 `.claude/skills/` 下全部 skill。
+> - **Claude 网页 / 桌面版**：运行 `npm run pack:skill`，会在 `dist/skill-zips/` 产出每个 skill 一个 zip；在设置的 Skills 页逐个上传（需开启代码执行；入口名称以当前设置页为准）。
 > - 工具只需 Node 18+，不必 `npm install`。改了引擎或规则后运行 `npm run build:skill` 重新打包，`scripts/regression/skill-bundle.test.ts` 会检查产物是否过期。
 
 ---

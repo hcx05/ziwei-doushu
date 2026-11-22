@@ -75,6 +75,15 @@ npm test             # charting regression tests
 
 **This fork has removed the web UI and all API routes.** It keeps the charting engines (`lib/`) and the Claude Skills: `ziwei-doushu`, `bazi` (Four Pillars), `liuyao` (Six Lines, with the Zhouyi text), `wuyun-liuqi` (Five Movements and Six Qi), `zeri` (almanac day selection), `taiyi` (Taiyi annual chart, for world and state affairs), `huangji` (Shao Yong's cosmic chronology, with the original year-by-year text), `meihua` (Plum Blossom numerology), `liuren` (Da Liu Ren) and `qimen` (Qi Men Dun Jia, hourly chart), all under `.claude/skills/`. Each skill must mark abductive conclusions as uncertain. See `docs/ROADMAP-multi-system.md` for the expansion plan.
 
+To install all ten skills in Claude Code for every project:
+
+```
+/plugin marketplace add hcx05/ziwei-doushu
+/plugin install chinese-divination@ziwei-doushu
+```
+
+For the Claude web or desktop app, run `npm run pack:skill` and upload each zip in `dist/skill-zips/` on the Skills settings page (code execution must be on).
+
 ## What is not included
 
 The upstream interpretation database, any web UI or `/api/*` backend routes, user accounts, payments, and deployment configuration.
