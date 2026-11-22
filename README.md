@@ -90,6 +90,7 @@ npm run eval -- --tag overlap style --max-cost-usd 8   # 用真實模型評測�
 |---|---|
 | 代碼（`lib/`、`scripts/`、`.claude/skills/`） | [MIT](./LICENSE) |
 | 古籍原文（周易、梅花易數、六壬大全、遁甲演義、太乙金鏡式經、皇極經世書、紫微斗數全書等） | 公有領域 |
+| 取自維基文庫的錄本（《紫微斗數全書》《紫微斗數》續道藏本，見 `lib/systems/ziwei/classics/data/`） | 原文公有領域；維基文庫的錄入與排版依 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | 紫微斗數數據集（Releases） | [CC BY 4.0](./DATASET-LICENSE)，詳見 [`docs/ziwei.md`](./docs/ziwei.md) |
 | 倪海廈《天紀》原話（`docs/tianji-ziwei/`） | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md)，**不許商用** |
 

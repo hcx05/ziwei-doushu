@@ -60,6 +60,12 @@ assert.ok(q.stdout.includes('「斗數批六親本來就比較差一點。」'))
 assert.ok(q.stdout.includes('https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=1527'));
 assert.ok(!q.stdout.includes('cleaned'), '語料清洗標記不應出現在輸出裡');
 
+const cls = run('classics', '紫微居午');
+assert.ok(cls.stdout.includes('《紫微斗數全書》卷一·斗數骨髓賦：紫微居午無殺湊位至三公'), 'classics 應給出《全書》原文');
+const cls2 = run('classics', '天同', '夫妻');
+assert.ok(cls2.stdout.includes('卷二·三妻妾：天同遲娶諧老'), '宮名「夫妻」應對到《全書》卷二「妻妾」');
+assert.ok(run('classics', '落陷之人').stdout.includes('沒有'), '上游的白話改寫已移除，不應再搜得到');
+
 const liuren = run('liuren', '--lunar-month', '4', '--lunar-day', '5', '--hour', '戌');
 assert.equal(liuren.status, 0, liuren.stderr);
 assert.ok(liuren.stdout.includes('**空亡**') && liuren.stdout.includes('你可以斷念了'));

@@ -1,20 +1,19 @@
 /**
  * 古籍原典查詢庫 — 入口
  *
- * 加載所有古籍數據 + 提供查詢/搜索 API
- * 數據為 JSON 靜態打包，零 DB 依賴、零網絡請求
+ * 只收原文：《紫微斗數全書》卷一至卷三（清刊本）、《紫微斗數》（續道藏本），取自維基文庫，
+ * 由 scripts/classics/import-ziwei-wikisource.py 產生。2026-11-22 以前這裡的「全書」「全集」「骨髓賦」
+ * 是上游專案的白話改寫（共 75 段，與通行本對不上），已移除。
  */
 
 import type { Book, Paragraph, SearchHit } from './types';
-import { guSuiFu } from './data/gusuifu';
-import { ziWeiQuanJi } from './data/quanji';
-import { ziWeiQuanShu } from './data/quanshu';
+import { ziWeiQuanShuText } from './data/quanshu-text.data';
+import { ziWeiDaoZangText } from './data/daozang-text.data';
 
-/** 所有已收錄古籍 */
+/** 所有已收錄古籍（原文） */
 export const ALL_BOOKS: Book[] = [
-  guSuiFu,
-  ziWeiQuanJi,
-  ziWeiQuanShu,
+  ziWeiQuanShuText,
+  ziWeiDaoZangText,
 ];
 
 /** 總段落數（用於首頁統計） */
@@ -54,19 +53,22 @@ export function getParagraphById(id: string) {
 /**
  * 全文搜索
  *
- * 簡單子字符串匹配（不分詞，對中文 OK）
- * 大小寫不敏感、繁簡轉換暫不支持
+ * 簡單子字符串匹配（不分詞）；多個關鍵詞時，第一個須在段落裡，其餘在段落或章名裡即可
  */
-export function searchClassics(query: string, limit = 30): SearchHit[] {
-  const q = query.trim();
-  if (q.length < 1) return [];
+export function searchClassics(query: string | string[], limit = 30): SearchHit[] {
+  const terms = (Array.isArray(query) ? query : [query]).map(t => t.trim()).filter(Boolean);
+  if (!terms.length) return [];
+  const firstAlts = terms[0].split('|');
 
   const hits: SearchHit[] = [];
   for (const book of ALL_BOOKS) {
     for (const chapter of book.chapters) {
       for (const p of chapter.paragraphs) {
+        const q = firstAlts.find(a => p.text.includes(a));
+        if (!q) continue;
         const idx = p.text.indexOf(q);
-        if (idx < 0) continue;
+        const has = (t: string) => t.split('|').some(a => p.text.includes(a) || chapter.title.includes(a));
+        if (!terms.slice(1).every(has)) continue;
 
         // 提取上下文（前後各 40 字）
         const start = Math.max(0, idx - 40);

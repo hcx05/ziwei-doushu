@@ -68,6 +68,7 @@ npm run pack:skill   # build upload zips
 |---|---|
 | Code (`lib/`, `scripts/`, `.claude/skills/`) | [MIT](./LICENSE) |
 | Classical texts | Public domain |
+| Wikisource transcriptions (*Ziwei Doushu Quanshu*, Daozang *Ziwei Doushu*; `lib/systems/ziwei/classics/data/`) | Text public domain; Wikisource transcription under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | Zi Wei Dou Shu datasets (Releases) | [CC BY 4.0](./DATASET-LICENSE); see [`docs/ziwei.en.md`](./docs/ziwei.en.md) |
 | Ni Haixia quotes (`docs/tianji-ziwei/`) | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md): **non-commercial only** |
 

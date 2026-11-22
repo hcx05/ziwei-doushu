@@ -10,7 +10,7 @@
  *   rules     輸出推理分工規則全文（可指定體系：ziwei / xiaoliuren）
  *   check     檢查解讀草稿：溯因節是否以「僅供參考」標記開頭、小節是否齊全（--fix 自動補標記）
  *   quotes    搜索倪海廈《天紀·紫微斗數》原話（1848 條，帶 B 站出處時間）
- *   classics  搜索《紫微斗數全書》等古籍原文
+ *   classics  搜索古籍原文：《紫微斗數全書》卷一至卷三、續道藏本《紫微斗數》
  *   liuyue    流月：斗君、流月命宮、流月四化落宮（不給 --month 則列出全年 12 個月）
  *   liuri     流日：某一公曆日的流日命宮、流日四化落宮
  *   years     逐年流年：每年所在大限、流年命宮、流年四化的三盤疊宮；--palace 只列碰到該宮的四化
@@ -304,14 +304,17 @@ function cmdQuotes(args: Args) {
 // ────────────────── classics ──────────────────
 
 function cmdClassics(args: Args) {
-  const q = args._.slice(1).join('');
-  if (!q) fail('用法：classics <關鍵詞> [--limit 10]');
+  // 《全書》卷二的宮名與引擎不同：妻妾＝夫妻、奴僕＝僕役；用「|」表示任一皆可
+  const ALIAS: Record<string, string> = { 夫妻: '夫妻|妻妾', 妻妾: '夫妻|妻妾', 僕役: '僕役|奴僕', 交友: '僕役|奴僕|交友', 奴僕: '僕役|奴僕' };
+  const terms = args._.slice(1).map(String).map(t => ALIAS[t.replace(/宮$/, '')] ?? t);
+  if (!terms.length) fail('用法：classics <關鍵詞…> [--limit 10]（多個關鍵詞須同時出現，後面的也可以是章名，例如 classics 紫微 命宮）');
   const limit = Number(str(args.limit) ?? 10);
-  const hits = searchClassics(q, limit);
+  const hits = searchClassics(terms, limit);
   if (!hits.length) {
-    console.log(`古籍中沒有找到「${q}」。搜不到就不要聲稱古籍有此說法。`);
+    console.log(`古籍中沒有同時含「${terms.join('」「').replace(/\|/g, '／')}」的原文。搜不到就不要聲稱古籍有此說法。`);
     return;
   }
+  console.log('以下是古籍原文（維基文庫錄本，只做簡轉繁）。引用請逐字照抄並注明書名、篇名。\n');
   for (const h of hits) console.log(`- 《${h.bookTitle}》${h.chapterTitle}：${h.text}`);
 }
 
