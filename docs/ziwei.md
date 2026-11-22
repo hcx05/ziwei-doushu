@@ -290,6 +290,8 @@ Expand-Archive combined.zip
 | `dst-cn.ts` | 中國 1986–1991 夏令時年份與區間 |
 | `clock-adjust.ts` | 鐘表讀數按分鐘平移成標準時間（跨日不改） |
 | `yunxian-context.ts` | 運限上下文（含童限處理） |
+| `layers.ts` | 三盤疊宮：同一宮在本命、大限、流年（流月、流日）各叫什麼；某年所在大限；某宮被哪些四化碰到（`years --palace`） |
+| `refs.ts` | 規則條目：按宮名、星名、四化挑出《全書》卷二各宮諸星斷語、諸星問答與倪師原話（`refs`） |
 | `lunar-solar.ts` | 農曆 / 公曆互轉與閏月邊界 clamp |
 
 ### 4.3 古籍原文（`lib/systems/ziwei/classics/`）

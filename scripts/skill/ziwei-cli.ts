@@ -13,6 +13,7 @@
  *   classics  搜索古籍原文：《紫微斗數全書》卷一至卷三、續道藏本《紫微斗數》
  *   liuyue    流月：斗君、流月命宮、流月四化落宮（不給 --month 則列出全年 12 個月）
  *   liuri     流日：某一公曆日的流日命宮、流日四化落宮
+ *   refs      規則條目：把這張盤某主題、某宮用得到的《全書》原文與倪師原話挑出來（星×宮、四化×宮）
  *   years     逐年流年：每年所在大限、流年命宮、流年四化的三盤疊宮；--palace 只列碰到該宮的四化
  *   liuren    小六壬：按農曆月日時起課，含義只給倪師原話
  */
@@ -20,6 +21,7 @@
 import { generateChart } from '../../lib/systems/ziwei/algorithm';
 import { formToBirthInfo } from '../../lib/systems/ziwei/share';
 import { searchClassics } from '../../lib/systems/ziwei/classics';
+import { buildRefs, TOPIC_PALACES, type Quote } from '../../lib/systems/ziwei/refs';
 import { buildDigest } from '../../lib/systems/ziwei/digest';
 import {
   TOPICS, LIUNIAN_SECTIONS, LIUYUE_SECTIONS, LIURI_SECTIONS, XIAOLIUREN_SECTIONS,
@@ -28,7 +30,7 @@ import {
 } from '../../lib/systems/ziwei/tasks';
 import { BRANCHES } from '../../lib/systems/ziwei/constants';
 import { getLiuNianSiHua, getYearBranchIndex } from '../../lib/systems/ziwei/sihua';
-import { LAYER_PALACE_NAMES, locate, normalizePalaceName, transformsWithLayers, yearContext, yearHits, type Layer } from '../../lib/systems/ziwei/layers';
+import { branchOfLayerPalace, LAYER_PALACE_NAMES, locate, normalizePalaceName, transformsWithLayers, yearContext, yearHits, type Layer } from '../../lib/systems/ziwei/layers';
 import { getLiuRi, getLiuYue, solarToLunar } from '../../lib/systems/ziwei/liuyue';
 import { LIUREN_MEANING, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/systems/ziwei/xiaoliuren';
 import type { SiHua, ZiweiChart } from '../../lib/systems/ziwei/types';
@@ -157,6 +159,41 @@ function cmdYears(args: Args) {
     }
     console.log('');
   }
+}
+
+// ────────────────── refs（規則條目自動帶入）──────────────────
+
+function cmdRefs(args: Args) {
+  const { chart, notes } = buildChartFromArgs(args);
+  const topic = str(args.topic);
+  const palaceArg = str(args.palace);
+  let palaces: string[];
+  if (palaceArg) {
+    palaces = palaceArg.split(/[,，、]/).map(x => normalizePalaceName(x) ?? fail(`認不得宮名「${x}」；可用：${LAYER_PALACE_NAMES.join('、')}`));
+  } else if (topic) {
+    palaces = TOPIC_PALACES[topic] ?? fail(`--topic 可用：${Object.keys(TOPIC_PALACES).join('、')}；其他主題改用 --palace`);
+  } else {
+    fail('用法：refs <出生參數> --topic love|career|wealth|health|overview|personality 或 --palace 夫妻[,官祿] [--year 2026 --layer 大限|流年]');
+  }
+  const layerArg = str(args.layer);
+  let branches: { label: string; branch: number }[] | undefined;
+  if (layerArg) {
+    if (layerArg !== '大限' && layerArg !== '流年' && layerArg !== '本命') fail('--layer 只能是 本命、大限、流年');
+    const year = str(args.year) ? Number(args.year) : new Date().getFullYear();
+    const ctx = yearContext(chart, year);
+    if (layerArg !== '本命') {
+      const layer = ctx.layers.find(l => l.label === layerArg) ?? fail(`${year} 年沒有${layerArg}（例如還在童限之前）`);
+      branches = palaces.map(n => ({ label: `${layerArg}${n}`, branch: branchOfLayerPalace(layer.mingBranch, n) }));
+    }
+  }
+
+  console.log(`# 規則條目（${branches ? `${str(args.year) ?? new Date().getFullYear()} 年${layerArg}` : '本命'}：${palaces.join('、')}）\n`);
+  for (const n of notes) console.log(`- ${n}`);
+  if (chart.birthInfo.hourUnknown) console.log(`- ${ASSUMPTION_MARK}出生時辰不詳，宮位建立在「子時」假設上，條目可能整組對錯宮。`);
+  console.log('- 以下是工具按宮名、星名、四化比對挑出的**原文**：《紫微斗數全書》與倪師《天紀》原話，逐字照錄。');
+  console.log('- 解讀時以這些條目為依據；引用要逐字、注明出處。條目寫「沒有」的配置，不要自己補「書上說」或「倪師說」，改按溯因寫法標注。');
+  console.log('- 條目之間矛盾、或要套到命主身上的取捨，屬於溯因。\n');
+  console.log(buildRefs(chart, { palaces, branches, quotes: quotes() as Quote[] }));
 }
 
 // ────────────────── liuren（小六壬）──────────────────
@@ -328,6 +365,7 @@ const HELP = `紫微斗數 Skill 工具
   node ziwei.mjs liuyue --date 1990-06-15 --time 10:30 --gender 女 [--year 2026] [--month 3]
   node ziwei.mjs liuri  --date 1990-06-15 --time 10:30 --gender 女 --on 2026-11-21
   node ziwei.mjs years  --date 1990-06-15 --time 10:30 --gender 女 [--from 2026 --to 2035] [--palace 夫妻]   （逐年流年；--palace 只列碰到該宮的四化）
+  node ziwei.mjs refs   --date 1990-06-15 --time 10:30 --gender 女 --topic love   （或 --palace 夫妻[,官祿]；加 --year 2026 --layer 大限|流年 看該層同名宮）
   node ziwei.mjs liuren --date 2026-11-21 --time 15:20            （起念當下的當地時間）
   node ziwei.mjs liuren --now --utc-offset 8
   node ziwei.mjs liuren --lunar-month 4 --lunar-day 5 --hour 戌
@@ -349,6 +387,7 @@ try {
     case 'liuyue': cmdLiuyue(args); break;
     case 'liuri': cmdLiuri(args); break;
     case 'years': cmdYears(args); break;
+    case 'refs': cmdRefs(args); break;
     case 'liuren': cmdLiuren(args); break;
     default: console.log(HELP);
   }

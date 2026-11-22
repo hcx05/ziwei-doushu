@@ -60,6 +60,12 @@ assert.ok(q.stdout.includes('「斗數批六親本來就比較差一點。」'))
 assert.ok(q.stdout.includes('https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=1527'));
 assert.ok(!q.stdout.includes('cleaned'), '語料清洗標記不應出現在輸出裡');
 
+const refs = run('refs', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--topic', 'love', '--year', '2026', '--layer', '大限');
+assert.equal(refs.status, 0, refs.stderr);
+assert.ok(refs.stdout.includes('## 大限夫妻：申宮（本命疾厄）') && refs.stdout.includes('廉貞三度作新郎'), 'refs 應按大限同名宮取《全書》條文');
+assert.equal(run('refs', '--date', '1990-06-15', '--time', '10:30', '--gender', '女').status, 2, 'refs 沒給主題應報錯');
+assert.ok(readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8').includes('查規則條目（解讀前必做）'));
+
 const cls = run('classics', '紫微居午');
 assert.ok(cls.stdout.includes('《紫微斗數全書》卷一·斗數骨髓賦：紫微居午無殺湊位至三公'), 'classics 應給出《全書》原文');
 const cls2 = run('classics', '天同', '夫妻');
