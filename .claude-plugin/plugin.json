@@ -1,0 +1,20 @@
+{
+  "name": "chinese-divination",
+  "version": "1.0.0",
+  "description": "十個中國術數 Skill，各附確定性排盤工具（只需 Node 18+）。溯因結論一律標注僅供參考。",
+  "author": {
+    "name": "hcx05"
+  },
+  "skills": [
+    "./.claude/skills/bazi",
+    "./.claude/skills/huangji",
+    "./.claude/skills/liuren",
+    "./.claude/skills/liuyao",
+    "./.claude/skills/meihua",
+    "./.claude/skills/qimen",
+    "./.claude/skills/taiyi",
+    "./.claude/skills/wuyun-liuqi",
+    "./.claude/skills/zeri",
+    "./.claude/skills/ziwei-doushu"
+  ]
+}

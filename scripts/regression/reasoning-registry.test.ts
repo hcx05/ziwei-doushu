@@ -116,11 +116,11 @@ for (const dir of readdirSync(path.join(root, '.claude/skills'))) {
   const md = readFileSync(path.join(root, '.claude/skills', dir, 'SKILL.md'), 'utf8');
   assert.ok(/回复写法（先回答所问，不贴过程）|回覆寫法（先回答所問，不貼過程）/.test(md), `${dir}/SKILL.md 缺少回复写法`);
 }
-// 外掛市集（/plugin marketplace add）列出的 skill 與 .claude/skills 下的資料夾一一對應，新增體系不會漏裝
+// 外掛（plugin.json，市集安裝與評測都用它）列出的 skill 與 .claude/skills 下的資料夾一一對應，新增體系不會漏裝
 {
-  const market = JSON.parse(readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
-  const listed = (market.plugins[0].skills as string[]).map(s => path.basename(s)).sort();
-  assert.deepEqual(listed, readdirSync(path.join(root, '.claude/skills')).sort(), 'marketplace.json 的 skills 清單與 .claude/skills 不一致');
+  const plugin = JSON.parse(readFileSync(path.join(root, '.claude-plugin/plugin.json'), 'utf8'));
+  const listed = (plugin.skills as string[]).map(s => path.basename(s)).sort();
+  assert.deepEqual(listed, readdirSync(path.join(root, '.claude/skills')).sort(), 'plugin.json 的 skills 清單與 .claude/skills 不一致');
 }
 for (const sys of SYSTEMS) assert.ok(buildReasoningRules(sys.vocabulary).includes('【回复写法】'), `${sys.id}：规则须含回复写法`);
 

@@ -67,6 +67,7 @@ npm run typecheck    # 类型检查
 npm test             # 全部体系的回归测试
 npm run build:skill  # 改了 lib/ 或 scripts/skill/ 后重新打包各 skill 的工具
 npm run pack:skill   # 打出上传用的 zip
+npm run eval -- --tag overlap style --max-cost-usd 8   # 用真实模型评测技能用得对不对（会产生费用，见 evals/README.md）
 ```
 
 | 路径 | 内容 |
@@ -78,6 +79,7 @@ npm run pack:skill   # 打出上传用的 zip
 | `scripts/skill/` | 各 skill 的命令行工具源码与打包脚本 |
 | `scripts/regression/` | 回归测试 |
 | `.claude/skills/` | 各 skill 的 `SKILL.md` 与打包好的工具 |
+| `evals/` | 技能评测案例（`claude plugin eval`）：触发、体系选择、回复写法 |
 | `docs/` | 各体系的原文核对记录、[扩充计划与决策记录](./docs/ROADMAP-multi-system.md) |
 
 **新增体系**：在 `lib/systems/` 下建引擎与 `tasks.ts`，登记到 `lib/systems/index.ts`；在 `scripts/skill/` 写命令行工具，加进 `build.mjs`；写 `SKILL.md`；补引擎与 skill 测试并登记到 `package.json`。外挂市集 `.claude-plugin/marketplace.json` 的清单有测试核对，漏登记会失败。
