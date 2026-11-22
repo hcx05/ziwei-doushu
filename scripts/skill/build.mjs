@@ -1,5 +1,5 @@
 /**
- * 把各 Skill 的命令行工具打包成单文件：
+ * 把各 Skill 的命令行工具打包成單文件：
  *   scripts/skill/ziwei-cli.ts → .claude/skills/ziwei-doushu/scripts/ziwei.mjs
  *   scripts/skill/bazi-cli.ts  → .claude/skills/bazi/scripts/bazi.mjs
  *   scripts/skill/liuyao-cli.ts → .claude/skills/liuyao/scripts/liuyao.mjs
@@ -10,19 +10,19 @@
  *   scripts/skill/meihua-cli.ts  → .claude/skills/meihua/scripts/meihua.mjs
  *   scripts/skill/liuren-cli.ts  → .claude/skills/liuren/scripts/liuren.mjs
  *   scripts/skill/qimen-cli.ts   → .claude/skills/qimen/scripts/qimen.mjs
- * 打包后只需 Node 18+，不必 npm install —— 所以每个 skill 目录都可以直接拷走或打成 zip 上传。
+ * 打包後只需 Node 18+，不必 npm install —— 所以每個 skill 目錄都可以直接拷走或打成 zip 上傳。
  *
  *   npm run build:skill
  *
- * 改了 lib/ 或 docs/tianji-ziwei/entries.jsonl 之后要重新打包；
- * scripts/regression/ 下各 *-skill.test.ts 会检查打包产物是否过期。
+ * 改了 lib/ 或 docs/tianji-ziwei/entries.jsonl 之後要重新打包；
+ * scripts/regression/ 下各 *-skill.test.ts 會檢查打包產物是否過期。
  */
 import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-// SKILL_BUNDLE_OUT_DIR 只给回归测试用：打包到临时目录，再与仓库里的产物比对
+// SKILL_BUNDLE_OUT_DIR 只給迴歸測試用：打包到臨時目錄，再與倉庫裡的產物比對
 const OUT_DIR = process.env.SKILL_BUNDLE_OUT_DIR;
 
 const TARGETS = [
@@ -54,7 +54,7 @@ for (const t of TARGETS) {
     loader: { '.jsonl': 'text' },
     banner: {
       js: [
-        `// 由 scripts/skill/build.mjs 生成，请勿手改。源码：${t.entry}`,
+        `// 由 scripts/skill/build.mjs 生成，請勿手改。源碼：${t.entry}`,
         "import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);",
       ].join('\n'),
     },

@@ -4,7 +4,7 @@ import type { BirthInfo } from '../../lib/systems/ziwei/types';
 
 const base: BirthInfo = { year: 1925, month: 3, day: 1, hour: 6, gender: 'male' };
 
-// 运行时非法 gender 必须在排盘前抛 RangeError，不能被静默当成「女」
+// 運行時非法 gender 必須在排盤前拋 RangeError，不能被靜默當成「女」
 for (const gender of ['typo', '', 'MALE', 'Male', '男', 'female ', 'm', null, undefined, 0, 1, {}] as never[]) {
   assert.throws(
     () => generateChart({ ...base, gender }),
@@ -13,13 +13,13 @@ for (const gender of ['typo', '', 'MALE', 'Male', '男', 'female ', 'm', null, u
   );
 }
 
-// 合法值行为保持不变
+// 合法值行為保持不變
 const male = generateChart({ ...base, gender: 'male' });
 assert.equal(male.birthInfo.gender, 'male');
-assert.ok(male.yinYangGender?.includes('男'), 'male chart should be 阳男/阴男');
+assert.ok(male.yinYangGender?.includes('男'), 'male chart should be 陽男/陰男');
 
 const female = generateChart({ ...base, gender: 'female' });
 assert.equal(female.birthInfo.gender, 'female');
-assert.ok(female.yinYangGender?.includes('女'), 'female chart should be 阳女/阴女');
+assert.ok(female.yinYangGender?.includes('女'), 'female chart should be 陽女/陰女');
 
 console.log('gender validation regression passed');

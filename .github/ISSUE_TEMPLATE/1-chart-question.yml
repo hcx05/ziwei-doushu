@@ -1,58 +1,58 @@
-name: 排盘 / 起卦结果疑问 / Chart result question
-description: 觉得某个体系算得不对？请附上输入和对照结果，我们才能逐项核。
-title: "[结果疑问] "
+name: 排盤 / 起卦結果疑問 / Chart result question
+description: 覺得某個體系算得不對？請附上輸入和對照結果，我們才能逐項核。
+title: "[結果疑問] "
 labels: ["question"]
 body:
   - type: markdown
     attributes:
       value: |
-        只写「不准」我们没法查。请按下面填完整，我们会逐项对照。
-        先看一眼：各体系有些口径本来就分派别（如紫微辅星亮度、闰月归属、晚子时换日，奇门拆补与置闰，六壬涉害取法），工具会用「⚠ 假设：」标出；这类差异不算 bug，但仍欢迎指出。
+        只寫「不準」我們沒法查。請按下面填完整，我們會逐項對照。
+        先看一眼：各體系有些口徑本來就分派別（如紫微輔星亮度、閏月歸屬、晚子時換日，奇門拆補與置閏，六壬涉害取法），工具會用「⚠ 假設：」標出；這類差異不算 bug，但仍歡迎指出。
   - type: dropdown
     id: system
     attributes:
-      label: 体系
-      options: ["八字", "紫微斗数", "六爻", "梅花易数", "大六壬", "奇门遁甲", "小六壬", "择日", "太乙神数", "皇极经世", "五运六气"]
+      label: 體系
+      options: ["八字", "紫微斗數", "六爻", "梅花易數", "大六壬", "奇門遁甲", "小六壬", "擇日", "太乙神數", "皇極經世", "五運六氣"]
     validations:
       required: true
   - type: textarea
     id: command
     attributes:
-      label: 输入
-      description: 运行的命令，或出生日期时间、出生地、性别、起卦时间、所给数字等。
+      label: 輸入
+      description: 運行的命令，或出生日期時間、出生地、性別、起卦時間、所給數字等。
       placeholder: 例：node .claude/skills/bazi/scripts/bazi.mjs chart --date 1990-05-12 --time 08:30 --gender 女 --city 杭州
     validations:
       required: true
   - type: textarea
     id: ours
     attributes:
-      label: 本项目算出的结果
-      description: 贴出工具输出里相关的那几项。
+      label: 本項目算出的結果
+      description: 貼出工具輸出裡相關的那幾項。
     validations:
       required: true
   - type: input
     id: ref
     attributes:
-      label: 拿什么对照
-      placeholder: 例：某本书第几卷某例 / 其它排盘软件
+      label: 拿什麼對照
+      placeholder: 例：某本書第幾卷某例 / 其它排盤軟件
     validations:
       required: true
   - type: textarea
     id: theirs
     attributes:
-      label: 对照结果
-      description: 截图或文字。
+      label: 對照結果
+      description: 截圖或文字。
     validations:
       required: true
   - type: textarea
     id: diff
     attributes:
-      label: 具体哪一项不一致
-      placeholder: 例：初传应为子，这里取了午
+      label: 具體哪一項不一致
+      placeholder: 例：初傳應為子，這裡取了午
     validations:
       required: true
   - type: input
     id: env
     attributes:
-      label: 运行环境
+      label: 運行環境
       placeholder: 例：macOS 15 / Node 22

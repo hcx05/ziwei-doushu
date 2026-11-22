@@ -11,7 +11,7 @@
  *   rules     推理分工規則全文
  *   check     檢查解讀草稿（--fix 自動補標記）
  */
-import { Solar } from 'lunar-javascript';
+import { Solar } from '../../lib/calendar/lunar';
 import { BRANCHES, STEMS, type Stem } from '../../lib/systems/bazi/constants';
 import { buildQimen, determineJu, tw, type Dun } from '../../lib/systems/qimen/engine';
 import { buildQimenDigest } from '../../lib/systems/qimen/digest';
@@ -28,7 +28,7 @@ function cmdPan(args: Args) {
   let dun: Dun, ju: number, dayGz: string, hourGz: string;
   if (args.ju !== undefined) {
     const d = str(args.dun) ?? fail('--dun 應為 陽 或 陰');
-    dun = /^(陽|阳|yang)$/.test(d) ? '陽' : /^(陰|阴|yin)$/.test(d) ? '陰' : fail(`--dun 應為 陽 或 陰，收到「${d}」`);
+    dun = /^(陽|陽|yang)$/.test(d) ? '陽' : /^(陰|陰|yin)$/.test(d) ? '陰' : fail(`--dun 應為 陽 或 陰，收到「${d}」`);
     ju = Number(str(args.ju));
     if (!(Number.isInteger(ju) && ju >= 1 && ju <= 9)) fail('--ju 應為 1–9');
     dayGz = str(args.day) ?? fail('缺少 --day 日干支');

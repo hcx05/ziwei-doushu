@@ -16,9 +16,9 @@
  *     中五寄坤二，天禽隨天芮。
  *   · 八門：值使自旬首宮起，按時支距旬首之數陽順陰逆數九宮（入中寄坤），八門依圓周整體轉動。
  *   · 八神：值符所臨之宮起值符，陽遁順時針、陰遁逆時針：值符、螣蛇、太陰、六合、白虎、玄武、九地、九天
- *     （卷一：「直符前三六合位，前二太陰……後一名九天，后二宮神名九地」）。
+ *     （卷一：「直符前三六合位，前二太陰……後一名九天，後二宮神名九地」）。
  */
-import { Solar } from 'lunar-javascript';
+import { Solar } from '../../calendar/lunar';
 import { BRANCHES, STEMS, type Branch, type Stem } from '@/lib/systems/bazi/constants';
 
 export type Dun = '陽' | '陰';
@@ -40,18 +40,18 @@ export const XUN_YI: Record<string, Stem> = { 甲子: '戊', 甲戌: '己', 甲�
 /** 二十四節氣的三元局數（陽遁冬至至芒種，陰遁夏至至大雪）；鍵用 lunar-javascript 的簡體名 */
 export const JU_TABLE: Record<string, { dun: Dun; ju: [number, number, number] }> = {
   冬至: { dun: '陽', ju: [1, 7, 4] }, 小寒: { dun: '陽', ju: [2, 8, 5] }, 大寒: { dun: '陽', ju: [3, 9, 6] },
-  立春: { dun: '陽', ju: [8, 5, 2] }, 雨水: { dun: '陽', ju: [9, 6, 3] }, 惊蛰: { dun: '陽', ju: [1, 7, 4] },
-  春分: { dun: '陽', ju: [3, 9, 6] }, 清明: { dun: '陽', ju: [4, 1, 7] }, 谷雨: { dun: '陽', ju: [5, 2, 8] },
-  立夏: { dun: '陽', ju: [4, 1, 7] }, 小满: { dun: '陽', ju: [5, 2, 8] }, 芒种: { dun: '陽', ju: [6, 3, 9] },
+  立春: { dun: '陽', ju: [8, 5, 2] }, 雨水: { dun: '陽', ju: [9, 6, 3] }, 驚蟄: { dun: '陽', ju: [1, 7, 4] },
+  春分: { dun: '陽', ju: [3, 9, 6] }, 清明: { dun: '陽', ju: [4, 1, 7] }, 穀雨: { dun: '陽', ju: [5, 2, 8] },
+  立夏: { dun: '陽', ju: [4, 1, 7] }, 小滿: { dun: '陽', ju: [5, 2, 8] }, 芒種: { dun: '陽', ju: [6, 3, 9] },
   夏至: { dun: '陰', ju: [9, 3, 6] }, 小暑: { dun: '陰', ju: [8, 2, 5] }, 大暑: { dun: '陰', ju: [7, 1, 4] },
-  立秋: { dun: '陰', ju: [2, 5, 8] }, 处暑: { dun: '陰', ju: [1, 4, 7] }, 白露: { dun: '陰', ju: [9, 3, 6] },
+  立秋: { dun: '陰', ju: [2, 5, 8] }, 處暑: { dun: '陰', ju: [1, 4, 7] }, 白露: { dun: '陰', ju: [9, 3, 6] },
   秋分: { dun: '陰', ju: [7, 1, 4] }, 寒露: { dun: '陰', ju: [6, 9, 3] }, 霜降: { dun: '陰', ju: [5, 8, 2] },
   立冬: { dun: '陰', ju: [6, 9, 3] }, 小雪: { dun: '陰', ju: [5, 8, 2] }, 大雪: { dun: '陰', ju: [4, 7, 1] },
 };
 export const JIEQI_ORDER = Object.keys(JU_TABLE);
 /** 繁體顯示名 */
 export const JIEQI_TW: Record<string, string> = {
-  惊蛰: '驚蟄', 谷雨: '穀雨', 小满: '小滿', 芒种: '芒種', 处暑: '處暑',
+  驚蟄: '驚蟄', 穀雨: '穀雨', 小滿: '小滿', 芒種: '芒種', 處暑: '處暑',
 };
 export const tw = (q: string) => JIEQI_TW[q] ?? q;
 
@@ -111,7 +111,7 @@ export function zhiRunSchedule(events: JieqiEvent[], fuTouDays: number[]): ZhiRu
     if (!ev) break;
     const lead = ev.day - d0;
     for (let y = 0; y < 3; y++) segs.push({ start: d0 + 5 * y, jieqi: name, yuan: YUAN[y], lead, run });
-    if (!run && (name === '芒种' || name === '大雪') && lead > RUN_THRESHOLD) { run = true; continue; }
+    if (!run && (name === '芒種' || name === '大雪') && lead > RUN_THRESHOLD) { run = true; continue; }
     run = false;
     qi = (qi + 1) % 24;
   }

@@ -1,9 +1,9 @@
 /**
- * Claude Skill（.claude/skills/ziwei-doushu）回归：
- *   1) 仓库里的 scripts/ziwei.mjs 与源码重新打包的结果逐字节一致（改了引擎 / 规则忘记 npm run build:skill 会在这里失败）；
- *   2) 命令行工具能排盘，输出含流年与大限四化落宫；时辰不详带声明；非法日期干净地报错退出；
- *   3) 倪师原话搜索给出逐字原文与 B 站出处；
- *   4) SKILL.md 有合法的 frontmatter，并写明推理分工与溯因重灾区。
+ * Claude Skill（.claude/skills/ziwei-doushu）迴歸：
+ *   1) 倉庫裡的 scripts/ziwei.mjs 與源碼重新打包的結果逐字節一致（改了引擎 / 規則忘記 npm run build:skill 會在這裡失敗）；
+ *   2) 命令行工具能排盤，輸出含流年與大限四化落宮；時辰不詳帶聲明；非法日期乾淨地報錯退出；
+ *   3) 倪師原話搜索給出逐字原文與 B 站出處；
+ *   4) SKILL.md 有合法的 frontmatter，並寫明推理分工與溯因重災區。
  */
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -16,93 +16,93 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const skillDir = path.join(root, '.claude/skills/ziwei-doushu');
 const bundle = path.join(skillDir, 'scripts/ziwei.mjs');
 
-// ── 1) 产物未过期 ───────────────────────────────────────────
+// ── 1) 產物未過期 ───────────────────────────────────────────
 const tmpDir = mkdtempSync(path.join(tmpdir(), 'ziwei-skill-'));
 execFileSync(process.execPath, [path.join(root, 'scripts/skill/build.mjs')], {
   env: { ...process.env, SKILL_BUNDLE_OUT_DIR: tmpDir }, stdio: 'pipe',
 });
 assert.ok(
   readFileSync(path.join(tmpDir, 'ziwei.mjs')).equals(readFileSync(bundle)),
-  'skill 打包产物已过期：请运行 npm run build:skill 并提交 .claude/skills/ziwei-doushu/scripts/ziwei.mjs',
+  'skill 打包產物已過期：請運行 npm run build:skill 並提交 .claude/skills/ziwei-doushu/scripts/ziwei.mjs',
 );
 
-// ── 2) 排盘 ─────────────────────────────────────────────────
+// ── 2) 排盤 ─────────────────────────────────────────────────
 const run = (...args: string[]) => spawnSync(process.execPath, [bundle, ...args], { encoding: 'utf8', cwd: skillDir });
 
 const chart = run('chart', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--city', '杭州', '--year', '2026');
 assert.equal(chart.status, 0, chart.stderr);
-for (const must of ['【十二宫】', '命宫在丑', '【当前大限（', '【流年 2026（丙午年）】', '流年四化：化禄天同', '真太阳时校正', '夏令时']) {
-  assert.ok(chart.stdout.includes(must), `排盘输出缺少「${must}」`);
+for (const must of ['【十二宮】', '命宮在丑', '【當前大限（', '【流年 2026（丙午年）】', '流年四化：化祿天同', '真太陽時校正', '夏令時']) {
+  assert.ok(chart.stdout.includes(must), `排盤輸出缺少「${must}」`);
 }
 
 const edge = run('chart', '--date', '1990-06-15', '--time', '10:55', '--gender', '女');
-assert.ok(edge.stdout.includes('距巳、午两个时辰的交界只有 5 分钟'), '时辰交界要提醒定盘');
-assert.ok(!chart.stdout.includes('两个时辰的交界'), '10:30 离交界远，不该提醒');
+assert.ok(edge.stdout.includes('距巳、午兩個時辰的交界只有 5 分鐘'), '時辰交界要提醒定盤');
+assert.ok(!chart.stdout.includes('兩個時辰的交界'), '10:30 離交界遠，不該提醒');
 {
   const md = readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
-  for (const must of ['先问再排', '定盘', '双胞胎', '你提到']) assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
+  for (const must of ['先問再排', '定盤', '雙胞胎', '你提到']) assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
 }
 const unknown = run('chart', '--date', '1990-06-15', '--unknown-time', '--gender', '男');
 assert.equal(unknown.status, 0, unknown.stderr);
-assert.ok(unknown.stdout.includes('⚠ 假设：出生时辰不详，本盘按子时假设排出'));
+assert.ok(unknown.stdout.includes('⚠ 假設：出生時辰不詳，本盤按子時假設排出'));
 
 const bad = run('chart', '--date', '1990-02-30', '--time', '01:00', '--gender', '男');
 assert.equal(bad.status, 2);
-assert.ok(bad.stderr.startsWith('错误：') && bad.stderr.length < 200, '非法日期应只输出一行错误');
+assert.ok(bad.stderr.startsWith('錯誤：') && bad.stderr.length < 200, '非法日期應只輸出一行錯誤');
 
 const lunar = run('chart', '--date', '1990-05-23', '--lunar', '--time', '10:30', '--gender', '女');
-assert.ok(lunar.stdout.includes('农历输入已换算为公历 1990-6-15'));
+assert.ok(lunar.stdout.includes('農曆輸入已換算為公曆 1990-6-15'));
 
-// ── 3) 原话检索 ─────────────────────────────────────────────
-const q = run('quotes', '六亲', '比较差');
-assert.ok(q.stdout.includes('「斗数批六亲本来就比较差一点。」'));
+// ── 3) 原話檢索 ─────────────────────────────────────────────
+const q = run('quotes', '六親', '比較差');
+assert.ok(q.stdout.includes('「斗數批六親本來就比較差一點。」'));
 assert.ok(q.stdout.includes('https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=1527'));
-assert.ok(!q.stdout.includes('cleaned'), '语料清洗标记不应出现在输出里');
+assert.ok(!q.stdout.includes('cleaned'), '語料清洗標記不應出現在輸出裡');
 
 const liuren = run('liuren', '--lunar-month', '4', '--lunar-day', '5', '--hour', '戌');
 assert.equal(liuren.status, 0, liuren.stderr);
-assert.ok(liuren.stdout.includes('**空亡**') && liuren.stdout.includes('你可以断念了'));
-assert.equal(run('liuren', '--now').status, 2, 'liuren --now 未给时区应报错（不能用服务器时区代替命主的当地时间）');
+assert.ok(liuren.stdout.includes('**空亡**') && liuren.stdout.includes('你可以斷念了'));
+assert.equal(run('liuren', '--now').status, 2, 'liuren --now 未給時區應報錯（不能用服務器時區代替命主的當地時間）');
 
 const ly = run('liuyue', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--year', '2026', '--month', '3');
 assert.equal(ly.status, 0, ly.stderr);
-assert.ok(ly.stdout.includes('斗君（流年正月）在未宫') && ly.stdout.includes('## 农历3月（壬干）'));
+assert.ok(ly.stdout.includes('斗君（流年正月）在未宮') && ly.stdout.includes('## 農曆3月（壬干）'));
 
 const lr = run('liuri', '--date', '1990-06-15', '--time', '10:30', '--gender', '女', '--on', '2026-11-21');
 assert.equal(lr.status, 0, lr.stderr);
-assert.ok(lr.stdout.includes('倪师口径') && lr.stdout.includes('通行口径'));
+assert.ok(lr.stdout.includes('倪師口徑') && lr.stdout.includes('通行口徑'));
 
 const rules = run('rules');
-assert.ok(rules.stdout.includes('⚠ 仅供参考（模型在此类推理有能力限制）：'));
+assert.ok(rules.stdout.includes('⚠ 僅供參考（模型在此類推理有能力限制）：'));
 
 const sec = run('sections', 'all');
 assert.ok(sec.stdout.includes('**【命格定性】** ［溯因］') && sec.stdout.includes('## liunian'));
 for (const k of ['## liuyue', '## liuri', '## xiaoliuren']) assert.ok(sec.stdout.includes(k), `sections 缺 ${k}`);
 
-// ── 3b) 溯因标注检查 ───────────────────────────────────────
-const MARK = '⚠ 仅供参考（模型在此类推理有能力限制）：';
-const draft = '**【起课】**\n……\n\n**【课象】**\n……\n\n**【应期】**\n……\n\n**【对所问之事的含义】**\n可能有第三者。';
+// ── 3b) 溯因標注檢查 ───────────────────────────────────────
+const MARK = '⚠ 僅供參考（模型在此類推理有能力限制）：';
+const draft = '**【起課】**\n……\n\n**【課象】**\n……\n\n**【應期】**\n……\n\n**【對所問之事的含義】**\n可能有第三者。';
 const chk = spawnSync(process.execPath, [bundle, 'check', 'xiaoliuren'], { encoding: 'utf8', input: draft });
-assert.equal(chk.status, 1, '漏标的溯因节应让 check 以非零退出');
-assert.ok(chk.stdout.includes('对所问之事的含义'));
+assert.equal(chk.status, 1, '漏標的溯因節應讓 check 以非零退出');
+assert.ok(chk.stdout.includes('對所問之事的含義'));
 const fix = spawnSync(process.execPath, [bundle, 'check', 'xiaoliuren', '--fix'], { encoding: 'utf8', input: draft });
-assert.ok(fix.stdout.includes(`${MARK}可能有第三者。`), 'check --fix 应补上标记');
+assert.ok(fix.stdout.includes(`${MARK}可能有第三者。`), 'check --fix 應補上標記');
 const ok = spawnSync(process.execPath, [bundle, 'check', 'xiaoliuren'], { encoding: 'utf8', input: fix.stdout });
 assert.equal(ok.status, 0, ok.stdout);
 const sk = run('sections', 'overview', '--skeleton');
-assert.ok(sk.stdout.includes(`**【命格定性】**（仅供参考）\n${MARK}`), 'sections --skeleton 应给出预填标记的骨架');
-assert.ok(run('rules', 'xiaoliuren').stdout.includes('假设小六壬的规则成立'));
+assert.ok(sk.stdout.includes(`**【命格定性】**（僅供參考）\n${MARK}`), 'sections --skeleton 應給出預填標記的骨架');
+assert.ok(run('rules', 'xiaoliuren').stdout.includes('假設小六壬的規則成立'));
 assert.equal(run('rules', 'nope').status, 2);
 
 // ── 4) SKILL.md ─────────────────────────────────────────────
 const md = readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
 const fm = md.match(/^---\nname: ([a-z0-9-]+)\ndescription: (.+)\n---\n/);
-assert.ok(fm, 'SKILL.md 须以 name / description frontmatter 开头');
+assert.ok(fm, 'SKILL.md 須以 name / description frontmatter 開頭');
 assert.equal(fm[1], 'ziwei-doushu');
-assert.ok(fm[2].length <= 1024, 'description 不宜超过 1024 字符');
-for (const must of ['⚠ 仅供参考（模型在此类推理有能力限制）：', '⚠ 假设：', '溯因重灾区：可以回答，但必须标注',
-  '工具做不到，不做', '定盘、校正时辰', 'check', '先查再引', '小六壬', '同一个念', '流日', '不给分数']) {
+assert.ok(fm[2].length <= 1024, 'description 不宜超過 1024 字符');
+for (const must of ['⚠ 僅供參考（模型在此類推理有能力限制）：', '⚠ 假設：', '溯因重災區：可以回答，但必須標注',
+  '工具做不到，不做', '定盤、校正時辰', 'check', '先查再引', '小六壬', '同一個念', '流日', '不給分數']) {
   assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
 }
 
-console.log('✓ Claude Skill：打包产物最新、排盘 / 原话 / 小节命令可用、SKILL.md 规则齐全');
+console.log('✓ Claude Skill：打包產物最新、排盤 / 原話 / 小節命令可用、SKILL.md 規則齊全');

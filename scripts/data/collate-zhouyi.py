@@ -1,10 +1,10 @@
 """
-《周易》两份独立转录逐字比对（忽略标点）：iching-kit@0.1.0 与 @freizl/yijing@2.1.0（均为 MIT）。
+《周易》兩份獨立轉錄逐字比對（忽略標點）：iching-kit@0.1.0 與 @freizl/yijing@2.1.0（均為 MIT）。
 
   （另把 @freizl/yijing@2.1.0 解包到 /tmp/zy/pkgs/_freizl_yijing）
   python3 -I scripts/data/collate-zhouyi.py /tmp/zy
 
-结果整理在 docs/zhouyi-collation.md。
+結果整理在 docs/zhouyi-collation.md。
 """
 import json, re, sys
 d = sys.argv[1]
@@ -31,10 +31,10 @@ for g in a:
     if not b: print('missing', g['name']); diffs += 1; continue
     ga = norm(g['gua_ci']); gb = norm(b['gc'])
     # source A prefixes name + '：'; B prefixes name + '，'
-    if ga != gb: print('卦辞', g['name'], '|', g['gua_ci'], '|', b['gc']); diffs += 1
+    if ga != gb: print('卦辭', g['name'], '|', g['gua_ci'], '|', b['gc']); diffs += 1
     ya = g['yao_ci'][:6]; yb = b['yc']
     for i in range(6):
-        if norm(ya[i]) != norm(yb[i]): print('爻辞', g['name'], i + 1, '|', ya[i], '|', yb[i]); diffs += 1
+        if norm(ya[i]) != norm(yb[i]): print('爻辭', g['name'], i + 1, '|', ya[i], '|', yb[i]); diffs += 1
     yongA = g['yao_ci'][6] if len(g['yao_ci']) > 6 else None
     if (yongA and norm(yongA)) != (b['yong'] and norm(b['yong'])): print('用', g['name'], yongA, b['yong']); diffs += 1
 print('diffs', diffs)

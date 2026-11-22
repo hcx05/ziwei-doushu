@@ -1,9 +1,9 @@
 /**
- * 格局加分项里的「化禄 / 化权 / 化科」要按星曜的 siHua 字段判，不是按星名。
+ * 格局加分項裡的「化祿 / 化權 / 化科」要按星曜的 siHua 字段判，不是按星名。
  *
- * 四化挂在 Star.siHua 上（如 { name: '天机', siHua: '科' }），盘上没有叫「化科」的星。
- * 早先府相朝垣「命宫见禄」、阳梁昌禄 / 机月同梁「再会化科」、杀破狼「三方有化禄或化权」
- * 用 hasStar / sanFangAllStars 查「化X」星名，永远查不到，这几条加分项从来不会出现。
+ * 四化掛在 Star.siHua 上（如 { name: '天機', siHua: '科' }），盤上沒有叫「化科」的星。
+ * 早先府相朝垣「命宮見祿」、陽梁昌祿 / 機月同梁「再會化科」、殺破狼「三方有化祿或化權」
+ * 用 hasStar / sanFangAllStars 查「化X」星名，永遠查不到，這幾條加分項從來不會出現。
  */
 import assert from 'node:assert/strict';
 import { generateChart } from '../../lib/systems/ziwei/algorithm';
@@ -18,19 +18,19 @@ function sanFangHasSiHua(chart: ZiweiChart, hua: SiHua): boolean {
 
 async function main() {
 
-// 盘上不存在名为「化X」的星
+// 盤上不存在名為「化X」的星
 const sample = generateChart({ year: 1988, month: 10, day: 8, hour: 7, gender: 'male' });
-assert.ok(sample.palaces.every(p => p.stars.every(s => !/^化[禄权科忌]$/.test(s.name))), '星名里出现了「化X」');
+assert.ok(sample.palaces.every(p => p.stars.every(s => !/^化[祿權科忌]$/.test(s.name))), '星名裡出現了「化X」');
 
-// 逐日扫一年、固定午时，统计每个加分项「该出现」与「实际出现」的盘数
+// 逐日掃一年、固定午時，統計每個加分項「該出現」與「實際出現」的盤數
 const checks: { pattern: string; bonus: string; expect: (c: ZiweiChart) => boolean }[] = [
   {
-    pattern: '府相朝垣', bonus: '命宫见禄',
-    expect: c => c.palaces.some(p => p.branch === c.mingGongBranch && p.stars.some(s => s.name === '禄存' || s.siHua === '禄')),
+    pattern: '府相朝垣', bonus: '命宮見祿',
+    expect: c => c.palaces.some(p => p.branch === c.mingGongBranch && p.stars.some(s => s.name === '祿存' || s.siHua === '祿')),
   },
-  { pattern: '杀破狼', bonus: '三方有化禄或化权（动得有力）', expect: c => sanFangHasSiHua(c, '禄') || sanFangHasSiHua(c, '权') },
-  { pattern: '机月同梁', bonus: '再会化科', expect: c => sanFangHasSiHua(c, '科') },
-  { pattern: '阳梁昌禄', bonus: '再会化科', expect: c => sanFangHasSiHua(c, '科') },
+  { pattern: '殺破狼', bonus: '三方有化祿或化權（動得有力）', expect: c => sanFangHasSiHua(c, '祿') || sanFangHasSiHua(c, '權') },
+  { pattern: '機月同梁', bonus: '再會化科', expect: c => sanFangHasSiHua(c, '科') },
+  { pattern: '陽梁昌祿', bonus: '再會化科', expect: c => sanFangHasSiHua(c, '科') },
 ];
 const hits = new Map<string, number>();
 const start = Date.UTC(1990, 0, 1);
@@ -45,15 +45,15 @@ for (let d = 0; d < 366; d++) {
     if (!p) continue;
     const want = expect(chart);
     const got = p.conditions?.bonus?.includes(bonus) ?? false;
-    assert.equal(got, want, `${dt.toISOString().slice(0, 10)} 午时 ${pattern}「${bonus}」应为 ${want}`);
+    assert.equal(got, want, `${dt.toISOString().slice(0, 10)} 午時 ${pattern}「${bonus}」應為 ${want}`);
     if (got) hits.set(pattern, (hits.get(pattern) ?? 0) + 1);
   }
 }
 for (const { pattern } of checks) {
-  assert.ok((hits.get(pattern) ?? 0) > 0, `${pattern} 的四化加分项一次都没触发，样本覆盖不到或判断仍按星名`);
+  assert.ok((hits.get(pattern) ?? 0) > 0, `${pattern} 的四化加分項一次都沒觸發，樣本覆蓋不到或判斷仍按星名`);
 }
 
-console.log(`✓ 格局四化加分项按 siHua 判定（触发盘数：${[...hits].map(([k, v]) => `${k} ${v}`).join('、')}）`);
+console.log(`✓ 格局四化加分項按 siHua 判定（觸發盤數：${[...hits].map(([k, v]) => `${k} ${v}`).join('、')}）`);
 }
 
 main().catch((err) => {

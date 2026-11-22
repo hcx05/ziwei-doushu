@@ -1,11 +1,11 @@
 /**
- * formToBirthInfo：晚子时换日要按真太阳时判定，与时辰支同一口径。
+ * formToBirthInfo：晚子時換日要按真太陽時判定，與時辰支同一口徑。
  *
- * 时辰支按经度校正后的真太阳时算，换日却曾只看钟表「23 点」，两者错位时排盘日差一天：
- *   · 东经 100° 钟表 23:30 → 真太阳时 22:10 亥时，却被挪到次日 → 排成次日亥时；
- *   · 东经 135° 钟表 22:30 → 真太阳时 23:30 晚子时，却留在本日 → 排成本日早子时；
- *   · 东经 80° 钟表 00:30 → 真太阳时前一日 21:50 亥时，却留在本日 → 排成本日亥时。
- * 换日口径与 lib/calendar/true-solar-time.ts 的 resolveZiweiDayOffset('next-day') 一致。
+ * 時辰支按經度校正後的真太陽時算，換日卻曾只看鐘表「23 點」，兩者錯位時排盤日差一天：
+ *   · 東經 100° 鐘表 23:30 → 真太陽時 22:10 亥時，卻被挪到次日 → 排成次日亥時；
+ *   · 東經 135° 鐘表 22:30 → 真太陽時 23:30 晚子時，卻留在本日 → 排成本日早子時；
+ *   · 東經 80° 鐘表 00:30 → 真太陽時前一日 21:50 亥時，卻留在本日 → 排成本日亥時。
+ * 換日口徑與 lib/calendar/true-solar-time.ts 的 resolveZiweiDayOffset('next-day') 一致。
  */
 import assert from 'node:assert/strict';
 import { formToBirthInfo } from '../../lib/systems/ziwei/share';
@@ -20,7 +20,7 @@ function formAt(clockHour: string, clockMinute: string, longitude: number): Birt
     clockHour,
     clockMinute,
     unknownTime: false,
-    province: longitude === 120 ? '' : '测试',
+    province: longitude === 120 ? '' : '測試',
     city: '',
     longitude,
     gender: 'male',
@@ -30,12 +30,12 @@ function formAt(clockHour: string, clockMinute: string, longitude: number): Birt
 const pick = (b: ReturnType<typeof formToBirthInfo>) => ({ year: b.year, month: b.month, day: b.day, hour: b.hour });
 
 const cases: Array<[string, string, number, { year: number; month: number; day: number; hour: number }, string]> = [
-  ['23', '30', 120, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 120° 23:30 晚子时 → 次日子时'],
-  ['0', '30', 120, { year: 2000, month: 1, day: 31, hour: 0 }, '东经 120° 00:30 早子时 → 本日子时'],
-  ['23', '30', 100, { year: 2000, month: 1, day: 31, hour: 11 }, '东经 100° 23:30（真太阳时约 21:57，含均时差）→ 本日亥时'],
-  ['22', '30', 135, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 135° 22:30（真太阳时约 23:17）→ 次日子时'],
-  ['0', '30', 80, { year: 2000, month: 1, day: 30, hour: 11 }, '东经 80° 00:30（真太阳时前一日约 21:37）→ 前一日亥时'],
-  ['23', '50', 130, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 130° 23:50（真太阳时次日约 00:17）→ 次日子时'],
+  ['23', '30', 120, { year: 2000, month: 2, day: 1, hour: 0 }, '東經 120° 23:30 晚子時 → 次日子時'],
+  ['0', '30', 120, { year: 2000, month: 1, day: 31, hour: 0 }, '東經 120° 00:30 早子時 → 本日子時'],
+  ['23', '30', 100, { year: 2000, month: 1, day: 31, hour: 11 }, '東經 100° 23:30（真太陽時約 21:57，含均時差）→ 本日亥時'],
+  ['22', '30', 135, { year: 2000, month: 2, day: 1, hour: 0 }, '東經 135° 22:30（真太陽時約 23:17）→ 次日子時'],
+  ['0', '30', 80, { year: 2000, month: 1, day: 30, hour: 11 }, '東經 80° 00:30（真太陽時前一日約 21:37）→ 前一日亥時'],
+  ['23', '50', 130, { year: 2000, month: 2, day: 1, hour: 0 }, '東經 130° 23:50（真太陽時次日約 00:17）→ 次日子時'],
 ];
 
 for (const [h, mi, lon, expected, label] of cases) {
@@ -43,6 +43,6 @@ for (const [h, mi, lon, expected, label] of cases) {
 }
 
 const unknown = formToBirthInfo({ ...formAt('23', '30', 100), unknownTime: true });
-assert.deepEqual(pick(unknown), { year: 2000, month: 1, day: 31, hour: 0 }, '时辰不详不换日');
+assert.deepEqual(pick(unknown), { year: 2000, month: 1, day: 31, hour: 0 }, '時辰不詳不換日');
 
 console.log('form true-solar day rollover regression passed');

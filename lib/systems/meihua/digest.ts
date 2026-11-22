@@ -5,7 +5,7 @@ import type { MeihuaChart } from './engine';
 import { KE_TI, MEIHUA_TOPICS, SHENG_TI, WANWU } from './text.data';
 
 /** 引擎沿用六爻常數的簡體卦名；摘要統一用繁體 */
-export const tw = (s: string) => s.replace(/兑/g, '兌').replace(/离/g, '離');
+export const tw = (s: string) => s.replace(/兌/g, '兌').replace(/離/g, '離');
 const POS = ['初', '二', '三', '四', '五', '上'];
 
 export function buildMeihuaDigest(c: MeihuaChart, topic?: string): string {

@@ -1,12 +1,12 @@
 /**
- * lib/systems/ziwei/tasks.ts —— 紫微斗数（与小六壬）的解读任务与小节定义
+ * lib/systems/ziwei/tasks.ts —— 紫微斗數（與小六壬）的解讀任務與小節定義
  *
- * 推理分工的通用部分（推理类型、UNCERTAINTY_MARK、规则文本、输出检查）在 lib/reasoning/，
- * 所有体系共用；这里只放紫微斗数特有的小节结构与用语。
+ * 推理分工的通用部分（推理類型、UNCERTAINTY_MARK、規則文本、輸出檢查）在 lib/reasoning/，
+ * 所有體系共用；這裡只放紫微斗數特有的小節結構與用語。
  *
- * 前提：本项目假设紫微斗数的规则成立，不讨论其真伪。
- * 能力边界：本仓库**做不到**的（没有工具或方法）不做；**做得到**、只是属于溯因的，
- * 可以做，但必须以 UNCERTAINTY_MARK 标明「仅供参考，模型在此类推理有能力限制」。
+ * 前提：本項目假設紫微斗數的規則成立，不討論其真偽。
+ * 能力邊界：本倉庫**做不到**的（沒有工具或方法）不做；**做得到**、只是屬於溯因的，
+ * 可以做，但必須以 UNCERTAINTY_MARK 標明「僅供參考，模型在此類推理有能力限制」。
  */
 
 import type { Palace, ZiweiChart } from '@/lib/systems/ziwei/types';
@@ -28,204 +28,204 @@ export type AiTask =
 export const TOPICS: { key: TopicKey; label: string }[] = [
   { key: 'overview', label: '命格' },
   { key: 'love', label: '感情' },
-  { key: 'career', label: '事业' },
-  { key: 'wealth', label: '财运' },
+  { key: 'career', label: '事業' },
+  { key: 'wealth', label: '財運' },
   { key: 'health', label: '健康' },
   { key: 'personality', label: '性格' },
 ];
 
-// ────────────────── 各主题的小节定义 ──────────────────
-// 每个小节只属于一种推理类型；原先混在一起的（如「三方四正 + 整体格局」）已拆开。
+// ────────────────── 各主題的小節定義 ──────────────────
+// 每個小節只屬於一種推理類型；原先混在一起的（如「三方四正 + 整體格局」）已拆開。
 
 const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] }> = {
   overview: {
-    intro: '请生成命格总览',
+    intro: '請生成命格總覽',
     sections: [
       { title: '命格定性', kind: 'abduction',
-        instruction: '综合全盘，给出命盘核心格局与命主气质的倾向性描述。' },
-      { title: '主星解读', kind: 'deduction',
-        instruction: '命宫主星（含亮度、四化）按倪海厦体系的规则所对应的特质。' },
+        instruction: '綜合全盤，給出命盤核心格局與命主氣質的傾向性描述。' },
+      { title: '主星解讀', kind: 'deduction',
+        instruction: '命宮主星（含亮度、四化）按倪海廈體系的規則所對應的特質。' },
       { title: '三方四正', kind: 'deduction',
-        instruction: '财帛、官禄、迁移三宫的星曜与四化，按规则逐条说明它们与命宫的联动。只陈述规则推出的内容，不做整体评判。' },
-      { title: '当前大限', kind: 'deduction',
-        instruction: '当前大限宫位的星曜与大限四化，按规则推出的运势方向。' },
-      { title: '优势与注意', kind: 'abduction',
-        instruction: '在上述讯号中，哪些较可能是天赋优势、哪些较可能是需要注意的功课。' },
+        instruction: '財帛、官祿、遷移三宮的星曜與四化，按規則逐條說明它們與命宮的聯動。只陳述規則推出的內容，不做整體評判。' },
+      { title: '當前大限', kind: 'deduction',
+        instruction: '當前大限宮位的星曜與大限四化，按規則推出的運勢方向。' },
+      { title: '優勢與注意', kind: 'abduction',
+        instruction: '在上述訊號中，哪些較可能是天賦優勢、哪些較可能是需要注意的功課。' },
     ],
   },
   love: {
-    intro: '请分析感情婚姻运',
+    intro: '請分析感情婚姻運',
     sections: [
       { title: '感情格局', kind: 'abduction',
-        instruction: '综合夫妻宫与相关宫位，给出感情命格的倾向性描述。' },
-      { title: '夫妻宫分析', kind: 'deduction',
-        instruction: '夫妻宫主星、亮度、四化，以及倪海厦体系对此配置的规则判断。' },
-      { title: '三方联动', kind: 'deduction',
-        instruction: '夫妻宫三方四正的星曜与四化，按规则说明对感情的影响。' },
-      { title: '当前大限感情运', kind: 'deduction',
-        instruction: '当前大限四化落入或冲照夫妻宫的情况，按规则推出的走向。只讲规则推出的象意；具体事件的推测放到溯因节。' },
-      { title: '实际建议', kind: 'abduction',
-        instruction: '基于以上象意，可供命主参考的方向。' },
+        instruction: '綜合夫妻宮與相關宮位，給出感情命格的傾向性描述。' },
+      { title: '夫妻宮分析', kind: 'deduction',
+        instruction: '夫妻宮主星、亮度、四化，以及倪海廈體系對此配置的規則判斷。' },
+      { title: '三方聯動', kind: 'deduction',
+        instruction: '夫妻宮三方四正的星曜與四化，按規則說明對感情的影響。' },
+      { title: '當前大限感情運', kind: 'deduction',
+        instruction: '當前大限四化落入或沖照夫妻宮的情況，按規則推出的走向。只講規則推出的象意；具體事件的推測放到溯因節。' },
+      { title: '實際建議', kind: 'abduction',
+        instruction: '基於以上象意，可供命主參考的方向。' },
     ],
   },
   career: {
-    intro: '请分析事业运',
+    intro: '請分析事業運',
     sections: [
-      { title: '事业格局', kind: 'abduction',
-        instruction: '综合官禄宫与相关宫位，讨论较倾向任职还是创业。' },
-      { title: '官禄宫分析', kind: 'deduction',
-        instruction: '官禄宫主星、亮度、四化，以及倪师对这种配置的规则判断。' },
-      { title: '财帛宫联动', kind: 'deduction',
-        instruction: '财帛宫与官禄宫的星曜、四化关系，按规则说明财路来源的象意。' },
-      { title: '当前大限事业运', kind: 'deduction',
-        instruction: '当前大限四化与官禄宫的关系，按规则推出的走向。只讲规则推出的象意；具体事件的推测放到溯因节。' },
-      { title: '实际建议', kind: 'abduction',
-        instruction: '基于以上象意，可供命主参考的方向与行业类型。' },
+      { title: '事業格局', kind: 'abduction',
+        instruction: '綜合官祿宮與相關宮位，討論較傾向任職還是創業。' },
+      { title: '官祿宮分析', kind: 'deduction',
+        instruction: '官祿宮主星、亮度、四化，以及倪師對這種配置的規則判斷。' },
+      { title: '財帛宮聯動', kind: 'deduction',
+        instruction: '財帛宮與官祿宮的星曜、四化關係，按規則說明財路來源的象意。' },
+      { title: '當前大限事業運', kind: 'deduction',
+        instruction: '當前大限四化與官祿宮的關係，按規則推出的走向。只講規則推出的象意；具體事件的推測放到溯因節。' },
+      { title: '實際建議', kind: 'abduction',
+        instruction: '基於以上象意，可供命主參考的方向與行業類型。' },
     ],
   },
   wealth: {
-    intro: '请分析财运',
+    intro: '請分析財運',
     sections: [
-      { title: '财运格局', kind: 'abduction',
-        instruction: '综合财帛、田宅等宫位，讨论财运较倾向主动财还是被动财。' },
-      { title: '财帛宫分析', kind: 'deduction',
-        instruction: '财帛宫主星、亮度、四化，按规则推出的财富来源与流动象意。' },
-      { title: '田宅宫（财库）', kind: 'deduction',
-        instruction: '田宅宫星曜与四化，按规则推出的积蓄与不动产象意。' },
-      { title: '当前大限财运', kind: 'deduction',
-        instruction: '当前大限四化与财帛、田宅的关系，按规则推出的走向。只讲规则推出的象意；具体事件的推测放到溯因节。' },
-      { title: '理财建议', kind: 'abduction',
-        instruction: '基于以上象意，可供命主参考的理财方向（不承诺收益、不推荐具体标的）。' },
+      { title: '財運格局', kind: 'abduction',
+        instruction: '綜合財帛、田宅等宮位，討論財運較傾向主動財還是被動財。' },
+      { title: '財帛宮分析', kind: 'deduction',
+        instruction: '財帛宮主星、亮度、四化，按規則推出的財富來源與流動象意。' },
+      { title: '田宅宮（財庫）', kind: 'deduction',
+        instruction: '田宅宮星曜與四化，按規則推出的積蓄與不動產象意。' },
+      { title: '當前大限財運', kind: 'deduction',
+        instruction: '當前大限四化與財帛、田宅的關係，按規則推出的走向。只講規則推出的象意；具體事件的推測放到溯因節。' },
+      { title: '理財建議', kind: 'abduction',
+        instruction: '基於以上象意，可供命主參考的理財方向（不承諾收益、不推薦具體標的）。' },
     ],
   },
   health: {
-    intro: '请分析健康运势',
+    intro: '請分析健康運勢',
     sections: [
-      { title: '疾厄宫主星', kind: 'deduction',
-        instruction: '疾厄宫星曜、亮度、四化，按规则对应的健康象意。' },
-      { title: '主要风险', kind: 'abduction',
-        instruction: '在全盘讯号中，哪些部位较值得留意。只谈调养方向，不下诊断。' },
-      { title: '大限健康走势', kind: 'deduction',
-        instruction: '当前大限四化与疾厄宫的关系，按规则推出的走向。' },
-      { title: '预防建议', kind: 'induction',
-        instruction: '把以上各节提到的调养方向整理成清单，不新增判断。' },
+      { title: '疾厄宮主星', kind: 'deduction',
+        instruction: '疾厄宮星曜、亮度、四化，按規則對應的健康象意。' },
+      { title: '主要風險', kind: 'abduction',
+        instruction: '在全盤訊號中，哪些部位較值得留意。只談調養方向，不下診斷。' },
+      { title: '大限健康走勢', kind: 'deduction',
+        instruction: '當前大限四化與疾厄宮的關係，按規則推出的走向。' },
+      { title: '預防建議', kind: 'induction',
+        instruction: '把以上各節提到的調養方向整理成清單，不新增判斷。' },
     ],
   },
   personality: {
-    intro: '请解析性格特质',
+    intro: '請解析性格特質',
     sections: [
-      { title: '命宫主星性格', kind: 'deduction',
-        instruction: '命宫主星（含亮度、四化）按规则对应的性格特质。' },
-      { title: '三方性格综合', kind: 'induction',
-        instruction: '把财帛、官禄、迁移三宫星曜对应的性格特质整理成共通描述，不做取舍。' },
-      { title: '人际关系模式', kind: 'induction',
-        instruction: '把交友、迁移宫星曜对应的互动特质整理成共通描述。' },
-      { title: '优势与人生课题', kind: 'abduction',
-        instruction: '在上述特质中，哪些较可能是优势、哪些较可能是人生课题。' },
+      { title: '命宮主星性格', kind: 'deduction',
+        instruction: '命宮主星（含亮度、四化）按規則對應的性格特質。' },
+      { title: '三方性格綜合', kind: 'induction',
+        instruction: '把財帛、官祿、遷移三宮星曜對應的性格特質整理成共通描述，不做取捨。' },
+      { title: '人際關係模式', kind: 'induction',
+        instruction: '把交友、遷移宮星曜對應的互動特質整理成共通描述。' },
+      { title: '優勢與人生課題', kind: 'abduction',
+        instruction: '在上述特質中，哪些較可能是優勢、哪些較可能是人生課題。' },
     ],
   },
 };
 
 const PALACE_ROLES: Record<string, string> = {
-  '命宫': '自我、性格、先天格局',
-  '兄弟宫': '兄弟关系、合伙人',
-  '夫妻宫': '感情关系、婚姻状态',
-  '子女宫': '子女缘分、下属关系',
-  '财帛宫': '财运来源、收入方式',
-  '疾厄宫': '身体健康、意外',
-  '迁移宫': '外出机遇、人际格局',
-  '交友宫': '朋友圈、贵人、小人',
-  '官禄宫': '事业成就、社会地位',
-  '田宅宫': '不动产、家庭环境',
-  '福德宫': '精神享受、内心福分',
-  '父母宫': '父母关系、文书契约',
+  '命宮': '自我、性格、先天格局',
+  '兄弟宮': '兄弟關係、合夥人',
+  '夫妻宮': '感情關係、婚姻狀態',
+  '子女宮': '子女緣分、下屬關係',
+  '財帛宮': '財運來源、收入方式',
+  '疾厄宮': '身體健康、意外',
+  '遷移宮': '外出機遇、人際格局',
+  '交友宮': '朋友圈、貴人、小人',
+  '官祿宮': '事業成就、社會地位',
+  '田宅宮': '不動產、家庭環境',
+  '福德宮': '精神享受、內心福分',
+  '父母宮': '父母關係、文書契約',
 };
 
 function palaceSections(): SectionSpec[] {
   return [
-    { title: '宫位定性', kind: 'abduction',
-      instruction: '综合本宫与三方四正，给出这个宫位的倾向性判断。' },
-    { title: '主星解读', kind: 'deduction',
-      instruction: '本宫主星（含亮度、四化）按倪海厦体系的规则所对应的象意；空宫则按规则借对宫说明。' },
-    { title: '三方四正联动', kind: 'deduction',
-      instruction: '本宫三方四正的星曜与四化，按规则说明对本宫的影响。' },
-    { title: '实际建议', kind: 'abduction',
-      instruction: '基于本宫象意，可供命主参考的方向。' },
+    { title: '宮位定性', kind: 'abduction',
+      instruction: '綜合本宮與三方四正，給出這個宮位的傾向性判斷。' },
+    { title: '主星解讀', kind: 'deduction',
+      instruction: '本宮主星（含亮度、四化）按倪海廈體系的規則所對應的象意；空宮則按規則借對宮說明。' },
+    { title: '三方四正聯動', kind: 'deduction',
+      instruction: '本宮三方四正的星曜與四化，按規則說明對本宮的影響。' },
+    { title: '實際建議', kind: 'abduction',
+      instruction: '基於本宮象意，可供命主參考的方向。' },
   ];
 }
 
 function sihuaSections(siHua: string, viewLabel: string): SectionSpec[] {
   return [
-    { title: `化${siHua}基本含义`, kind: 'deduction',
-      instruction: `化${siHua}在倪海厦体系中的规则含义，以及这颗星化${siHua}的特殊含义。` },
-    { title: '落宫影响', kind: 'deduction',
-      instruction: '按规则说明落宫所主管的领域受到何种影响。' },
-    { title: '三方四正飞化路径', kind: 'deduction',
-      instruction: '按规则说明对落宫三方四正（对宫、两个三合宫）的联动影响。' },
-    { title: '当前运势影响', kind: 'deduction',
-      instruction: `在${viewLabel}的时间维度下，按规则推出的象意。只讲规则推出的象意；具体事件的推测放到溯因节。` },
-    { title: '实际建议', kind: 'abduction',
-      instruction: '基于以上象意，可供命主参考的方向。' },
+    { title: `化${siHua}基本含義`, kind: 'deduction',
+      instruction: `化${siHua}在倪海廈體系中的規則含義，以及這顆星化${siHua}的特殊含義。` },
+    { title: '落宮影響', kind: 'deduction',
+      instruction: '按規則說明落宮所主管的領域受到何種影響。' },
+    { title: '三方四正飛化路徑', kind: 'deduction',
+      instruction: '按規則說明對落宮三方四正（對宮、兩個三合宮）的聯動影響。' },
+    { title: '當前運勢影響', kind: 'deduction',
+      instruction: `在${viewLabel}的時間維度下，按規則推出的象意。只講規則推出的象意；具體事件的推測放到溯因節。` },
+    { title: '實際建議', kind: 'abduction',
+      instruction: '基於以上象意，可供命主參考的方向。' },
   ];
 }
 
 /**
- * 流年解读的小节。
- * 依据是命盘摘要里的【流年】与【当前大限四化落宫】，都由引擎确定性算出。
+ * 流年解讀的小節。
+ * 依據是命盤摘要裡的【流年】與【當前大限四化落宮】，都由引擎確定性算出。
  */
 export const LIUNIAN_SECTIONS: SectionSpec[] = [
-  { title: '流年命宫', kind: 'deduction',
-    instruction: '流年命宫落在本命哪一宫、该宫星曜，按规则推出的年度主题象意。' },
-  { title: '流年四化落宫', kind: 'deduction',
-    instruction: '流年禄权科忌各落本命哪一宫，按规则逐条说明影响的领域。' },
-  { title: '与当前大限叠加', kind: 'deduction',
-    instruction: '流年四化与当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲规则推出的象意；具体事件的推测放到溯因节。' },
-  { title: '需留意的领域', kind: 'abduction',
-    instruction: '在上述讯号中，今年哪些领域较值得留意。' },
-  { title: '实际建议', kind: 'abduction',
-    instruction: '基于以上象意，可供命主参考的方向。' },
+  { title: '流年命宮', kind: 'deduction',
+    instruction: '流年命宮落在本命哪一宮、該宮星曜，按規則推出的年度主題象意。' },
+  { title: '流年四化落宮', kind: 'deduction',
+    instruction: '流年祿權科忌各落本命哪一宮，按規則逐條說明影響的領域。' },
+  { title: '與當前大限疊加', kind: 'deduction',
+    instruction: '流年四化與當前大限四化同落或沖照的宮位，按規則說明疊加的象意。只講規則推出的象意；具體事件的推測放到溯因節。' },
+  { title: '需留意的領域', kind: 'abduction',
+    instruction: '在上述訊號中，今年哪些領域較值得留意。' },
+  { title: '實際建議', kind: 'abduction',
+    instruction: '基於以上象意，可供命主參考的方向。' },
 ];
 
-/** 流月解读（Claude Skill 用）。依据：斗君、流月命宫、流月四化，均由 lib/systems/ziwei/liuyue.ts 确定性算出 */
+/** 流月解讀（Claude Skill 用）。依據：斗君、流月命宮、流月四化，均由 lib/systems/ziwei/liuyue.ts 確定性算出 */
 export const LIUYUE_SECTIONS: SectionSpec[] = [
-  { title: '流月命宫', kind: 'deduction',
-    instruction: '流月命宫落在本命哪一宫、该宫星曜，按规则推出的当月主题象意。' },
-  { title: '流月四化落宫', kind: 'deduction',
-    instruction: '流月禄权科忌各落本命哪一宫，按规则逐条说明影响的领域。' },
-  { title: '与流年大限叠加', kind: 'deduction',
-    instruction: '流月四化与流年、当前大限四化同落或冲照的宫位，按规则说明叠加的象意。只讲规则推出的象意；具体事件的推测放到溯因节。' },
-  { title: '需留意的领域', kind: 'abduction',
-    instruction: '在上述讯号中，这个月哪些领域较值得留意。' },
+  { title: '流月命宮', kind: 'deduction',
+    instruction: '流月命宮落在本命哪一宮、該宮星曜，按規則推出的當月主題象意。' },
+  { title: '流月四化落宮', kind: 'deduction',
+    instruction: '流月祿權科忌各落本命哪一宮，按規則逐條說明影響的領域。' },
+  { title: '與流年大限疊加', kind: 'deduction',
+    instruction: '流月四化與流年、當前大限四化同落或沖照的宮位，按規則說明疊加的象意。只講規則推出的象意；具體事件的推測放到溯因節。' },
+  { title: '需留意的領域', kind: 'abduction',
+    instruction: '在上述訊號中，這個月哪些領域較值得留意。' },
 ];
 
-/** 流日解读（Claude Skill 用） */
+/** 流日解讀（Claude Skill 用） */
 export const LIURI_SECTIONS: SectionSpec[] = [
-  { title: '流日命宫', kind: 'deduction',
-    instruction: '流日命宫落在本命哪一宫（倪师口径为主，若与通行口径不同须一并说明），该宫星曜的象意。' },
-  { title: '流日四化落宫', kind: 'deduction',
-    instruction: '流日（日干）禄权科忌各落本命哪一宫，按规则说明影响的领域。只讲规则推出的象意；具体事件的推测放到溯因节。' },
-  { title: '需留意的领域', kind: 'abduction',
-    instruction: '在上述讯号中，当天哪些领域较值得留意。' },
+  { title: '流日命宮', kind: 'deduction',
+    instruction: '流日命宮落在本命哪一宮（倪師口徑為主，若與通行口徑不同須一併說明），該宮星曜的象意。' },
+  { title: '流日四化落宮', kind: 'deduction',
+    instruction: '流日（日干）祿權科忌各落本命哪一宮，按規則說明影響的領域。只講規則推出的象意；具體事件的推測放到溯因節。' },
+  { title: '需留意的領域', kind: 'abduction',
+    instruction: '在上述訊號中，當天哪些領域較值得留意。' },
 ];
 
-/** 小六壬（Claude Skill 用）。课象由 lib/systems/ziwei/xiaoliuren.ts 起出，含义只用倪师原话 */
+/** 小六壬（Claude Skill 用）。課象由 lib/systems/ziwei/xiaoliuren.ts 起出，含義只用倪師原話 */
 export const XIAOLIUREN_SECTIONS: SectionSpec[] = [
-  { title: '起课', kind: 'deduction',
-    instruction: '起课所用的农历月、日、时辰，以及月、日、时各落哪一课，最终课象是什么。' },
-  { title: '课象', kind: 'deduction',
-    instruction: '引用工具给出的倪师原话说明这一课的含义，附出处；延伸说明放到溯因节。' },
-  { title: '应期', kind: 'deduction',
-    instruction: '倪师原话里有时间说法的（大安约一周、小吉约两周、速喜马上）照引；倪师没讲的，说明没有原话依据。' },
-  { title: '对所问之事的含义', kind: 'abduction',
-    instruction: '这一课放到命主所问的那件具体事情上最可能对应什么情况、另有哪几种可能；倪师没讲应期的课也可在此推测。' },
+  { title: '起課', kind: 'deduction',
+    instruction: '起課所用的農曆月、日、時辰，以及月、日、時各落哪一課，最終課象是什麼。' },
+  { title: '課象', kind: 'deduction',
+    instruction: '引用工具給出的倪師原話說明這一課的含義，附出處；延伸說明放到溯因節。' },
+  { title: '應期', kind: 'deduction',
+    instruction: '倪師原話裡有時間說法的（大安約一週、小吉約兩週、速喜馬上）照引；倪師沒講的，說明沒有原話依據。' },
+  { title: '對所問之事的含義', kind: 'abduction',
+    instruction: '這一課放到命主所問的那件具體事情上最可能對應什麼情況、另有哪幾種可能；倪師沒講應期的課也可在此推測。' },
 ];
 
-// ────────────────── prompt 组装 ──────────────────
+// ────────────────── prompt 組裝 ──────────────────
 
 const VIEW_LABEL: Record<string, string> = { mingpan: '本命', daxian: '大限', liunian: '流年' };
 
 export interface BuiltTask {
-  /** 发给 AI 的 user 消息 */
+  /** 發給 AI 的 user 消息 */
   prompt: string;
   sections: SectionSpec[];
 }
@@ -234,16 +234,16 @@ function starDesc(palace: Palace): string {
   const major = palace.stars.filter(s => s.type === 'major');
   return major.length
     ? major.map(s => `${s.name}${s.siHua ? '化' + s.siHua : ''}`).join('、')
-    : '空宫（借对宫）';
+    : '空宮（借對宮）';
 }
 
-/** 由任务 + 命盘组出 prompt；命盘里找不到对应宫位/星曜时返回 null */
+/** 由任務 + 命盤組出 prompt；命盤裡找不到對應宮位/星曜時返回 null */
 export function buildTask(task: AiTask, chart: ZiweiChart): BuiltTask | null {
   if (task.type === 'topic') {
     const def = TOPIC_SECTIONS[task.key];
     return {
       sections: def.sections,
-      prompt: `${def.intro}，按以下结构输出：\n\n${renderSections(def.sections)}`,
+      prompt: `${def.intro}，按以下結構輸出：\n\n${renderSections(def.sections)}`,
     };
   }
 
@@ -255,7 +255,7 @@ export function buildTask(task: AiTask, chart: ZiweiChart): BuiltTask | null {
     return {
       sections,
       prompt:
-        `请分析【${palace.name}】（主管：${role}），该宫主星为${starDesc(palace)}，按以下结构输出：\n\n` +
+        `請分析【${palace.name}】（主管：${role}），該宮主星為${starDesc(palace)}，按以下結構輸出：\n\n` +
         renderSections(sections),
     };
   }
@@ -267,48 +267,48 @@ export function buildTask(task: AiTask, chart: ZiweiChart): BuiltTask | null {
   return {
     sections,
     prompt:
-      `请分析【${viewLabel}${task.starName}化${task.siHua}】的飞化影响，` +
-      `${task.starName}落在【${palace.name}】，按以下结构输出：\n\n${renderSections(sections)}`,
+      `請分析【${viewLabel}${task.starName}化${task.siHua}】的飛化影響，` +
+      `${task.starName}落在【${palace.name}】，按以下結構輸出：\n\n${renderSections(sections)}`,
   };
 }
 
-// ────────────────── 系统提示里的推理分工规则 ──────────────────
+// ────────────────── 系統提示裡的推理分工規則 ──────────────────
 
-/** 紫微斗数的规则用语 */
+/** 紫微斗數的規則用語 */
 export const ZIWEI_VOCABULARY: RulesVocabulary = {
-  systemName: '紫微斗数',
-  chartNoun: '命盘',
-  signalNoun: '盘面',
+  systemName: '紫微斗數',
+  chartNoun: '命盤',
+  signalNoun: '盤面',
   subject: '命主',
-  abductionExamples: '在多种讯号之间取舍定性、给现实建议、推测具体事件、从命主经历反推原因、判断时辰',
+  abductionExamples: '在多種訊號之間取捨定性、給現實建議、推測具體事件、從命主經歷反推原因、判斷時辰',
 };
 
-/** 小六壬的规则用语 */
+/** 小六壬的規則用語 */
 export const XIAOLIUREN_VOCABULARY: RulesVocabulary = {
   systemName: '小六壬',
-  chartNoun: '课',
-  signalNoun: '课象',
-  subject: '问事者',
-  abductionExamples: '把课象对应到所问之事的具体情况、推测倪师没讲应期的课多久应验',
+  chartNoun: '課',
+  signalNoun: '課象',
+  subject: '問事者',
+  abductionExamples: '把課象對應到所問之事的具體情況、推測倪師沒講應期的課多久應驗',
 };
 
 export const REASONING_RULES = buildReasoningRules(ZIWEI_VOCABULARY);
 
-/** 时辰不详时附在命盘摘要里的声明 */
+/** 時辰不詳時附在命盤摘要裡的聲明 */
 export const HOUR_UNKNOWN_NOTICE = [
-  '【重要：出生时辰不详】',
-  '命主没有提供出生时辰，本盘是按「子时」这个假设排出的；命宫、身宫、各宫位置与大限都依赖这个假设。',
-  `回答开头第一行必须写：「${ASSUMPTION_MARK}出生时辰不详，本盘按子时假设排出，以下所有内容都建立在这个假设上。」`,
-  `若命主要求推断真正的出生时辰，那是溯因，按溯因规则以「${UNCERTAINTY_MARK}」标注。`,
+  '【重要：出生時辰不詳】',
+  '命主沒有提供出生時辰，本盤是按「子時」這個假設排出的；命宮、身宮、各宮位置與大限都依賴這個假設。',
+  `回答開頭第一行必須寫：「${ASSUMPTION_MARK}出生時辰不詳，本盤按子時假設排出，以下所有內容都建立在這個假設上。」`,
+  `若命主要求推斷真正的出生時辰，那是溯因，按溯因規則以「${UNCERTAINTY_MARK}」標注。`,
 ].join('\n');
 
-// ────────────────── 小节集合（Skill 的 sections / check 命令与体系注册表共用） ──────────────────
+// ────────────────── 小節集合（Skill 的 sections / check 命令與體系注冊表共用） ──────────────────
 
 export const ZIWEI_SECTION_KEYS = [
   ...TOPICS.map(t => t.key), 'palace', 'sihua', 'liunian', 'liuyue', 'liuri',
 ] as const;
 
-/** 不依赖具体命盘的小节集合；sihua 需指定是哪一化（默认「忌」） */
+/** 不依賴具體命盤的小節集合；sihua 需指定是哪一化（默認「忌」） */
 export function ziweiSectionSet(key: string, siHua = '忌'): SectionSpec[] | null {
   if (key in TOPIC_SECTIONS) return TOPIC_SECTIONS[key as TopicKey].sections;
   switch (key) {

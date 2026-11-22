@@ -1,8 +1,8 @@
 /**
- * lib/systems/index.ts —— 已登记的推演体系
+ * lib/systems/index.ts —— 已登記的推演體系
  *
- * 新增体系时：在这里加一项，并补上对应的确定性工具与回归测试。
- * 规划见 docs/ROADMAP-multi-system.md。
+ * 新增體系時：在這裡加一項，並補上對應的確定性工具與迴歸測試。
+ * 規劃見 docs/ROADMAP-multi-system.md。
  */
 import type { DivinationSystem } from '@/lib/reasoning/registry';
 import type { SectionSpec } from '@/lib/reasoning/kinds';
@@ -39,47 +39,47 @@ import {
 
 const ziwei: DivinationSystem = {
   id: 'ziwei',
-  name: '紫微斗数（倪海厦《天纪》体系）',
+  name: '紫微斗數（倪海廈《天紀》體系）',
   scope: '命',
   vocabulary: ZIWEI_VOCABULARY,
   sectionSets: Object.fromEntries(ZIWEI_SECTION_KEYS.map(k => [k, ziweiSectionSet(k)!])),
   abductionHotspots: [
-    { question: '从已发生的事反推原因', why: '同一件事可对应多个宫位与四化，选哪一个是「最佳解释」' },
-    { question: '定盘、校正时辰', why: '从性格与经历反推出生时辰，候选时辰都可能说得通' },
-    { question: '两人合不合', why: '两张盘的讯号要取舍加总，规则本身不给综合评判' },
-    { question: '二选一的人生决定', why: '象意不直接决定现实选择' },
-    { question: '推测具体事件与时间', why: '规则只给象意与时段，落到哪一件事是跳跃' },
-    { question: '命主说不准、要求修正解读', why: '为贴合反馈而改解读本身就是溯因' },
-    { question: '命格定性、优势与课题、实际建议', why: '吉凶讯号并存时，以哪一面为主规则不决定' },
+    { question: '從已發生的事反推原因', why: '同一件事可對應多個宮位與四化，選哪一個是「最佳解釋」' },
+    { question: '定盤、校正時辰', why: '從性格與經歷反推出生時辰，候選時辰都可能說得通' },
+    { question: '兩人合不合', why: '兩張盤的訊號要取捨加總，規則本身不給綜合評判' },
+    { question: '二選一的人生決定', why: '象意不直接決定現實選擇' },
+    { question: '推測具體事件與時間', why: '規則只給象意與時段，落到哪一件事是跳躍' },
+    { question: '命主說不準、要求修正解讀', why: '為貼合反饋而改解讀本身就是溯因' },
+    { question: '命格定性、優勢與課題、實際建議', why: '吉凶訊號並存時，以哪一面為主規則不決定' },
   ],
   outOfScope: [
-    '用紫微盘推国运、地区运势（引擎只为个人出生时间设计；国运世局改用 taiyi、huangji）',
-    '姓名学、风水布局、六神、测字（仓库没有对应工具）',
-    '合盘分数、配对指数（仓库没有计分方法）',
-    '语料里查不到的倪师原话、古籍里没有的说法',
+    '用紫微盤推國運、地區運勢（引擎只為個人出生時間設計；國運世局改用 taiyi、huangji）',
+    '姓名學、風水布局、六神、測字（倉庫沒有對應工具）',
+    '合盤分數、配對指數（倉庫沒有計分方法）',
+    '語料裡查不到的倪師原話、古籍裡沒有的說法',
   ],
 };
 
 const xiaoliuren: DivinationSystem = {
   id: 'xiaoliuren',
-  name: '小六壬（倪海厦起法）',
+  name: '小六壬（倪海廈起法）',
   scope: '事',
   vocabulary: XIAOLIUREN_VOCABULARY,
   sectionSets: { xiaoliuren: XIAOLIUREN_SECTIONS },
   abductionHotspots: [
-    { question: '课象对应到所问之事的具体情况', why: '例如赤口的「第三者」是谁，原话没有指定' },
-    { question: '倪师没讲应期的课多久应验', why: '只有大安、小吉、速喜有原话应期' },
+    { question: '課象對應到所問之事的具體情況', why: '例如赤口的「第三者」是誰，原話沒有指定' },
+    { question: '倪師沒講應期的課多久應驗', why: '只有大安、小吉、速喜有原話應期' },
   ],
   outOfScope: [
-    '同一个念起第二次课',
-    '一次问多件事',
-    '推荐具体投资标的、承诺收益',
+    '同一個念起第二次課',
+    '一次問多件事',
+    '推薦具體投資標的、承諾收益',
   ],
 };
 
 const bazi: DivinationSystem = {
   id: 'bazi',
-  name: '八字（子平术）',
+  name: '八字（子平術）',
   scope: '命',
   vocabulary: BAZI_VOCABULARY,
   sectionSets: BAZI_SECTION_SETS,
@@ -89,7 +89,7 @@ const bazi: DivinationSystem = {
 
 const liuyao: DivinationSystem = {
   id: 'liuyao',
-  name: '六爻（纳甲筮法，附《周易》经文）',
+  name: '六爻（納甲筮法，附《周易》經文）',
   scope: '事',
   vocabulary: LIUYAO_VOCABULARY,
   sectionSets: LIUYAO_SECTION_SETS,
@@ -99,7 +99,7 @@ const liuyao: DivinationSystem = {
 
 const wuyun: DivinationSystem = {
   id: 'wuyun',
-  name: '五运六气（《素问》运气学说）',
+  name: '五運六氣（《素問》運氣學說）',
   scope: '年',
   vocabulary: WUYUN_VOCABULARY,
   sectionSets: WUYUN_SECTION_SETS,
@@ -109,8 +109,8 @@ const wuyun: DivinationSystem = {
 
 const zeri: DivinationSystem = {
   id: 'zeri',
-  name: '择日（通书，《协纪辨方书》体系）',
-  scope: '时',
+  name: '擇日（通書，《協紀辨方書》體系）',
+  scope: '時',
   vocabulary: ZERI_VOCABULARY,
   sectionSets: ZERI_SECTION_SETS,
   abductionHotspots: ZERI_ABDUCTION_HOTSPOTS,
@@ -167,14 +167,14 @@ const qimen: DivinationSystem = {
   outOfScope: QIMEN_OUT_OF_SCOPE,
 };
 
-/** 按用途排列：命理、问事占卜、择日、世局年景；各体系地位相同 */
+/** 按用途排列：命理、問事占卜、擇日、世局年景；各體系地位相同 */
 export const SYSTEMS: DivinationSystem[] = [bazi, ziwei, liuyao, meihua, liuren, qimen, xiaoliuren, zeri, taiyi, huangji, wuyun];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);
 }
 
-/** 按小节集合的代号找出所属体系与小节（代号在所有体系间唯一） */
+/** 按小節集合的代號找出所屬體系與小節（代號在所有體系間唯一） */
 export function findSectionSet(key: string): { system: DivinationSystem; sections: SectionSpec[] } | null {
   for (const system of SYSTEMS) {
     const sections = system.sectionSets[key];

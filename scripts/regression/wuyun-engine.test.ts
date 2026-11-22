@@ -1,12 +1,12 @@
 /**
- * 五运六气引擎回归（lib/systems/wuyun/）
+ * 五運六氣引擎迴歸（lib/systems/wuyun/）
  *
- *   1) 六十甲子逐年对照《素问·六元正纪大论》的排列（司天 / 中运 / 在泉，按六组手写，不经程序推导）；
- *   2) 运气同化：天符十二年、岁会八年、太乙天符四年、同天符六年、同岁会六年，逐年列名比对；
- *      运气关系五类各十二年；
- *   3) 主运初运太少（壬甲丙乙癸太角、丁己辛戊庚少角）、客运五步、主气客气六步、客主加临；
- *   4) 日期：运气年始于大寒、六步交于春分小满大暑秋分小雪 —— 以 Meeus 太阳黄经独立求节气，1901–2098 每年比对；
- *      大寒至立春之间的日期须带「⚠ 假设」。
+ *   1) 六十甲子逐年對照《素問·六元正紀大論》的排列（司天 / 中運 / 在泉，按六組手寫，不經程序推導）；
+ *   2) 運氣同化：天符十二年、歲會八年、太乙天符四年、同天符六年、同歲會六年，逐年列名比對；
+ *      運氣關係五類各十二年；
+ *   3) 主運初運太少（壬甲丙乙癸太角、丁己辛戊庚少角）、客運五步、主氣客氣六步、客主加臨；
+ *   4) 日期：運氣年始於大寒、六步交於春分小滿大暑秋分小雪 —— 以 Meeus 太陽黃經獨立求節氣，1901–2098 每年比對；
+ *      大寒至立春之間的日期須帶「⚠ 假設」。
  */
 import assert from 'node:assert/strict';
 import { computeWuyun, locateDate } from '../../lib/systems/wuyun/engine';
@@ -18,14 +18,14 @@ const ganZhiYear = (gz: string) => {
   throw new Error(gz);
 };
 
-// ── 1) 《素问·六元正纪大论》六组（上：司天；中：中运；下：在泉） ──────
+// ── 1) 《素問·六元正紀大論》六組（上：司天；中：中運；下：在泉） ──────
 const LIUYUAN: [string, string, [string, string][]][] = [
-  ['太阳寒水', '太阴湿土', [['壬辰壬戌', '太角'], ['戊辰戊戌', '太徵'], ['甲辰甲戌', '太宫'], ['庚辰庚戌', '太商'], ['丙辰丙戌', '太羽']]],
-  ['阳明燥金', '少阴君火', [['丁卯丁酉', '少角'], ['癸卯癸酉', '少徵'], ['己卯己酉', '少宫'], ['乙卯乙酉', '少商'], ['辛卯辛酉', '少羽']]],
-  ['少阳相火', '厥阴风木', [['壬寅壬申', '太角'], ['戊寅戊申', '太徵'], ['甲寅甲申', '太宫'], ['庚寅庚申', '太商'], ['丙寅丙申', '太羽']]],
-  ['太阴湿土', '太阳寒水', [['丁丑丁未', '少角'], ['癸丑癸未', '少徵'], ['己丑己未', '少宫'], ['乙丑乙未', '少商'], ['辛丑辛未', '少羽']]],
-  ['少阴君火', '阳明燥金', [['壬子壬午', '太角'], ['戊子戊午', '太徵'], ['甲子甲午', '太宫'], ['庚子庚午', '太商'], ['丙子丙午', '太羽']]],
-  ['厥阴风木', '少阳相火', [['丁巳丁亥', '少角'], ['癸巳癸亥', '少徵'], ['己巳己亥', '少宫'], ['乙巳乙亥', '少商'], ['辛巳辛亥', '少羽']]],
+  ['太陽寒水', '太陰溼土', [['壬辰壬戌', '太角'], ['戊辰戊戌', '太徵'], ['甲辰甲戌', '太宮'], ['庚辰庚戌', '太商'], ['丙辰丙戌', '太羽']]],
+  ['陽明燥金', '少陰君火', [['丁卯丁酉', '少角'], ['癸卯癸酉', '少徵'], ['己卯己酉', '少宮'], ['乙卯乙酉', '少商'], ['辛卯辛酉', '少羽']]],
+  ['少陽相火', '厥陰風木', [['壬寅壬申', '太角'], ['戊寅戊申', '太徵'], ['甲寅甲申', '太宮'], ['庚寅庚申', '太商'], ['丙寅丙申', '太羽']]],
+  ['太陰溼土', '太陽寒水', [['丁丑丁未', '少角'], ['癸丑癸未', '少徵'], ['己丑己未', '少宮'], ['乙丑乙未', '少商'], ['辛丑辛未', '少羽']]],
+  ['少陰君火', '陽明燥金', [['壬子壬午', '太角'], ['戊子戊午', '太徵'], ['甲子甲午', '太宮'], ['庚子庚午', '太商'], ['丙子丙午', '太羽']]],
+  ['厥陰風木', '少陽相火', [['丁巳丁亥', '少角'], ['癸巳癸亥', '少徵'], ['己巳己亥', '少宮'], ['乙巳乙亥', '少商'], ['辛巳辛亥', '少羽']]],
 ];
 let checked = 0;
 for (const [siTian, zaiQuan, rows] of LIUYUAN) {
@@ -34,62 +34,62 @@ for (const [siTian, zaiQuan, rows] of LIUYUAN) {
       const c = computeWuyun(ganZhiYear(gz));
       assert.equal(c.siTian.name, siTian, `${gz} 司天`);
       assert.equal(c.zaiQuan.name, zaiQuan, `${gz} 在泉`);
-      assert.ok(c.suiYun.label.endsWith(`（${yun}）`), `${gz} 中运应为${yun}：${c.suiYun.label}`);
-      assert.equal(c.keYun[0].label, yun, `${gz} 客运初运即中运`);
+      assert.ok(c.suiYun.label.endsWith(`（${yun}）`), `${gz} 中運應為${yun}：${c.suiYun.label}`);
+      assert.equal(c.keYun[0].label, yun, `${gz} 客運初運即中運`);
       checked++;
     }
   }
 }
 assert.equal(checked, 60);
 
-// ── 2) 运气同化与运气关系 ──────────────────────────────────
+// ── 2) 運氣同化與運氣關係 ──────────────────────────────────
 const all = Array.from({ length: 60 }, (_, i) => computeWuyun(1984 + i));
 const named = (prefix: string) => all.filter(c => c.tongHua.some(t => t.startsWith(prefix))).map(c => c.ganZhi).sort();
 const sorted = (s: string) => (s.match(/../g) ?? []).sort();
 assert.deepEqual(named('太乙天符'), sorted('戊午乙酉己丑己未'));
 const tianFu = all.filter(c => c.tongHua.some(t => t.startsWith('天符') || t.startsWith('太乙天符'))).map(c => c.ganZhi).sort();
 assert.deepEqual(tianFu, sorted('己丑己未戊寅戊申戊子戊午乙卯乙酉丁巳丁亥丙辰丙戌'), '天符十二年');
-const suiHui = all.filter(c => c.tongHua.some(t => t.startsWith('岁会') || t.startsWith('太乙天符'))).map(c => c.ganZhi).sort();
-assert.deepEqual(suiHui, sorted('丁卯戊午甲辰甲戌己丑己未乙酉丙子'), '岁会八年');
+const suiHui = all.filter(c => c.tongHua.some(t => t.startsWith('歲會') || t.startsWith('太乙天符'))).map(c => c.ganZhi).sort();
+assert.deepEqual(suiHui, sorted('丁卯戊午甲辰甲戌己丑己未乙酉丙子'), '歲會八年');
 assert.deepEqual(named('同天符'), sorted('甲辰甲戌庚子庚午壬寅壬申'), '同天符六年');
-assert.deepEqual(named('同岁会'), sorted('辛丑辛未癸卯癸酉癸巳癸亥'), '同岁会六年');
-for (const k of ['天符', '顺化', '天刑', '小逆', '不和'] as const) {
-  assert.equal(all.filter(c => c.relation.kind === k).length, 12, `运气关系「${k}」应为十二年`);
+assert.deepEqual(named('同歲會'), sorted('辛丑辛未癸卯癸酉癸巳癸亥'), '同歲會六年');
+for (const k of ['天符', '順化', '天刑', '小逆', '不和'] as const) {
+  assert.equal(all.filter(c => c.relation.kind === k).length, 12, `運氣關係「${k}」應為十二年`);
 }
-assert.equal(computeWuyun(1984).relation.kind, '顺化', '甲子：少阴君火生土运');
-assert.equal(computeWuyun(1990).relation.kind, '天刑', '庚午：少阴君火克金运');
+assert.equal(computeWuyun(1984).relation.kind, '順化', '甲子：少陰君火生土運');
+assert.equal(computeWuyun(1990).relation.kind, '天刑', '庚午：少陰君火克金運');
 
-// ── 3) 主运、客运、六气 ────────────────────────────────────
+// ── 3) 主運、客運、六氣 ────────────────────────────────────
 for (const c of all) {
   const taiJiao = '壬甲丙乙癸'.includes(c.stem);
-  assert.equal(c.zhuYun[0].label, taiJiao ? '太角' : '少角', `${c.ganZhi} 主运初运`);
-  assert.deepEqual(c.zhuYun.map(s => s.yin), ['角', '徵', '宫', '商', '羽']);
-  // 太少相生：相邻两步太少交替（主运五步与客运五步皆然）
+  assert.equal(c.zhuYun[0].label, taiJiao ? '太角' : '少角', `${c.ganZhi} 主運初運`);
+  assert.deepEqual(c.zhuYun.map(s => s.yin), ['角', '徵', '宮', '商', '羽']);
+  // 太少相生：相鄰兩步太少交替（主運五步與客運五步皆然）
   for (const steps of [c.zhuYun, c.keYun]) for (let k = 1; k < 5; k++) assert.notEqual(steps[k].tai, steps[k - 1].tai);
-  // 主运中与岁运同音的一步，太少与岁运一致
-  assert.equal(c.zhuYun.find(s => s.wuXing === c.suiYun.wuXing)!.tai, c.suiYun.excess, `${c.ganZhi} 主运与中运同步`);
-  assert.deepEqual(c.steps.map(s => s.zhu.short), ['厥阴', '少阴', '少阳', '太阴', '阳明', '太阳']);
+  // 主運中與歲運同音的一步，太少與歲運一致
+  assert.equal(c.zhuYun.find(s => s.wuXing === c.suiYun.wuXing)!.tai, c.suiYun.excess, `${c.ganZhi} 主運與中運同步`);
+  assert.deepEqual(c.steps.map(s => s.zhu.short), ['厥陰', '少陰', '少陽', '太陰', '陽明', '太陽']);
   assert.equal(c.steps[2].ke.name, c.siTian.name);
   assert.equal(c.steps[5].ke.name, c.zaiQuan.name);
 }
 const jiaZi = computeWuyun(1984);
-assert.deepEqual(jiaZi.steps.map(s => s.ke.short), ['太阳', '厥阴', '少阴', '太阴', '少阳', '阳明'], '子午年客气六步');
-assert.deepEqual(jiaZi.keYun.map(s => s.label), ['太宫', '少商', '太羽', '少角', '太徵'], '甲年客运');
-assert.deepEqual(jiaZi.zhuYun.map(s => s.label), ['太角', '少徵', '太宫', '少商', '太羽'], '甲年主运');
-assert.ok(jiaZi.steps[2].relation.startsWith('君位臣'), '子年三之气：客少阴加主少阳');
-assert.equal(computeWuyun(1986).steps[2].relation, '客主同气', '丙寅：少阳司天，三之气客少阳加主少阳');
-const chenYear = computeWuyun(1988); // 戊辰：太阳司天，二之气客阳明加主少阴（火克金：主胜逆）
-assert.equal(chenYear.steps[1].ke.short, '阳明');
-assert.ok(chenYear.steps[1].relation.startsWith('主胜客：逆'));
-const siYear = computeWuyun(1989); // 己巳：厥阴司天，初之气客阳明加主厥阴（金克木：客胜从）
-assert.equal(siYear.steps[0].ke.short, '阳明');
-assert.ok(siYear.steps[0].relation.startsWith('客胜主：从'));
-// 臣位君：客少阳加于主少阴，出现在卯酉年的二之气
-const maoYear = computeWuyun(1987); // 丁卯：阳明司天，客气 太阴 少阳 阳明 太阳 厥阴 少阴
-assert.deepEqual(maoYear.steps.map(s => s.ke.short), ['太阴', '少阳', '阳明', '太阳', '厥阴', '少阴']);
+assert.deepEqual(jiaZi.steps.map(s => s.ke.short), ['太陽', '厥陰', '少陰', '太陰', '少陽', '陽明'], '子午年客氣六步');
+assert.deepEqual(jiaZi.keYun.map(s => s.label), ['太宮', '少商', '太羽', '少角', '太徵'], '甲年客運');
+assert.deepEqual(jiaZi.zhuYun.map(s => s.label), ['太角', '少徵', '太宮', '少商', '太羽'], '甲年主運');
+assert.ok(jiaZi.steps[2].relation.startsWith('君位臣'), '子年三之氣：客少陰加主少陽');
+assert.equal(computeWuyun(1986).steps[2].relation, '客主同氣', '丙寅：少陽司天，三之氣客少陽加主少陽');
+const chenYear = computeWuyun(1988); // 戊辰：太陽司天，二之氣客陽明加主少陰（火克金：主勝逆）
+assert.equal(chenYear.steps[1].ke.short, '陽明');
+assert.ok(chenYear.steps[1].relation.startsWith('主勝客：逆'));
+const siYear = computeWuyun(1989); // 己巳：厥陰司天，初之氣客陽明加主厥陰（金克木：客勝從）
+assert.equal(siYear.steps[0].ke.short, '陽明');
+assert.ok(siYear.steps[0].relation.startsWith('客勝主：從'));
+// 臣位君：客少陽加於主少陰，出現在卯酉年的二之氣
+const maoYear = computeWuyun(1987); // 丁卯：陽明司天，客氣 太陰 少陽 陽明 太陽 厥陰 少陰
+assert.deepEqual(maoYear.steps.map(s => s.ke.short), ['太陰', '少陽', '陽明', '太陽', '厥陰', '少陰']);
 assert.ok(maoYear.steps[1].relation.startsWith('臣位君：逆'));
 
-// ── 4) 日期：大寒与六步交司以 Meeus 独立求 ─────────────────────
+// ── 4) 日期：大寒與六步交司以 Meeus 獨立求 ─────────────────────
 let maxDiff = 0;
 const minutesOf = (s: string) => {
   const [d, t] = s.split(' ');
@@ -111,17 +111,17 @@ for (let y = 1901; y <= 2098; y++) {
   assert.equal(c.zhuYun[0].start, c.span.start);
   assert.equal(c.zhuYun[4].end, c.span.end);
 }
-assert.ok(maxDiff <= 20, `六步交司时刻与 Meeus 独立推算最大相差 ${maxDiff} 分钟（应 ≤ 20）`);
+assert.ok(maxDiff <= 20, `六步交司時刻與 Meeus 獨立推算最大相差 ${maxDiff} 分鐘（應 ≤ 20）`);
 
 const early = locateDate(2026, 1, 25);
-assert.equal(early.chart.ganZhi, '丙午', '2026-01-25 已过大寒，属丙午运气年');
-assert.ok(early.chart.assumptions[0].startsWith('⚠ 假设：'));
+assert.equal(early.chart.ganZhi, '丙午', '2026-01-25 已過大寒，屬丙午運氣年');
+assert.ok(early.chart.assumptions[0].startsWith('⚠ 假設：'));
 const before = locateDate(2026, 1, 15);
-assert.equal(before.chart.ganZhi, '乙巳', '大寒前仍属上一运气年');
+assert.equal(before.chart.ganZhi, '乙巳', '大寒前仍屬上一運氣年');
 assert.equal(before.chart.assumptions.length, 0);
 const nov = locateDate(2026, 11, 21);
-assert.deepEqual([nov.yunStep, nov.qiStep], [4, 4], '2026-11-21：五运（太羽）、五之气（小雪前）');
-assert.equal(locateDate(2026, 11, 22, 16, 0).qiStep, 5, '小雪 15:23 之后为终之气');
+assert.deepEqual([nov.yunStep, nov.qiStep], [4, 4], '2026-11-21：五運（太羽）、五之氣（小雪前）');
+assert.equal(locateDate(2026, 11, 22, 16, 0).qiStep, 5, '小雪 15:23 之後為終之氣');
 assert.throws(() => computeWuyun(2099), /1901–2098/);
 
-console.log(`✓ 五运六气引擎：六十甲子与《六元正纪大论》排列一致；同化与运气关系年数正确；主客运气与客主加临正确；1901–2098 六步交司与 Meeus 推算最大相差 ${maxDiff} 分钟`);
+console.log(`✓ 五運六氣引擎：六十甲子與《六元正紀大論》排列一致；同化與運氣關係年數正確；主客運氣與客主加臨正確；1901–2098 六步交司與 Meeus 推算最大相差 ${maxDiff} 分鐘`);

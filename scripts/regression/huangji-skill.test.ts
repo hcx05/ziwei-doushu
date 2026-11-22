@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const skillDir = path.join(root, '.claude/skills/huangji');
 const bundle = path.join(skillDir, 'scripts/huangji.mjs');
-const MARK = '⚠ 仅供参考（模型在此类推理有能力限制）：';
+const MARK = '⚠ 僅供參考（模型在此類推理有能力限制）：';
 
 const tmpDir = mkdtempSync(path.join(tmpdir(), 'huangji-skill-'));
 execFileSync(process.execPath, [path.join(root, 'scripts/skill/build.mjs')], { env: { ...process.env, SKILL_BUNDLE_OUT_DIR: tmpDir }, stdio: 'pipe' });
@@ -41,7 +41,7 @@ assert.equal(run('year', '-99999').status, 2);
 assert.equal(run('search').status, 2);
 
 const sec = run('sections');
-for (const must of ['**【元會運世】** ［演绎］', '**【經世原文】** ［演绎］', '**【時勢解讀】** ［溯因］']) assert.ok(sec.stdout.includes(must), `sections 缺少「${must}」`);
+for (const must of ['**【元會運世】** ［演繹］', '**【經世原文】** ［演繹］', '**【時勢解讀】** ［溯因］']) assert.ok(sec.stdout.includes(must), `sections 缺少「${must}」`);
 const rules = run('rules').stdout;
 assert.ok(rules.includes(MARK) && rules.includes('書中沒有對後世年份的預言'));
 const draft = run('sections', '--skeleton').stdout.split('\n').filter(l => !l.startsWith('## ') && !l.startsWith('溯因節')).join('\n').replaceAll(MARK, '');

@@ -11,7 +11,7 @@
  *   rules     推理分工規則全文
  *   check     檢查解讀草稿（--fix 自動補標記）
  */
-import { Solar } from 'lunar-javascript';
+import { Solar } from '../../lib/calendar/lunar';
 import { BRANCHES, type Branch } from '../../lib/systems/bazi/constants';
 import { JIANG_NAME, QI_JIANG, buildLiuren } from '../../lib/systems/liuren/engine';
 import { buildLiurenDigest } from '../../lib/systems/liuren/digest';

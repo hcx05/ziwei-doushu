@@ -28,7 +28,7 @@ export const trigramByNumber = (n: number): Trigram => TRIGRAMS.find(t => t.xian
 
 /** 後天八卦方位（「離南坎北，震東兌西」，四隅依後天圖） */
 export const DIRECTION_TRIGRAM: Record<string, TrigramName> = {
-  南: '离', 北: '坎', 東: '震', 西: '兑', 東南: '巽', 西北: '乾', 東北: '艮', 西南: '坤',
+  南: '離', 北: '坎', 東: '震', 西: '兌', 東南: '巽', 西北: '乾', 東北: '艮', 西南: '坤',
 };
 
 export interface MeihuaCast {
@@ -108,8 +108,8 @@ export function seasonOfMonth(b: Branch): Season {
   return '四季';
 }
 
-const WANG: Record<Season, TrigramName[]> = { 春: ['震', '巽'], 夏: ['离'], 秋: ['乾', '兑'], 冬: ['坎'], 四季: ['坤', '艮'] };
-const SHUAI: Record<Season, TrigramName[]> = { 春: ['坤', '艮'], 夏: ['乾', '兑'], 秋: ['震', '巽'], 冬: ['离'], 四季: ['坎'] };
+const WANG: Record<Season, TrigramName[]> = { 春: ['震', '巽'], 夏: ['離'], 秋: ['乾', '兌'], 冬: ['坎'], 四季: ['坤', '艮'] };
+const SHUAI: Record<Season, TrigramName[]> = { 春: ['坤', '艮'], 夏: ['乾', '兌'], 秋: ['震', '巽'], 冬: ['離'], 四季: ['坎'] };
 
 /** 卦氣：書中只分旺、衰兩種，其餘記為「平」 */
 export function trigramQi(t: TrigramName, s: Season): Qi {
@@ -145,7 +145,7 @@ export interface MeihuaChart {
   hu: { upper: Trigram; lower: Trigram; from: '本卦' | '變卦'; hexagram: ZhouyiHexagram };
   ti: { trigram: Trigram; position: '上卦' | '下卦'; qi: Qi };
   pieces: Piece[];
-  /** 「體党多而體勢盛，用黨多則體勢衰」：互、變之中與體同五行者、與用同五行者 */
+  /** 「體黨多而體勢盛，用黨多則體勢衰」：互、變之中與體同五行者、與用同五行者 */
   party: { ti: TrigramName[]; yong: TrigramName[] };
   season: { monthBranch: Branch; season: Season };
   movingText: string;

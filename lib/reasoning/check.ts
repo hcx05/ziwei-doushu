@@ -1,16 +1,16 @@
 /**
- * lib/reasoning/check.ts —— 输出端的确定性检查：溯因节有没有标注
+ * lib/reasoning/check.ts —— 輸出端的確定性檢查：溯因節有沒有標注
  *
- * 标注原本只靠提示词要求；模型漏写时没有任何补救。这里提供：
- *   · checkMarks()：找出缺标记的溯因节（小节按需取用，不要求逐节都写），以及正文超过 ABDUCTION_MAX_LINES 行的溯因节；
- *   · enforceMarks()：在缺标记的溯因节第一行前补上 UNCERTAINTY_MARK（不改动其他内容）。
+ * 標注原本只靠提示詞要求；模型漏寫時沒有任何補救。這裡提供：
+ *   · checkMarks()：找出缺標記的溯因節（小節按需取用，不要求逐節都寫），以及正文超過 ABDUCTION_MAX_LINES 行的溯因節；
+ *   · enforceMarks()：在缺標記的溯因節第一行前補上 UNCERTAINTY_MARK（不改動其他內容）。
  *
- * 只认 **【标题】** 这种小节标题（标题后允许跟「（仅供参考）」等说明）。
- * 溯因节的第一个非空行可以先是一行 ASSUMPTION_MARK 假设声明，之后的第一行必须以 UNCERTAINTY_MARK 开头。
+ * 只認 **【標題】** 這種小節標題（標題後允許跟「（僅供參考）」等說明）。
+ * 溯因節的第一個非空行可以先是一行 ASSUMPTION_MARK 假設聲明，之後的第一行必須以 UNCERTAINTY_MARK 開頭。
  */
-import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, UNCERTAINTY_MARK, UNCERTAINTY_MARK_TRAD, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, UNCERTAINTY_MARK, UNCERTAINTY_MARK_SIMP, type SectionSpec } from './kinds';
 
-const isMarked = (line: string) => line.trim().startsWith(UNCERTAINTY_MARK) || line.trim().startsWith(UNCERTAINTY_MARK_TRAD);
+const isMarked = (line: string) => line.trim().startsWith(UNCERTAINTY_MARK) || line.trim().startsWith(UNCERTAINTY_MARK_SIMP);
 
 const HEADING = /^\s*\*\*【([^】]+)】\*\*.*$/;
 
@@ -27,7 +27,7 @@ function splitBlocks(lines: string[]): Block[] {
   return blocks;
 }
 
-/** 溯因节正文里应以标记开头的那一行（跳过空行与假设声明）；找不到返回 -1 */
+/** 溯因節正文裡應以標記開頭的那一行（跳過空行與假設聲明）；找不到返回 -1 */
 function firstClaimLine(lines: string[], b: Block): number {
   for (let i = b.bodyStart; i < b.bodyEnd; i++) {
     const t = lines[i].trim();
@@ -38,9 +38,9 @@ function firstClaimLine(lines: string[], b: Block): number {
 }
 
 export interface MarkReport {
-  /** 是溯因节，但第一行没有以 UNCERTAINTY_MARK 开头 */
+  /** 是溯因節，但第一行沒有以 UNCERTAINTY_MARK 開頭 */
   unmarkedAbduction: string[];
-  /** 溯因节正文（不计空行、假设声明行）超过 ABDUCTION_MAX_LINES 行：多半又贴了讯号清单或推导过程 */
+  /** 溯因節正文（不計空行、假設聲明行）超過 ABDUCTION_MAX_LINES 行：多半又貼了訊號清單或推導過程 */
   tooLongAbduction: string[];
   ok: boolean;
 }
@@ -56,13 +56,13 @@ export function checkMarks(text: string, sections: SectionSpec[]): MarkReport {
     if (!b || s.kind !== 'abduction') continue;
     const i = firstClaimLine(lines, b);
     if (i < 0 || !isMarked(lines[i])) unmarkedAbduction.push(s.title);
-    const body = lines.slice(b.bodyStart, b.bodyEnd).map(l => l.trim()).filter(l => l && !l.startsWith(ASSUMPTION_MARK) && !/^依据|^依據|^```/.test(l));
+    const body = lines.slice(b.bodyStart, b.bodyEnd).map(l => l.trim()).filter(l => l && !l.startsWith(ASSUMPTION_MARK) && !/^依據|^依據|^```/.test(l));
     if (body.length > ABDUCTION_MAX_LINES) tooLongAbduction.push(s.title);
   }
   return { unmarkedAbduction, tooLongAbduction, ok: !unmarkedAbduction.length && !tooLongAbduction.length };
 }
 
-/** 给缺标记的溯因节补上标记；已标记的、非溯因的小节原样保留 */
+/** 給缺標記的溯因節補上標記；已標記的、非溯因的小節原樣保留 */
 export function enforceMarks(text: string, sections: SectionSpec[]): string {
   const abductive = new Set(sections.filter(s => s.kind === 'abduction').map(s => s.title));
   const lines = text.split('\n');
@@ -71,7 +71,7 @@ export function enforceMarks(text: string, sections: SectionSpec[]): string {
     if (!abductive.has(b.title)) continue;
     const i = firstClaimLine(lines, b);
     if (i >= 0 && isMarked(lines[i])) continue;
-    if (i < 0) inserts.push({ at: b.bodyStart, line: `${UNCERTAINTY_MARK}本节属于溯因推理。` });
+    if (i < 0) inserts.push({ at: b.bodyStart, line: `${UNCERTAINTY_MARK}本節屬於溯因推理。` });
     else inserts.push({ at: i });
   }
   for (const ins of inserts.reverse()) {

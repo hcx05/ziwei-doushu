@@ -4,7 +4,7 @@
  * 依據《六壬大全》（四庫全書本）卷一「入手法」：
  *   · 十干寄宮：「甲課寅兮乙課辰，丙戊課巳……丁己課未，庚申，辛戌，壬亥，癸課原來丑宮坐」；
  *   · 月將加占時成天地盤；月將以中氣換（卷二：雨水後登明亥為正月將、春分後河魁戌……）；
- *   · 四課：干上、干陰、支上、支陰；
+ *   · 四課：幹上、干陰、支上、支陰；
  *   · 九宗門取三傳：一賊克（重審、元首）、二比用（知一）、三涉害、四遙克（蒿矢、彈射）、五昴星、
  *     六別責、七八專、八伏吟、九返吟（含井欄）。
  *   · 中傳取初傳之上神，末傳取中傳之上神（伏吟、返吟無克、昴星、別責、八專另有取法）。
@@ -23,13 +23,13 @@ export const bi = (b: Branch) => BRANCHES.indexOf(b);
 export const JI_GONG: Record<Stem, Branch> = {
   甲: '寅', 乙: '辰', 丙: '巳', 丁: '未', 戊: '巳', 己: '未', 庚: '申', 辛: '戌', 壬: '亥', 癸: '丑',
 };
-/** 寄宮 → 寄在此宮的干（涉害數「路逢多克」時連干一併數） */
+/** 寄宮 → 寄在此宮的干（涉害數「路逢多克」時連幹一併數） */
 export const STEMS_AT: Record<Branch, Stem[]> = Object.fromEntries(
   BRANCHES.map(b => [b, STEMS.filter(s => JI_GONG[s] === b)]),
 ) as Record<Branch, Stem[]>;
 
 const STEM_HE: Record<Stem, Stem> = { 甲: '己', 己: '甲', 乙: '庚', 庚: '乙', 丙: '辛', 辛: '丙', 丁: '壬', 壬: '丁', 戊: '癸', 癸: '戊' };
-/** 三合：申子辰、亥卯未、寅午戌、巳酉丑；「支前三合」取本支在三合中的下一位 */
+/** 三合：申子辰、亥卯未、寅午戌、巳酉丑；「支前三合」取本支在三閤中的下一位 */
 const TRINE_NEXT = (b: Branch): Branch => B(bi(b) + 4);
 /** 驛馬：申子辰馬在寅、寅午戌在申、巳酉丑在亥、亥卯未在巳 */
 export const yiMa = (b: Branch): Branch => B([2, 11, 8, 5][bi(b) % 4]);
@@ -45,10 +45,10 @@ const ZHONG = new Set<Branch>(['子', '午', '卯', '酉']);
 
 /** 中氣 → 月將（卷二：雨水後登明亥為正月將……） */
 export const QI_JIANG: Record<string, Branch> = {
-  雨水: '亥', 春分: '戌', 谷雨: '酉', 小满: '申', 夏至: '未', 大暑: '午', 处暑: '巳', 秋分: '辰', 霜降: '卯', 小雪: '寅', 冬至: '丑', 大寒: '子',
+  雨水: '亥', 春分: '戌', 穀雨: '酉', 小滿: '申', 夏至: '未', 大暑: '午', 處暑: '巳', 秋分: '辰', 霜降: '卯', 小雪: '寅', 冬至: '丑', 大寒: '子',
 };
 export const JIANG_NAME: Record<Branch, string> = {
-  亥: '登明', 戌: '河魁', 酉: '從魁', 申: '傳送', 未: '小吉', 午: '勝光', 巳: '太乙', 辰: '天罡', 卯: '太衝', 寅: '功曹', 丑: '大吉', 子: '神后',
+  亥: '登明', 戌: '河魁', 酉: '從魁', 申: '傳送', 未: '小吉', 午: '勝光', 巳: '太乙', 辰: '天罡', 卯: '太衝', 寅: '功曹', 丑: '大吉', 子: '神後',
 };
 
 export interface Ke {
@@ -133,7 +133,7 @@ export function sanChuan(stem: Stem, branch: Branch, plate: Plate): SanChuanResu
   if (off === 0) {
     const hasKe = ke[0].ke !== null;
     const first = hasKe || yang ? ganShang : zhiShang;
-    steps.push(hasKe ? `伏吟有克還為用：干上${ganShang}與日干相克` : `伏吟無克，${yang ? '剛日取干上' : '柔日取支上'}神${first}`);
+    steps.push(hasKe ? `伏吟有克還為用：幹上${ganShang}與日干相克` : `伏吟無克，${yang ? '剛日取幹上' : '柔日取支上'}神${first}`);
     let mid: Branch;
     if (XING[first] === first) {
       mid = first === ganShang ? zhiShang : ganShang;
@@ -188,14 +188,14 @@ export function sanChuan(stem: Stem, branch: Branch, plate: Plate): SanChuanResu
         if (top.length > 1) {
           steps.push(`受克相等（${max} 次），「孟深仲淺季當休」：先取臨孟，次取臨仲`);
           top = pickMengZhong(top);
-          if (top.length > 1) steps.push(`仍相等，「復等柔辰剛日宜」：${yang ? '剛日取干上' : '柔日取支上'}神`);
+          if (top.length > 1) steps.push(`仍相等，「復等柔辰剛日宜」：${yang ? '剛日取幹上' : '柔日取支上'}神`);
         }
         first = fuDeng(top);
         steps.push(`取${first}為初傳`);
         method = '涉害';
         const simple = fuDeng(pickMengZhong(cand));
         if (simple !== first) {
-          alternative = { rule: '另一派涉害不數深淺，直接先取臨孟、次取臨仲、再按剛柔日取干上或支上', chuan: follow(simple) };
+          alternative = { rule: '另一派涉害不數深淺，直接先取臨孟、次取臨仲、再按剛柔日取幹上或支上', chuan: follow(simple) };
         }
       }
     }
@@ -206,13 +206,13 @@ export function sanChuan(stem: Stem, branch: Branch, plate: Plate): SanChuanResu
   // ── 以下四課皆無克 ──
   if (isFanYin) {
     const ma = yiMa(branch);
-    steps.push(`返吟無克，井欄：初傳取日支${branch}之驛馬${ma}，中傳支上神${zhiShang}，末傳干上神${ganShang}`);
+    steps.push(`返吟無克，井欄：初傳取日支${branch}之驛馬${ma}，中傳支上神${zhiShang}，末傳幹上神${ganShang}`);
     return { method: '返吟', detail: '井欄', chuan: [ma, zhiShang, ganShang], steps };
   }
   if (isBaZhuan) {
     const first = yang ? B(bi(ganShang) + 2) : B(bi(ke[3].upper) - 2);
-    steps.push(yang ? `八專無克，陽日自干上神${ganShang}順數三位（連本位）得${first}` : `八專無克，陰日自第四課上神${ke[3].upper}逆數三位（連本位）得${first}`);
-    steps.push(`中末皆取干上神${ganShang}`);
+    steps.push(yang ? `八專無克，陽日自幹上神${ganShang}順數三位（連本位）得${first}` : `八專無克，陰日自第四課上神${ke[3].upper}逆數三位（連本位）得${first}`);
+    steps.push(`中末皆取幹上神${ganShang}`);
     return { method: '八專', detail: '', chuan: [first, ganShang, ganShang], steps };
   }
 
@@ -240,17 +240,17 @@ export function sanChuan(stem: Stem, branch: Branch, plate: Plate): SanChuanResu
   if (distinct === 4) {
     if (yang) {
       const first = plate.up('酉');
-      steps.push(`無遙無克，昴星（虎視）：剛日仰視，取地盤酉上神${first}；中傳支上${zhiShang}，末傳干上${ganShang}`);
+      steps.push(`無遙無克，昴星（虎視）：剛日仰視，取地盤酉上神${first}；中傳支上${zhiShang}，末傳幹上${ganShang}`);
       return { method: '昴星', detail: '虎視', chuan: [first, zhiShang, ganShang], steps };
     }
     const first = plate.at('酉');
-    steps.push(`無遙無克，昴星（冬蛇掩目）：柔日俯視，取天盤酉所臨之地${first}；中傳干上${ganShang}，末傳支上${zhiShang}`);
+    steps.push(`無遙無克，昴星（冬蛇掩目）：柔日俯視，取天盤酉所臨之地${first}；中傳幹上${ganShang}，末傳支上${zhiShang}`);
     return { method: '昴星', detail: '冬蛇掩目', chuan: [first, ganShang, zhiShang], steps };
   }
   const first = yang ? plate.up(JI_GONG[STEM_HE[stem]]) : TRINE_NEXT(branch);
   steps.push(yang
-    ? `四課不全、無遙無克，別責：剛日取干合（${STEM_HE[stem]}，寄${JI_GONG[STEM_HE[stem]]}）上神${first}；中末皆干上神${ganShang}`
-    : `四課不全、無遙無克，別責：柔日取支前三合${first}；中末皆干上神${ganShang}`);
+    ? `四課不全、無遙無克，別責：剛日取干合（${STEM_HE[stem]}，寄${JI_GONG[STEM_HE[stem]]}）上神${first}；中末皆幹上神${ganShang}`
+    : `四課不全、無遙無克，別責：柔日取支前三合${first}；中末皆幹上神${ganShang}`);
   return { method: '別責', detail: '', chuan: [first, ganShang, ganShang], steps };
 }
 

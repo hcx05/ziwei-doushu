@@ -4,7 +4,7 @@
  *   1) 卷三「陽局天目地目計神主客大小將立成」七十二局，逐局比對 太乙宮、天目、主算、客目、客算、計神
  *      （fixture 由 scripts/data/parse-taiyi-licheng.py 從原文取出）；原文與算法不符處只允許
  *      docs/taiyi-collation.md 記錄的兩處（局三十九、局五十主算，均差十）；
- *   2) 卷二「假令太乙在九宫大義為天目……計得十六」與卷六四個戰例的 主客算、大將、參將；
+ *   2) 卷二「假令太乙在九宮大義為天目……計得十六」與卷六四個戰例的 主客算、大將、參將；
  *   3) 開元十二年甲子（724）：積年 1,937,281、太歲甲子、五福「在遼東十一年」（卷五）、
  *      大遊「上元甲寅太乙在七宮」且甲寅至開元十二年 371 年（卷五）；
  *   4) 太歲與一般年干支（儒略日以外的獨立推算）逐年一致；陽局週期 72 年、紀 60 年。
@@ -78,7 +78,7 @@ for (let y = -3000; y <= 3000; y += 7) {
   const astro = y < 0 ? y + 1 : y;
   const t = computeTaiyiYear(y);
   assert.equal(t.taiSui, ganZhiOf(astro - 4), `${y} 太歲`);
-  if (y + 72 !== 0 && (y < 0) === (y + 72 < 0)) assert.equal(computeTaiyiYear(y + 72).ju, t.ju, '陽局七十二年一周');
+  if (y + 72 !== 0 && (y < 0) === (y + 72 < 0)) assert.equal(computeTaiyiYear(y + 72).ju, t.ju, '陽局七十二年一週');
   assert.ok(t.ju >= 1 && t.ju <= 72 && t.ji >= 1 && t.ji <= 6);
 }
 assert.equal(computeTaiyiYear(-1).jiNian + 1, computeTaiyiYear(1).jiNian, '公元前一年與公元一年相鄰（無公元 0 年）');

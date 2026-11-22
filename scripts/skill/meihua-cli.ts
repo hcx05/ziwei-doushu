@@ -12,7 +12,7 @@
  *   rules     推理分工規則全文
  *   check     檢查解讀草稿（--fix 自動補標記）
  */
-import { Solar } from 'lunar-javascript';
+import { Solar } from '../../lib/calendar/lunar';
 import { BRANCHES, type Branch } from '../../lib/systems/bazi/constants';
 import type { TrigramName } from '../../lib/systems/liuyao/constants';
 import type { CastMoment } from '../../lib/systems/liuyao/engine';
@@ -28,9 +28,9 @@ import { clockBranch, fail, parseArgs, parseMoment, runCheck, str, type Args } f
 
 /** 繁簡卦名、方位 → 引擎用的卦名 */
 function trigramArg(s: string): TrigramName {
-  const n = s.trim().replace(/兌/g, '兑').replace(/離/g, '离');
-  if (['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'].includes(n)) return n as TrigramName;
-  const dir = s.trim().replace(/方$/, '').replace(/东/g, '東');
+  const n = s.trim().replace(/兌/g, '兌').replace(/離/g, '離');
+  if (['乾', '兌', '離', '震', '巽', '坎', '艮', '坤'].includes(n)) return n as TrigramName;
+  const dir = s.trim().replace(/方$/, '').replace(/東/g, '東');
   const hit = DIRECTION_TRIGRAM[dir];
   if (hit) return hit;
   fail(`無法識別「${s}」：應為卦名（乾兌離震巽坎艮坤）或方位（南、北、東、西、東南、西北、東北、西南）`);

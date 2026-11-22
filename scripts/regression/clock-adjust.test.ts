@@ -1,8 +1,8 @@
 /**
- * 回归：出生钟表时间平移（lib/calendar/clock-adjust.ts）与海外时区的真太阳时（true-solar-time.ts 的 utcOffsetMinutes）。
+ * 迴歸：出生鐘表時間平移（lib/calendar/clock-adjust.ts）與海外時區的真太陽時（true-solar-time.ts 的 utcOffsetMinutes）。
  *
- *   · 平移方向：标准时间 = 钟表读数 −（当年实际偏移 − 标准偏移）；跨日不改（给 null）。
- *   · 国内不传 utcOffsetMinutes 与传 480 逐日结果一致；海外按出生地时区的中央经线做经度修正。
+ *   · 平移方向：標準時間 = 鐘表讀數 −（當年實際偏移 − 標準偏移）；跨日不改（給 null）。
+ *   · 國內不傳 utcOffsetMinutes 與傳 480 逐日結果一致；海外按出生地時區的中央經線做經度修正。
  */
 import { clockToStandardDelta, formatClock, shiftClock } from '../../lib/calendar/clock-adjust';
 import { calculateTrueSolarTime } from '../../lib/calendar/true-solar-time';
@@ -14,20 +14,20 @@ function ok(name: string, cond: boolean) {
 }
 const eq = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
-ok('中国大陆夏令时（+9:00 对 +8:00）→ 减 60', clockToStandardDelta(540, 480) === -60);
-ok('美东夏令时（-4:00 对 -5:00）→ 减 60', clockToStandardDelta(-240, -300) === -60);
-ok('马来西亚 1982 年前（+7:30 对 +8:00）→ 加 30', clockToStandardDelta(450, 480) === 30);
+ok('中國大陸夏令時（+9:00 對 +8:00）→ 減 60', clockToStandardDelta(540, 480) === -60);
+ok('美東夏令時（-4:00 對 -5:00）→ 減 60', clockToStandardDelta(-240, -300) === -60);
+ok('馬來西亞 1982 年前（+7:30 對 +8:00）→ 加 30', clockToStandardDelta(450, 480) === 30);
 
-ok('14:30 减 60 → 13:30', eq(shiftClock({ clockHour: '14', clockMinute: '30' }, -60), { clockHour: '13', clockMinute: '30' }));
-ok('1:05 减 60 → 0:05', eq(shiftClock({ clockHour: '1', clockMinute: '5' }, -60), { clockHour: '0', clockMinute: '5' }));
-ok('0:30 减 60 跨到前一天 → null', shiftClock({ clockHour: '0', clockMinute: '30' }, -60) === null);
+ok('14:30 減 60 → 13:30', eq(shiftClock({ clockHour: '14', clockMinute: '30' }, -60), { clockHour: '13', clockMinute: '30' }));
+ok('1:05 減 60 → 0:05', eq(shiftClock({ clockHour: '1', clockMinute: '5' }, -60), { clockHour: '0', clockMinute: '5' }));
+ok('0:30 減 60 跨到前一天 → null', shiftClock({ clockHour: '0', clockMinute: '30' }, -60) === null);
 ok('8:15 加 30 → 8:45', eq(shiftClock({ clockHour: '8', clockMinute: '15' }, 30), { clockHour: '8', clockMinute: '45' }));
-ok('23:45 加 30 跨到后一天 → null', shiftClock({ clockHour: '23', clockMinute: '45' }, 30) === null);
-ok('时没填 → null', shiftClock({ clockHour: '', clockMinute: '0' }, -60) === null);
-ok('平移 0 分钟 → null', shiftClock({ clockHour: '9', clockMinute: '0' }, 0) === null);
-ok('formatClock 补零', formatClock({ clockHour: '7', clockMinute: '5' }) === '07:05');
+ok('23:45 加 30 跨到後一天 → null', shiftClock({ clockHour: '23', clockMinute: '45' }, 30) === null);
+ok('時沒填 → null', shiftClock({ clockHour: '', clockMinute: '0' }, -60) === null);
+ok('平移 0 分鐘 → null', shiftClock({ clockHour: '9', clockMinute: '0' }, 0) === null);
+ok('formatClock 補零', formatClock({ clockHour: '7', clockMinute: '5' }) === '07:05');
 
-// 国内：不传偏移 = 传 480，逐日抽查结果完全一致
+// 國內：不傳偏移 = 傳 480，逐日抽查結果完全一致
 let same = true;
 for (let m = 1; m <= 12; m++) {
   for (const d of [1, 15, 28]) {
@@ -35,11 +35,11 @@ for (let m = 1; m <= 12; m++) {
     if (!eq(calculateTrueSolarTime(base), calculateTrueSolarTime({ ...base, utcOffsetMinutes: 480 }))) same = false;
   }
 }
-ok('国内不传 utcOffsetMinutes 与传 480 结果一致', same);
+ok('國內不傳 utcOffsetMinutes 與傳 480 結果一致', same);
 
-// 海外：纽约（经度 -74.0，美东标准 -5:00，中央经线 -75°）→ 经度修正 (-74 − (-75)) × 4 = +4 分钟
+// 海外：紐約（經度 -74.0，美東標準 -5:00，中央經線 -75°）→ 經度修正 (-74 − (-75)) × 4 = +4 分鐘
 const ny = calculateTrueSolarTime({ year: 1995, month: 1, day: 15, clockHour: 14, clockMinute: 0, longitude: -74, utcOffsetMinutes: -300 });
-ok('纽约经度修正 +4 分钟', Math.abs(ny.longitudeCorrectionMinutes - 4) < 1e-9);
+ok('紐約經度修正 +4 分鐘', Math.abs(ny.longitudeCorrectionMinutes - 4) < 1e-9);
 
-if (fails) { console.error(`\n✗ 钟表时间平移回归 ${fails} 项未过`); process.exit(1); }
-console.log('\n✓ 钟表时间平移回归全部通过');
+if (fails) { console.error(`\n✗ 鐘表時間平移回歸 ${fails} 項未過`); process.exit(1); }
+console.log('\n✓ 鐘表時間平移回歸全部通過');

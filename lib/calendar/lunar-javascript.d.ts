@@ -1,6 +1,6 @@
 declare module 'lunar-javascript' {
   class Lunar {
-    /** month 为负表示闰月（如 -5 = 闰五月） */
+    /** month 為負表示閏月（如 -5 = 閏五月） */
     static fromYmd(year: number, month: number, day: number): Lunar;
     getYear(): number;
     getMonth(): number;  // negative = leap month
@@ -13,19 +13,19 @@ declare module 'lunar-javascript' {
     getDayZhi(): string;
     getEightChar(): EightChar;
     getPrevJie(wholeDay?: boolean): JieQi;
-    // ── 梅花、六壬（2026-11-21 补：lib/systems/meihua、lib/systems/liuren 用） ──
-    /** 以立春换年的年支（getYearZhi 以春节换年） */
+    // ── 梅花、六壬（2026-11-21 補：lib/systems/meihua、lib/systems/liuren 用） ──
+    /** 以立春換年的年支（getYearZhi 以春節換年） */
     getYearZhiByLiChun(): string;
-    /** 上一个「气」（中气：雨水、春分……大寒）；六壬月将用 */
+    /** 上一個「氣」（中氣：雨水、春分……大寒）；六壬月將用 */
     getPrevQi(wholeDay?: boolean): JieQi;
     /** 上一個節或氣（二十四節氣都算）；奇門用 */
     getPrevJieQi(wholeDay?: boolean): JieQi;
     getNextJie(wholeDay?: boolean): JieQi;
-    /** 换算成公历(2026-08-05 补声明:lib/systems/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
+    /** 換算成公曆(2026-08-05 補聲明:lib/systems/ziwei/share.ts 早在用，只是從前靠 as any 繞過) */
     getSolar(): Solar;
-    // ── 择日 / 五运六气（2026-11-21 补：lib/systems/zeri、lib/systems/wuyun 用） ──
+    // ── 擇日 / 五運六氣（2026-11-21 補：lib/systems/zeri、lib/systems/wuyun 用） ──
     getYearInGanZhiByLiChun(): string;
-    /** 按「节」所在日换月（交节当日即用新月），通书口径 */
+    /** 按「節」所在日換月（交節當日即用新月），通書口徑 */
     getMonthInGanZhi(): string;
     getMonthInGanZhiExact(): string;
     getDayInGanZhi(): string;
@@ -51,10 +51,10 @@ declare module 'lunar-javascript' {
     getPengZuGan(): string;
     getPengZuZhi(): string;
     getDayNineStar(): { toString(): string };
-    /** 当日若为十二节之一则返回节名，否则空字符串 */
+    /** 當日若為十二節之一則返回節名，否則空字符串 */
     getJie(): string;
     getTimes(): LunarTime[];
-    /** 本农历年附近的节气表；当年为中文名，前后一年的为拼音大写键（如 DA_HAN） */
+    /** 本農曆年附近的節氣表；當年為中文名，前後一年的為拼音大寫鍵（如 DA_HAN） */
     getJieQiTable(): Record<string, Solar>;
   }
 
@@ -81,7 +81,7 @@ declare module 'lunar-javascript' {
     getDay(): number;
     getHour(): number;
     getMinute(): number;
-    /** 本时刻减去另一时刻的分钟数 */
+    /** 本時刻減去另一時刻的分鐘數 */
     subtractMinute(other: Solar): number;
     toYmdHms(): string;
     toYmd(): string;
@@ -90,21 +90,21 @@ declare module 'lunar-javascript' {
     getJulianDay(): number;
   }
 
-  /** 节气（2026-11-21 补：八字月柱边界用） */
+  /** 節氣（2026-11-21 補：八字月柱邊界用） */
   class JieQi {
     getName(): string;
     getSolar(): Solar;
   }
 
-  /** 八字（2026-11-21 补：lib/systems/bazi 用） */
+  /** 八字（2026-11-21 補：lib/systems/bazi 用） */
   class EightChar {
-    /** 1 = 晚子时日柱算次日；2 = 晚子时日柱算当天（时柱仍按次日日干起） */
+    /** 1 = 晚子時日柱算次日；2 = 晚子時日柱算當天（時柱仍按次日日干起） */
     setSect(sect: 1 | 2): void;
     getYear(): string;
     getMonth(): string;
     getDay(): string;
     getTime(): string;
-    /** gender：1 男、0 女；sect：2 = 按分钟数精确计算起运 */
+    /** gender：1 男、0 女；sect：2 = 按分鐘數精確計算起運 */
     getYun(gender: 0 | 1, sect?: 1 | 2): Yun;
   }
 
@@ -129,15 +129,15 @@ declare module 'lunar-javascript' {
 
   const LunarUtil: {
     NAYIN: Record<string, string>;
-    /** 通书宜忌用语全表 */
+    /** 通書宜忌用語全表 */
     YI_JI: string[];
     getDayYi(monthGanZhi: string, dayGanZhi: string): string[];
     getDayJi(monthGanZhi: string, dayGanZhi: string): string[];
   };
 
-  /** 农历月信息(2026-06-10 补:闰月大小月边界 clamp 用) */
+  /** 農曆月信息(2026-06-10 補:閏月大小月邊界 clamp 用) */
   class LunarMonth {
-    /** month 为负表示闰月(如 -5 = 闰五月);查无此月返回 null */
+    /** month 為負表示閏月(如 -5 = 閏五月);查無此月返回 null */
     static fromYm(year: number, month: number): LunarMonth | null;
     getDayCount(): number;
   }

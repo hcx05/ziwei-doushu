@@ -1,34 +1,34 @@
-name: 程序问题 / Bug report
-description: 代码跑不起来、报错、页面显示异常
+name: 程序問題 / Bug report
+description: 代碼跑不起來、報錯、頁面顯示異常
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        本仓库不含网站界面与 `/api/*` 接口，只有各体系引擎与 Claude Skill。
+        本倉庫不含網站界面與 `/api/*` 接口，只有各體系引擎與 Claude Skill。
   - type: textarea
     id: steps
     attributes:
-      label: 复现步骤
+      label: 復現步驟
       placeholder: |
         1. node .claude/skills/<skill>/scripts/<工具>.mjs ……
-        2. 输出中哪一项不对 ……
+        2. 輸出中哪一項不對 ……
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: 期望结果
+      label: 期望結果
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: 实际结果（报错信息、截图）
+      label: 實際結果（報錯信息、截圖）
     validations:
       required: true
   - type: input
     id: env
     attributes:
-      label: 运行环境
+      label: 運行環境
       placeholder: 例：macOS 15 / Node 22 / Chrome 140

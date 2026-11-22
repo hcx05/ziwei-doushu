@@ -1,7 +1,7 @@
 /**
- * 回归测试共用的「独立算法」—— 与 lunar-javascript 无关，用来交叉验证引擎：
- *   · 儒略日数（公历 → JDN）与日干支（1949-10-01 甲子）；
- *   · Meeus《天文算法》第 25 章低精度太阳视黄经（约 0.01°，即十几分钟），二分法求节气时刻。
+ * 迴歸測試共用的「獨立算法」—— 與 lunar-javascript 無關，用來交叉驗證引擎：
+ *   · 儒略日數（公曆 → JDN）與日干支（1949-10-01 甲子）；
+ *   · Meeus《天文算法》第 25 章低精度太陽視黃經（約 0.01°，即十幾分鍾），二分法求節氣時刻。
  */
 import { ganZhiOf } from '../../lib/systems/bazi/constants';
 
@@ -25,7 +25,7 @@ export function sunLongitude(jd: number): number {
   return ((lambda % 360) + 360) % 360;
 }
 
-/** 太阳视黄经到达 lon 度的儒略日（在 nearJd 前后 20 天内找） */
+/** 太陽視黃經到達 lon 度的儒略日（在 nearJd 前後 20 天內找） */
 export function termJd(lon: number, nearJd: number): number {
   let lo = nearJd - 20, hi = nearJd + 20;
   for (let i = 0; i < 60; i++) {
@@ -36,14 +36,14 @@ export function termJd(lon: number, nearJd: number): number {
   return (lo + hi) / 2;
 }
 
-/** 儒略日 → 北京时间 */
+/** 儒略日 → 北京時間 */
 export function jdToBeijing(jd: number): { y: number; m: number; d: number; h: number; mi: number; minutesOfDay: number } {
   const t = new Date(Math.round((jd - 2440587.5) * 86400_000 + 8 * 3600_000));
   const h = t.getUTCHours(), mi = t.getUTCMinutes();
   return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h, mi, minutesOfDay: h * 60 + mi };
 }
 
-/** 线性同余伪随机（固定种子，结果可重现） */
+/** 線性同餘偽隨機（固定種子，結果可重現） */
 export function seeded(seed: number) {
   let s = seed;
   const rand = () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
