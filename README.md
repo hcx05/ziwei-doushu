@@ -1,459 +1,98 @@
 <div align="center">
 
-# 紫微斗数 · 开源排盘引擎
+# 中国术数 · Claude Skills
 
-### 算法是公开的传统智慧，不应该被锁在围墙里
+### 十种古代术数，各自一个 Claude Skill：排盘由程序算，解读按推理类型分工
 
-[![CI](https://github.com/Renhuai123/ziwei-doushu/actions/workflows/ci.yml/badge.svg)](https://github.com/Renhuai123/ziwei-doushu/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](./LICENSE)
-[![Dataset: CC BY 4.0](https://img.shields.io/badge/dataset-CC%20BY%204.0-green.svg)](./DATASET-LICENSE)
 
 **中文** · [English](./README.en.md)
 
 </div>
 
-**一、项目理念**：紫微斗数是中国传统命理学的瑰宝，倪海厦老师在《天纪》中系统梳理了正宗的紫微斗数体系。我们希望通过技术手段让更多人接触和学习这门学问。
+本仓库收录十种规则明确、有古籍可依的中国术数，每种做成一个 Claude Skill。排盘、起卦、起局、查表都由打包好的程序确定性计算，模型不心算；Claude 根据工具输出回答用户所问。各体系地位相同，没有主次之分。
 
-开源排盘算法和知识库，是因为我们相信：**算法是公开的传统智慧，不应该被锁在围墙里**。真正的价值在于解读的深度、用户体验的打磨、以及持续运营的积累。
+## 一、收录的体系
 
-**二、项目信息**：基于<strong>倪海厦《天纪》</strong>教学体系的紫微斗数排盘系统，包含完整排盘算法、四化系统、格局知识库、古籍原文数据，以及一套完整开源的紫微斗数解读数据：**v4.0 解读数据集——67.5 万张命盘 × 13 维 = 877 万段解读，正文约 204 亿字，解压后 56.6 GB**（2026-10-15 发布）。
+按用途分四类。同一类里的体系各自独立，没有先后。
 
-| 数据集 | 命盘 | 解读段数 | 解压后 | 覆盖年份 | 每张盘解读字数 |
-|---|---|---|---|---|---|
-| **v4.0 解读数据集**（2026-10-15） | **674,976** | **8,774,688** | **56.6 GB** | **1950–2026**（只含真实日期） | **约 3.0 万字** |
-| v3.0 样本数据集 | 518,400 | 6,739,200 | 33.1 GB | 1924–1983 | 约 2.1 万字 |
-| 变化 | +30% | +30% | **+71%** | +17 年 | +44% |
+| 用途 | 体系 | Skill | 依据 | 核对 |
+|---|---|---|---|---|
+| **命理**（个人出生资料） | 八字 | [`bazi`](./.claude/skills/bazi/SKILL.md) | 子平法：十神、藏干、月令旺衰、合冲刑害、大运流年 | 四柱另以独立算法（儒略日、Meeus 太阳黄经）交叉校验 |
+| | 紫微斗数 | [`ziwei-doushu`](./.claude/skills/ziwei-doushu/SKILL.md) | 倪海厦《天纪》体系：十二宫、四化、大限流年流月流日 | 768 盘排盘铁律回归；详见 [`docs/ziwei.md`](./docs/ziwei.md) |
+| **问事占卜** | 六爻 | [`liuyao`](./.claude/skills/liuyao/SKILL.md) | 纳甲筮法，附《周易》卦辞爻辞 | [`docs/zhouyi-collation.md`](./docs/zhouyi-collation.md) |
+| | 梅花易数 | [`meihua`](./.claude/skills/meihua/SKILL.md) | 《梅花易数》体用法，四种起卦法 | 书中十三个占例逐一吻合，见 [`docs/meihua-liuren-collation.md`](./docs/meihua-liuren-collation.md) |
+| | 大六壬 | [`liuren`](./.claude/skills/liuren/SKILL.md) | 《六壬大全》九宗门：四课三传、天将 | 七百二十课与原书昴星、别责、井栏逐课吻合，同上文档 |
+| | 奇门遁甲 | [`qimen`](./.claude/skills/qimen/SKILL.md) | 《遁甲演义》时家转盘，拆补法定局并列置闰法 | 两个完整排盘例、二十条格局算例吻合，见 [`docs/qimen-collation.md`](./docs/qimen-collation.md) |
+| | 小六壬 | 在 `ziwei-doushu` 内 | 大安、留连、速喜、赤口、小吉、空亡 | 回归测试 |
+| **择日** | 择日 | [`zeri`](./.claude/skills/zeri/SKILL.md) | 通书、黄历（《协纪辨方书》体系）：宜忌、建除、黄道、冲煞 | 回归测试 |
+| **世局年景** | 太乙神数 | [`taiyi`](./.claude/skills/taiyi/SKILL.md) | 《太乙金镜式经》岁计 | 七十二局对照原书「阳局立成」，见 [`docs/taiyi-collation.md`](./docs/taiyi-collation.md) |
+| | 皇极经世 | [`huangji`](./.claude/skills/huangji/SKILL.md) | 邵雍元会运世，附「以运经世」逐年原文 | 原文逐年收录（公元前 2367 年至公元 963 年） |
+| | 五运六气 | [`wuyun-liuqi`](./.claude/skills/wuyun-liuqi/SKILL.md) | 《素问》运气七篇：岁运、司天在泉、客主加临 | 六十甲子对照《六元正纪大论》 |
 
-<sub>v3.0 每张盘解读字数按 2,160 张盘抽样估算，其余数字为全量统计；两版每张盘都是 13 维。</sub>
+**不收录**：面相、测字、风水这类靠观察或现场判断、规则无法写成程序的术数。
 
-在线体验：[ouranic.cn](https://ouranic.cn/?from=gh-readme)，排盘、AI 解读、命盘历史全部开放。
+## 二、推理分工
 
-> **注：关于六亲判断**
->
-> 紫微斗数在六亲（父母、兄弟、子女等）判断上存在一定局限。倪师在《天纪》中指出：“斗数批六亲本来就比较差一点。”（[2上 · 00:25:27](https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=1527)）在传统术数中，铁板神数在核对六亲方面有其独特优势（[2上 · 00:03:15](https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=195)）；倪师仍以紫微斗数为核心，是因为它能结合地理、环境与人事进行综合判断，形成“上知天文、下知地理、中知人事”的完整体系（[2上 · 00:25:43](https://www.bilibili.com/video/BV1KJsLekEfA?p=3&t=1543)）。因此，与六亲相关的分析仅供参考；[ouranic.cn](https://ouranic.cn/?from=gh-readme) 上父母、兄弟、子女三个维度也附有同样的说明。
+依据 Tom Zahavy《LLMs Can't Jump》（2026）的观点：大语言模型擅长**演绎**与**归纳**，**溯因**（从现象跳到最佳解释）有根本限制。在「假设该体系规则成立」的前提下，所有 skill 共用同一套规则（`lib/reasoning/`）：
 
-> **注：AI 推理分工（本 fork）**
->
-> 依据 Tom Zahavy《LLMs Can't Jump》（2026）的观点：大语言模型擅长**演绎**（Deduction）与**归纳**（Induction），但**溯因**（Abduction，从观察「跳」到最佳解释）有根本限制。在「假设紫微斗数规则成立」的前提下，本 fork 定两条边界：**工具做不到的不做；工具做得到、但属于溯因的可以做，必须注明「仅供参考，模型在此类推理有能力限制」。**
->
-> | 推理 | 在紫微斗数里 | 谁来做 |
-> |---|---|---|
-> | 演绎 | 已知命盘＋规则 → 推出象意（夫妻宫主星、大限四化落宫……） | AI |
-> | 归纳 | 把多条事实整理成共通描述（三方性格综合、预防清单……） | AI |
-> | 溯因 | 在吉凶讯号间取舍定性、给现实建议、推测具体事件、从已发生的事反推原因、判断时辰 | AI 可以给结论，但以「⚠ 仅供参考（模型在此类推理有能力限制）：」开头，列出正反讯号与另一种解读 |
->
-> - **网站**：本 fork 已移除网站界面与 `/api/interpret`，只保留排盘引擎与 Claude Skill。
-> - **Claude Skill**：可以自由提问，反推原因、校正时辰、两人合不合、推测哪年发生什么都可以回答，但一律标注仅供参考。
-> - 勾选「时辰不详」时，命盘带 `hourUnknown`，AI 必须先以「⚠ 假设：」声明本盘按子时排出（这是输入的假设，不是推理限制）。
->
-> 每个小节属于哪种推理、溯因规则怎么写，见 [`lib/ai/tasks.ts`](./lib/ai/tasks.ts)；回归测试见 `scripts/regression/ai-reasoning-split.test.ts`。
+| 推理 | 例子 | 做法 |
+|---|---|---|
+| 演绎 | 已知盘面和书中规则，推出结论 | 照规则写，一句话带过依据 |
+| 归纳 | 把多条事实整理成共同描述 | 照写 |
+| 溯因 | 在吉凶讯号间取舍、断应期、推测具体事件、反推原因、对应现实世事 | 可以下结论，但以「⚠ 仅供参考（模型在此类推理有能力限制）：」开头，并给出另一种解读 |
 
-> **注：八字、六爻、五运六气、择日、太乙、皇极经世、梅花易数、大六壬、奇门遁甲 Skill（本 fork 新增）**
->
-> - [`.claude/skills/bazi/`](./.claude/skills/bazi/SKILL.md)：八字（子平术）排盘与解读，含十神、藏干、月令旺衰、合冲刑害、大运、流年。四柱另以独立算法（儒略日、Meeus 太阳黄经）交叉校验。日主强弱、用神一律按溯因标注。
-> - [`.claude/skills/liuyao/`](./.claude/skills/liuyao/SKILL.md)：六爻（纳甲筮法）起卦装卦，附《周易》卦辞爻辞原文（校勘见 [`docs/zhouyi-collation.md`](./docs/zhouyi-collation.md)）。断吉凶、应期、把经文套到所问之事一律按溯因标注。
-> - [`.claude/skills/wuyun-liuqi/`](./.claude/skills/wuyun-liuqi/SKILL.md)：五运六气年局（岁运、主客运、司天在泉、主客气六步、客主加临、天符岁会）。六十甲子对照《素问·六元正纪大论》验算。气候、疾病倾向、世事对应一律按溯因标注。
-> - [`.claude/skills/zeri/`](./.claude/skills/zeri/SKILL.md)：择日（通书宜忌、建除、黄道黑道、二十八宿、冲煞、时辰），可在一段日期里筛出宜办某事的日子并标出生肖相冲。只列不评分，多日取舍按溯因标注。
-> - [`.claude/skills/taiyi/`](./.claude/skills/taiyi/SKILL.md)：太乙神数岁计（依《太乙金镜式经》），看国运世局。七十二局逐局对照原书「阳局立成」（见 [`docs/taiyi-collation.md`](./docs/taiyi-collation.md)）。年势、分野对应、世事推测一律按溯因标注。
-> - [`.claude/skills/huangji/`](./.claude/skills/huangji/SKILL.md)：皇极经世元会运世定位，附《皇极经世书》「以运经世」逐年原文查询（公元前 2367 年至公元 963 年）。原书没有对后世的预言，时势推论一律按溯因标注。
-> - [`.claude/skills/meihua/`](./.claude/skills/meihua/SKILL.md)：梅花易数（年月日时、物数、两数、后天端法起卦），算出互卦、变卦、体用生克、卦气旺衰，附书中十八类占法原文。书中十三个占例逐一核对（见 [`docs/meihua-liuren-collation.md`](./docs/meihua-liuren-collation.md)）。综合吉凶、应期、类象对应一律按溯因标注。
-> - [`.claude/skills/liuren/`](./.claude/skills/liuren/SKILL.md)：大六壬（依《六壬大全》九宗门）起课：天地盘、四课、三传、十二天将、遁干、六亲。七百二十课全部起出，与原书「昴星十六课」「别责九课」「井栏六日」逐课吻合。取类神、断吉凶、应期一律按溯因标注。
-> - [`.claude/skills/qimen/`](./.claude/skills/qimen/SKILL.md)：奇门遁甲（时家转盘，依《遁甲演义》），定局用拆补法并列出置闰法对照（见 [`docs/qimen-collation.md`](./docs/qimen-collation.md)）。书中两个完整排盘例与二十条格局算例逐一吻合。取用神、断吉凶、择方择时一律按溯因标注。
->
-> 后续体系规划见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
+- **工具做不到的不做**，加了「仅供参考」也不硬做。
+- 输入本身的假设（时辰不详、闰月口径、派别取法）由工具输出「⚠ 假设：」，回复里要转告。
+- **回复写法**：先回答所问，不贴推理和计算过程，只写与所问有关的部分。
 
-> **注：Claude Skill 版本**
->
-> [`.claude/skills/ziwei-doushu/`](./.claude/skills/ziwei-doushu/SKILL.md) 是同一套引擎与推理规则的 Claude Skill：在 Claude 里直接说「帮我看看命，1990-06-15 10:30 女，杭州」即可。Claude 用打包好的工具确定性排盘（含真太阳时、农历、海外时区、大限 / 流年 / 流月 / 流日四化落宫，以及按倪师起法的小六壬），按小节的演绎 / 归纳 / 溯因标注解读，引用倪师原话前先在 1848 条语料里检索，查不到就不引。反推原因、校正时辰、两人合不合这类溯因问题可以回答，但注明仅供参考；国运、姓名学、风水、六神测字等工具做不到的不做。
->
-> **安装全部十个 skill**
->
-> - **Claude Code（任何项目都能用）**：在 Claude Code 里输入下面两行，之后每个项目都会载入。
->   ```
->   /plugin marketplace add hcx05/ziwei-doushu
->   /plugin install chinese-divination@ziwei-doushu
->   ```
->   在本仓库目录里开 Claude Code 则不必安装，会自动载入 `.claude/skills/` 下全部 skill。
-> - **Claude 网页 / 桌面版**：运行 `npm run pack:skill`，会在 `dist/skill-zips/` 产出每个 skill 一个 zip；在设置的 Skills 页逐个上传（需开启代码执行；入口名称以当前设置页为准）。
-> - 工具只需 Node 18+，不必 `npm install`。改了引擎或规则后运行 `npm run build:skill` 重新打包，`scripts/regression/skill-bundle.test.ts` 会检查产物是否过期。
+## 三、安装
 
----
+- **Claude Code（任何项目都能用）**：在 Claude Code 里输入下面两行，之后每个项目都会载入全部 skill。
+  ```
+  /plugin marketplace add hcx05/ziwei-doushu
+  /plugin install chinese-divination@shushu
+  ```
+  在本仓库目录里开 Claude Code 则不必安装，会自动载入 `.claude/skills/` 下全部 skill。
+- **Claude 网页 / 桌面版**：运行 `npm run pack:skill`，在 `dist/skill-zips/` 得到每个 skill 一个 zip，到设置的 Skills 页逐个上传（需开启代码执行；入口名称以当前设置页为准）。
+- 工具只需 Node 18+，不必 `npm install`。
 
-## 目录
+用法：在 Claude 里直接问，例如「帮我排八字，1990-06-15 10:30 女，杭州」「用梅花易数占一下这次面试」「明年世局如何」。
 
-| | 章节 | 一句话 |
-|---|------|--------|
-| 一 | [本轮更新](#一本轮更新2026-10-15) | 13 维断语按倪师原话与《全书》逐句校正，发布 67.5 万命盘 × 13 维解读数据集 v4.0 |
-| 二·新 | [13 维解读数据集 v4.0](#二新13-维解读数据集-v402026-10-15) | 2026-10-15 新版断语，67.5 万命盘，按年份下载 |
-| 二 | [51.8 万命盘样本数据集](#二518-万命盘样本数据集) | 规格、下载、用途、许可 |
-| 三 | [快速开始](#三快速开始) | 克隆到跑起来 |
-| 四 | [排盘引擎](#四排盘引擎) | 能做到什么、文件怎么分、古籍数据 |
-| 五 | [倪师《天纪·紫微斗数》原话](#五倪师天纪紫微斗数原话) | 14 讲 + 2 段补充、1848 条，一图看全，每条可回放 |
-| 六 | [界面（本 fork 已移除）](#六界面本-fork-已移除) | 只保留引擎与 Claude Skill |
-| 七 | [开源边界](#七开源边界什么不在里面) | 什么开源、什么不开源 |
-| 八 | [维护节奏与贡献](#八维护节奏与贡献) | 同步节奏、issue / PR 口径 |
-| 九 | [协议](#九协议) | 代码 MIT / 数据 CC BY 4.0 / 古籍公版 / 倪师原话非商用 |
-| 十 | [关于与联系](#十关于与联系) | 项目理念、技术栈、联系方式 |
-
----
-
-## 一、本轮更新（2026-10-15）
-
-本轮跟随网站 2026-10-15 发版（网站内容版本 `ca268829f7a9`）：
-
-![本轮更新总览](./docs/update-20261015.png)
-
-**1. 发布 13 维解读数据集 v4.0** —— 674,976 张命盘（公历 1950–2026 年每一个真实日期 × 12 时辰 × 男女）× 13 维 = **8,774,688 段解读**，正文约 204 亿字。解压后 56.6 GB（v3.0 为 33.1 GB，增加 71%），压缩后只有 161 MB，按年份分 77 个文件，可以只下需要的年份，也可以一次下全年份总包。下载见 [Release v4.0-13d](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v4.0-13d)，规格和字段见[第二·新章](#二新13-维解读数据集-v402026-10-15)。发布前 77 个文件逐个解压，与原始数据逐字节比对一致。
-
-**2. 13 维断语按倪师原话与《全书》原文逐句校正**（断语库仍不开源，校正结果体现在 v4.0 数据集里）：
-
-- 标着倪师或《全书》却查不到出处的引文，删掉或换成逐字可查的原话；倪师原话注明《天纪》第几集、几分几秒
-- 不会发生的四化（如七杀化权、紫微化忌）相关的句子删去；只在某种条件下才成立的断语补上条件
-- 「力量强时……落陷时……」这类两头说的句子，改为按命盘只显示成立的那一种
-- 健康：哪个脏腑要留意，改按倪师的看法——全盘杀星最集中的那一宫，按它的地支对应脏腑；不再按星的五行推脏器
-- 网站知识库「古籍引证」由 244 处增至 405 处，每一处都能在《紫微斗数全书》原文里逐字找到
-
-**3. 排盘引擎同步**（[PR #39](https://github.com/Renhuai123/ziwei-doushu/pull/39)）—— `dst-cn.ts` 新增 `chinaDSTSpan(year)`，查某年中国夏令时起止；`cities.ts` 补全省直辖县级单位与新疆兵团各市的经度（神农架、海南各市县、阿拉尔等），出生地选这些城市时真太阳时校正可用。
-
-**4. 许可** —— [`DATASET-LICENSE`](./DATASET-LICENSE) 适用范围加上 v4.0；写明解读里引用的倪师原话不在数据授权范围内，与第五章倪师原话的 CC BY-NC-SA 4.0 一致。v3.0 样本数据集及其条款不变。
-
-> **2026-11-02 补充**：晚子时换日改按**真太阳时**判断，与时辰支同一口径（#63）——填了出生地时，东经 100° 钟表 23:30（真太阳时 22:10，亥时）留在本日，不再排成「次日亥时」；不填出生地不做校正，结果不变，线上 ouranic.cn 也是这个口径。闰月归属参数写错时当场报错，不再静默按「归本月」排盘（#71）。感谢 Bortlesboat、xunguangzlj-cloud 提交，Verchiel666 复核。
-
-> **2026-10-31 补充**：线上平台更名 **OURANIC**，网址由 metisziwei.com 迁到 **[ouranic.cn](https://ouranic.cn/?from=gh-readme)**（运营主体北京王多鱼科技有限责任公司，京ICP备2026069066号-1）；旧网址会自动跳转，本仓库的代码、数据集与许可都不变。
-
-> **2026-10-27 补充**：排盘引擎同步——`true-solar-time.ts` 支持海外出生地：传 `utcOffsetMinutes`（出生地时区的固定标准偏移），按当地时区中央经线做经度修正，国内不传时结果逐位不变；新增 `clock-adjust.ts`，把夏令时、或当年时区与现在不同时的**钟表读数换成标准时间**（跨日不改，交给用户），建议做成用户亲手点、可撤销的按钮，不要自动改。顺带更正：中国夏令时引擎**只判定、从不自动扣除**，此前「引擎能力」表写成「自动扣除」，有误。
-
-> **2026-10-24 补充**：项目理念移到页首——标题下居中一句「算法是公开的传统智慧，不应该被锁在围墙里」，紧接两段理念原文（前标「项目理念」），原有介绍段前标「项目信息」；第十章「项目理念」改为指向页首。
-
-> **2026-10-20 补充**：星曜亮度默认改为《斗数全书》，与主流排盘软件默认一致，此前默认的「现代修正 v2」仍可在流派设置里选；补齐天姚、天刑、天喜、大耗、解神、截空、副截、旬空的亮度，月德不再标亮度。用 5 张金标准盘逐宫核对，星曜落宫与亮度全部吻合。注意：v4.0 数据集（10-15）是按旧默认「现代修正 v2」生成的，其中亮度字和少量随亮度变化的解读句会与新默认不同。
-
-> **2026-10-06 ~ 10-07 补充**：README 加「注：关于六亲判断」（倪师原话 + 出处链接，中英两份）；网站链接加渠道码 `?from=`；同步倪师原话语料勘误（主星南斗、北斗归属）。
-
-### 上一轮更新（2026-09-21）
-
-
-> **2026-10-03 补充**：倪师《天纪·紫微斗数》原话 1848 条单独成章（第五章）；合并外部贡献 #29（时辰序号校验）；引擎拒绝不存在的公历日期，数据集补字段口径与已知问题；提交 package-lock.json；站点地址改为可配置；合盘演示改用本地引擎起盘、AI 接口缺失时明确提示；补齐贡献指南、行为准则、问题与 PR 模板；新增英文简介 [README.en.md](./README.en.md)；去掉两个用不上的部署工具包（vercel CLI、@cloudflare/next-on-pages），依赖从 483 个减到 185 个；随后升级到 Next.js 16 修掉 postcss 漏洞，GitHub 安全提醒从 51 条清零。
-
-![本轮更新总览](./docs/update-20260921.png)
-
-时隔三个月，本仓库完成一次完整更新（[PR #28](https://github.com/Renhuai123/ziwei-doushu/pull/28)，26 个文件、+2736 / −108 行）：
-
-**1. 排盘引擎同步到线上口径** —— `algorithm.ts` 从 181 行到 641 行，另更新 sihua / types / constants / patterns / cities / famous；新增 8 个模块（1367 行）：
-
-| 模块 | 作用 |
-|------|------|
-| `true-solar-time.ts` | 真太阳时校正（经度差 + 均时差） |
-| `dst-cn.ts` | 中国 1986–1991 夏令时 |
-| `clock-adjust.ts` | 钟表读数换成标准时间（夏令时 / 当年时区不同） |
-| `lunar-solar.ts` | 农历 / 公历互转与闰月边界 clamp |
-| `school-data.ts` / `school-tables.generated.ts` / `school-config.ts` | 星曜亮度流派数据与对照表、闰月与晚子时口径配置 |
-| `share.ts` | 出生资料（字符串输入）→ `BirthInfo`，含晚子时换日 |
-| `liuyue.ts` | 流月（斗君）与流日 |
-| `shier-shen.ts` | 十二神煞 |
-| `yunxian-context.ts` | 运限上下文（含童限） |
-
-**2. 补上回归测试与 CI** —— 此前本仓库没有任何测试。现在 5 条排盘回归，`npm test` 一条命令跑完，每次 push 与 PR 在 GitHub Actions 上自动跑。
-
-**3. 修掉样本时辰注释错位**（[#26](https://github.com/Renhuai123/ziwei-doushu/issues/26)）—— `famous.ts` 里 11 条名人样本有 7 条的时辰注释与 `hour` 索引不符（`hour` 一直是**时辰地支索引 0–11**，不是 0–23 的小时数）。已改正并加回归钉住。
-
-**4. 积压 issue 从 18 条清到 4 条**，留下的都是还在走的。
-
-**5. 文档与许可** —— 新增 [`DATASET-LICENSE`](./DATASET-LICENSE)；README 补齐引擎能力清单、维护节奏、开源边界；修正两处不实描述（数据集「口径与线上完全一致」、界面「完整的 Next.js 15 前端」）。
-
----
-
-## 二·新、13 维解读数据集 v4.0（2026-10-15）
-
-> **下载位置：本仓库右侧 [Releases → v4.0-13d](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v4.0-13d)**
-
-v4.0 用 2026-10-15 版网站断语库重新生成：13 个分析维度的断语已按倪海厦《天纪》逐字稿与《紫微斗数全书》原文逐句校正——查不到出处的引文删去或换成逐字可查的原话（倪师原话注明《天纪》集数与时间码），不会发生的四化相关句子删去，有条件的断语写明条件。
-
-### 规格
-
-| 项目 | 说明 |
-|------|------|
-| 命盘数 | **674,976 张**（公历 1950–2026 年 × 真实每月天数 × 12 时辰 × 男女） |
-| 解读段数 | **8,774,688 段**（每张盘 13 维） |
-| 维度 | 命格总览、性格、感情、事业、财运、健康、兄弟、子女、迁移、人际、田宅、福德、父母 |
-| 大小 | 解压后 56.6 GB；压缩后 161 MB（77 个年份文件，zstd；另有一个全年份总包 `ziwei-interp-v4-all.tar`） |
-| 正文 | 约 204 亿字，每张盘约 3.0 万字 |
-| 生成方式 | 排盘引擎 + 断语库确定性生成，不经 AI，同一输入恒得同一输出 |
-| 内容版本 | `ca268829f7a9`（与网站同期的 ANALYSIS_CONTENT_VERSION） |
-
-**每行一张盘**（JSON Lines），字段：
-
-| 字段 | 含义 |
-|------|------|
-| `k` | 键：`YYYY-MM-DD-时辰序号-性别`，如 `1990-01-01-0-male` |
-| `y` / `m` / `d` | **公历**出生日期；只含真实存在的日期（不再有 2 月 30 日之类） |
-| `h` | **时辰序号 0–11**（子 = 0 …… 亥 = 11），不是钟点；对照表见上一节 |
-| `g` | `male` / `female` |
-| `ms` | 命宫第一颗主星；命宫无主星时为 `null` |
-| `t` | 各维字数 |
-| `c` | 13 维解读全文（Markdown），键为 `overview` / `personality` / `love` / `career` / `wealth` / `health` / `family` / `children` / `move` / `friends` / `home` / `spirit` / `parents` |
-
-**口径说明**
-- 是本命盘视图的解读；网站上按读者当前年龄改写的句子、各维末尾附加的倪师法则段、AI 解读都不在数据集里。
-- 按时辰序号直接排盘，未按出生地做真太阳时校正。
-
-### 下载与解压
+## 四、开发
 
 ```bash
-# 一次下全部：gh release download v4.0-13d --repo Renhuai123/ziwei-doushu -p "ziwei-interp-v4-all.tar"
-# 只要某几年就只下那几年，例如 1990 年
-zstd -d --long=27 year-1990.jsonl.zst          # 得到 year-1990.jsonl
-shasum -a 256 -c SHA256SUMS.txt --ignore-missing # 校验
+npm ci
+npm run typecheck    # 类型检查
+npm test             # 全部体系的回归测试
+npm run build:skill  # 改了 lib/ 或 scripts/skill/ 后重新打包各 skill 的工具
+npm run pack:skill   # 打出上传用的 zip
 ```
 
-`--long=27` 必须带上（压缩时用了长窗口）。Windows 可用 [zstd 官方发布包](https://github.com/facebook/zstd/releases) 里的 zstd.exe，参数相同。
-
-### 引文说明
-
-解读里引用的倪海厦《天纪》原话**不属于本数据集的授权范围**：它们是为说明断语出处而注明集数与时间码的简短引用，著作权归原权利人；要把这些原话单独成批使用，按第五章倪师原话的 [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md) 处理。《紫微斗数全书》原文属公有领域。
-
-### 许可
-
-与 v3.0 相同：**CC BY 4.0，可自由商用，唯一要求是保留来源标注**（上面「引文说明」里的倪师原话除外），完整条款见 [DATASET-LICENSE](./DATASET-LICENSE)。引用时请写：
-
-> 本项目使用了 **紫微斗数开源解读数据集 v4.0**（674,976 张命盘 × 13 维）
-> 来源：https://github.com/Renhuai123/ziwei-doushu
-> 作者：王多鱼AI
-
----
-
-## 二、51.8 万命盘样本数据集
-
-> **下载位置：本仓库右侧 [Releases](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v3.0-samples) 页面**
-
-我们开源了一套完整的紫微斗数命盘样本数据集，覆盖 **51.8 万种排盘组合**（年 60 × 月 12 × 日 30 × 时 12 × 性别 2），每条样本包含完整的命盘结构和基于倪海厦体系的解读文本。
-
-### 2.1 数据规格
-
-| 项目 | 说明 |
-|------|------|
-| 样本数量 | **518,400 条** |
-| 总大小 | 压缩后 5.5 GB（分 3 卷），解压后 33.1 GB |
-| 体系 | 倪海厦《天纪》正统（纯飞星派已下线） |
-| 内容 | 命盘 JSON + 13 主题解读文本（命格总览、财运、事业、感情、健康等） |
-| 验证 | 男女命差异化 100%、健康含子午流注 100%、女命含妇科保养 100% |
-| 口径 | 由 **v3 版排盘引擎 + 当期断语库**生成；线上引擎在持续更新，新版输出与本数据集可能有差异 |
-
-**字段口径**（每条样本由 `birthInfo` 生成，常被看错的是 `hour`）：
-
-| 字段 | 含义 |
-|------|------|
-| `birthInfo.year` / `month` / `day` | **公历**出生日期：1924–1983 年（一个完整甲子），每月取 1–30 日 |
-| `birthInfo.hour` | **时辰序号 0–11**，不是 0–23 点钟：子 = 0、丑 = 1 …… 亥 = 11 |
-| `birthInfo.gender` | `male` / `female` |
-| `birthInfo.longitude` | 固定 120（东经 120°，未做各地真太阳时校正） |
-| 文件名 `YYYY-MM-DD-hHH-性别.json` | 其中 `hHH` 同样是时辰序号，例如 `h11` 是亥时，不是上午 11 点 |
-
-时辰序号与钟点对照：
-
-| 序号 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 时辰 | 子 | 丑 | 寅 | 卯 | 辰 | 巳 | 午 | 未 | 申 | 酉 | 戌 | 亥 |
-| 钟点 | 23–1 | 1–3 | 3–5 | 5–7 | 7–9 | 9–11 | 11–13 | 13–15 | 15–17 | 17–19 | 19–21 | 21–23 |
-
-23:00–23:59 出生（晚子时）按次日排盘、时辰取 0；00:00–00:59 出生（早子时）按当日排盘、时辰同样取 0。
-
-**已知问题：约 2,520 条样本的日期并不存在。** 生成时每个月都取了 1–30 日，所以 2 月 30 日，以及非闰年的 2 月 29 日也生成了样本，共 105 个日期 × 12 时辰 × 2 性别 = 2,520 条，占 0.49%。v3 引擎遇到这类日期不报错，而是顺延成 3 月 1–2 日排盘，所以这些样本的内容与对应的 3 月 1–2 日样本重复。使用时请过滤掉：`month = 2` 且 `day = 30`，或 `month = 2` 且 `day = 29` 且该年不是闰年。引擎从 2026-10-03 起会直接拒绝不存在的日期，下一版数据集不会再有这类样本。
-
-### 2.2 下载方式
-
-前往 [Releases](https://github.com/Renhuai123/ziwei-doushu/releases/tag/v3.0-samples) 下载以下文件：
-
-```
-ziwei-samples-v3-part1.zip.001  (1.9 GB)
-ziwei-samples-v3-part2.zip.002  (1.9 GB)
-ziwei-samples-v3-part3.zip.003  (1.8 GB)
-SHA256SUMS.txt                  (校验文件)
-```
-
-下载后合并解压：
-
-```bash
-# macOS / Linux
-cat ziwei-samples-v3-part*.zip.* > combined.zip
-unzip combined.zip
-
-# Windows (PowerShell)
-Get-Content ziwei-samples-v3-part*.zip.* -Encoding Byte -ReadCount 0 | Set-Content combined.zip -Encoding Byte
-Expand-Archive combined.zip
-```
-
-### 2.3 用途
-
-- 微调小模型的训练语料（51.8 万 input-output 配对）
-- AI 对话的 RAG 检索源
-- 修改 `patterns.ts` 后做 A/B 基线对比
-- 紫微斗数研究与数据分析
-
-### 2.4 数据许可与引用
-
-📂 **完全开源 · 可自由商用** —— 你可以在任何项目里使用这套数据，包括但不限于：
-
-- 商业产品 / SaaS / 付费应用
-- AI 模型微调（开源或闭源模型均可）
-- 二次开发、再分发、衍生数据集
-- 学术研究、技术博客、教学课程
-
-无需付费、无需申请、无需事先告知。
-
-**唯一的要求是保留数据来源标注（attribution）**：
-
-> 本项目使用了 **紫微斗数开源样本数据集 v3.0**（518,400 条）
-> 来源：https://github.com/Renhuai123/ziwei-doushu
-> 作者：王多鱼AI
-
-放在哪里都行：
-
-- **网页 / 产品**：About 页 / 关于我们 / 数据来源 / 页脚，写一行链接即可
-- **AI 模型**：模型卡（Model Card）或数据集卡（Dataset Card）的 "Training Data" 字段
-- **学术论文**：参考文献或致谢章节
-- **二次发布的数据集**：README 或 metadata 文件里注明上游来源
-
-仅此一条，其余都自由。完整条款见 [DATASET-LICENSE](./DATASET-LICENSE)。希望这套数据能帮你做出好东西 —— 做出来记得来小红书 / 抖音 / 闲鱼 **@王多鱼AI** 打个招呼 👋
-
----
-
-## 三、快速开始
-
-```bash
-# 克隆
-git clone https://github.com/Renhuai123/ziwei-doushu.git
-cd ziwei-doushu
-
-# 安装依赖（只在开发引擎、跑测试时需要；使用 Claude Skill 不必安装）
-npm install
-```
-
-本地验证：
-
-```bash
-npm run typecheck   # TypeScript 全量类型检查
-npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时、立春边界、红鸾天喜、样本时辰一致性、时辰序号边界、日期合法性、同宫双四化）
-```
-
-每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)）。
-
-> **注意**：本 fork 不含网站界面与任何后端 API。排盘以 `lib/ziwei/` 引擎完成，解读通过 Claude Skill（见页首）进行，不需要 API Key。
-
----
-
-## 四、排盘引擎
-
-排盘内核全部在 `lib/ziwei/`。
-
-### 4.1 能做到什么（与常见排盘库的差异）
-
-| 能力 | 说明 |
-|------|------|
-| **真太阳时校正** | 按出生地经度算时差 + 均时差，避免东西向差一个时辰 |
-| **中国夏令时** | 1986–1991 年的夏令时区间自动判定（只判定、不自动扣除；钟表读数由用户确认后用 `clock-adjust.ts` 换成标准时间） |
-| **闰月四种口径** | 闰月归前月 / 归后月 / 按日切分 / 按本月，可配置，不写死一派 |
-| **晚子时换日** | 23:00–23:59 按次日排盘、00:00–00:59 按本日；填了出生地时按真太阳时判断（与时辰同一口径）；换日策略可切换 |
-| **星曜亮度 7 档** | 庙 / 旺 / 得 / 利 / 平 / 不 / 陷，另保留 3 档粗分类做显示降级 |
-| **亮度流派可切换** | 不同流派（含主流排盘软件的不同版本）对辅星亮度判法不一致，做成开关而非写死 |
-| **四化与飞星** | 生年四化、大限 / 流年四化、飞星自化 |
-| **十二神煞** | 本命层按生年支起，流年层改按流年支起 |
-| **格局判定** | 1100+ 行规则库（紫府同宫、日月并明、七杀朝斗等） |
-
-### 4.2 文件怎么分
-
-| 文件 | 说明 |
-|------|------|
-| `algorithm.ts` | 完整排盘流程：安命宫、定五行局、安十四主星、安辅星、排大限流年 |
-| `constants.ts` | 天干地支、十四主星、辅星常量 |
-| `sihua.ts` | 四化飞星系统（禄权科忌），含各天干四化对照表 |
-| `patterns.ts` | **1100+ 行格局知识库**：紫府同宫、日月并明、七杀朝斗等经典格局判定规则 |
-| `types.ts` | TypeScript 类型定义 |
-| `cities.ts` | 中国城市经纬度，用于真太阳时校正 |
-| `school-data.ts` / `school-tables.generated.ts` / `school-config.ts` | 星曜亮度流派数据与对照表、闰月与晚子时口径配置 |
-| `shier-shen.ts` | 十二神煞（本命按生年支起、流年层按流年支起） |
-| `true-solar-time.ts` | 真太阳时校正（经度差 + 均时差） |
-| `dst-cn.ts` | 中国 1986–1991 夏令时年份与区间 |
-| `clock-adjust.ts` | 钟表读数按分钟平移成标准时间（跨日不改） |
-| `yunxian-context.ts` | 运限上下文（含童限处理） |
-| `lunar-solar.ts` | 农历 / 公历互转与闰月边界 clamp |
-
-### 4.3 古籍原文（`lib/classics/`）
-
-- **骨髓赋**（`gusuifu.ts`）— 紫微斗数核心歌诀
-- **紫微斗数全集**（`quanji.ts`）— 清代古本
-- **紫微斗数全书**（`quanshu.ts`）— 陈希夷传本
-
----
-
-## 五、倪师《天纪·紫微斗数》原话
-
-![倪海厦《天纪·紫微斗数》一图看全](./docs/tianji-ziwei/overview.png)
-
-倪海厦《天纪》紫微斗数部分的原话共 **1848 条**：正课 14 讲（第 2–15 讲上半）加 2 段补充，按讲分成 16 个文件，放在 [`docs/tianji-ziwei/`](./docs/tianji-ziwei/)。每条都带出处时间，点一下就跳回 B 站原视频的那一秒。
-
-- **怎么读**：先在上图里找到想看的主题，再点进对应那一讲，比如 [5上](./docs/tianji-ziwei/5%E4%B8%8A.md)（紫微在子）、[13上](./docs/tianji-ziwei/13%E4%B8%8A.md)（杀破狼、科权禄三会）。
-- **从哪来**：取自姊妹仓库 [nihai-tianji-corpus](https://github.com/Renhuai123/nihai-tianji-corpus)，以语料库为准，会随语料库同步。
-- **能不能商用**：**不能**。这一章的内容单独采用 CC BY-NC-SA 4.0，详见[九、协议](#九协议)。
-
----
-
-## 六、界面（本 fork 已移除）
-
-原仓库的 Demo 界面（`app/`、`components/`）与 `/api/interpret` 在本 fork 中已删除，只保留排盘引擎（`lib/`）与 Claude Skill（`.claude/skills/ziwei-doushu/`）。需要界面请参考上游仓库。
-
-后续扩充计划（八字、六爻、五运六气、择日、太乙、皇极等，推理分工通用化）见 [`docs/ROADMAP-multi-system.md`](./docs/ROADMAP-multi-system.md)。
-
----
-
-## 七、开源边界：什么不在里面
-
-| | 内容 |
+| 路径 | 内容 |
 |---|---|
-| ✅ **开源** | 排盘引擎（`lib/ziwei/`）、古籍公版原文（`lib/classics/`）、推理分工规则（`lib/ai/`）、Claude Skill、51.8 万样本数据集、13 维解读数据集 v4.0 |
-| ❌ **不开源** | 上游线上版的断语库、后端 API、用户系统（登录 / 会员 / 支付）、服务端安全（签名、防刷、水印）、部署配置 |
+| `lib/systems/<体系>/` | 各体系引擎、解读小节（`tasks.ts`）、摘要（`digest.ts`） |
+| `lib/systems/index.ts` | 体系注册表：每个体系的小节、术语、做不到的事 |
+| `lib/reasoning/` | 共用推理分工：标注、规则文本、草稿检查 |
+| `lib/calendar/` | 共用时间换算：真太阳时、城市经度、中国夏令时、农历公历 |
+| `scripts/skill/` | 各 skill 的命令行工具源码与打包脚本 |
+| `scripts/regression/` | 回归测试 |
+| `.claude/skills/` | 各 skill 的 `SKILL.md` 与打包好的工具 |
+| `docs/` | 各体系的原文核对记录、[扩充计划与决策记录](./docs/ROADMAP-multi-system.md) |
 
-AI 解读请使用本 fork 的 Claude Skill；规则见 `lib/ai/tasks.ts`。
+**新增体系**：在 `lib/systems/` 下建引擎与 `tasks.ts`，登记到 `lib/systems/index.ts`；在 `scripts/skill/` 写命令行工具，加进 `build.mjs`；写 `SKILL.md`；补引擎与 skill 测试并登记到 `package.json`。外挂市集 `.claude-plugin/marketplace.json` 的清单有测试核对，漏登记会失败。
 
----
+## 五、协议
 
-## 八、维护节奏与贡献
+| 内容 | 协议 |
+|---|---|
+| 代码（`lib/`、`scripts/`、`.claude/skills/`） | [MIT](./LICENSE) |
+| 古籍原文（周易、梅花易数、六壬大全、遁甲演义、太乙金镜式经、皇极经世书、紫微斗数全书等） | 公有领域 |
+| 紫微斗数数据集（Releases） | [CC BY 4.0](./DATASET-LICENSE)，详见 [`docs/ziwei.md`](./docs/ziwei.md) |
+| 倪海厦《天纪》原话（`docs/tianji-ziwei/`） | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md)，**不许商用** |
 
-这个仓库是**排盘引擎 + 数据集的开放快照**，不是一个全职维护的开源产品，说清楚免得大家猜：
+## 六、来源
 
-- **引擎同步**：随线上发版同步 `lib/ziwei/` 的引擎层并打 tag；断语库、AI 解读、商业站前端不在同步范围内。
-- **Issue**：会看，但回复可能不及时；带复现步骤或具体盘例（年月日时 + 性别 + 哪一条不对）的问题优先处理。
-- **PR**：欢迎，尤其是回归测试、口径修正、文档。动到排盘口径的改动请附上依据（古籍原文或可核对的对照）。
+本仓库 fork 自 [Renhuai123/ziwei-doushu](https://github.com/Renhuai123/ziwei-doushu)（紫微斗数排盘引擎与数据集），之后移除网站、扩充为多体系。紫微部分的上游说明、数据集与更新记录见 [`docs/ziwei.md`](./docs/ziwei.md)。
 
----
-
-## 九、协议
-
-本仓库分四部分授权。前三部分是宽松协议，**商用没有限制**；倪师原话目录**不许商用**：
-
-| 内容 | 协议 | 简单说 |
-|------|------|--------|
-| **代码**（`lib/`、`scripts/`、`.claude/skills/`） | [MIT License](./LICENSE) | 拿去随便用，保留 LICENSE 文件即可 |
-| **数据**（Releases 中的 51.8 万样本数据集 v3.0、13 维解读数据集 v4.0） | [CC BY 4.0](./DATASET-LICENSE) · 要求 attribution | 商用也行，**注明数据来源即可** |
-| **古籍原文**（骨髓赋、紫微斗数全集 / 全书等） | Public Domain | 古书都是公有领域，不存在版权 |
-| **倪师原话**（[`docs/tianji-ziwei/`](./docs/tianji-ziwei/)） | [CC BY-NC-SA 4.0](./docs/tianji-ziwei/LICENSE.md) | 可以引用、转载，注明出处；**不许商用**，改编后用同样协议 |
-
-**一句话**：代码和数据拿去用，商用也行，把来源链接带上就行；倪师原话只限非商业的学习研究（数据集解读里引用的倪师原话同样不在数据授权范围内）。
-
----
-
-## 十、关于与联系
-
-### 项目理念
-
-见本页开头。想自己搭？代码都在这里，拿去用。嫌麻烦？来 [ouranic.cn](https://ouranic.cn/?from=gh-readme) 直接用。
-
-### 技术栈
-
-- **语言**：TypeScript（Node 18+；Skill 工具由 esbuild 打包成单文件）
-- **排盘**：基于 [iztro](https://github.com/SylarLong/iztro) + lunar-javascript
-
-### 联系
-
-- 线上平台：[ouranic.cn](https://ouranic.cn/?from=gh-readme)（已完成 ICP 备案：京ICP备2026069066号-1）
-- 提问题、提修复：见 [CONTRIBUTING.md](./CONTRIBUTING.md)；使用交流请到 [讨论区](https://github.com/Renhuai123/ziwei-doushu/discussions)
-- 💕 发财的小手点一下：小红书 / 抖音 / 闲鱼 / X 关注 **王多鱼AI**，第一时间看上线 + 解锁更多紫微干货～
+贡献方式见 [CONTRIBUTING.md](./CONTRIBUTING.md)。

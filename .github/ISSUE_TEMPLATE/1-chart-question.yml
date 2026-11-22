@@ -1,52 +1,40 @@
-name: 排盘结果疑问 / Chart result question
-description: 觉得某张盘排得不对？请附上出生信息和对照结果，我们才能逐项核。
-title: "[排盘疑问] "
+name: 排盘 / 起卦结果疑问 / Chart result question
+description: 觉得某个体系算得不对？请附上输入和对照结果，我们才能逐项核。
+title: "[结果疑问] "
 labels: ["question"]
 body:
   - type: markdown
     attributes:
       value: |
         只写「不准」我们没法查。请按下面填完整，我们会逐项对照。
-        先看一眼：辅星亮度、闰月归属、晚子时是否换日在各流派本来就不同，这类差异不算 bug，但仍欢迎指出。
-  - type: input
-    id: date
-    attributes:
-      label: 出生日期（公历）
-      placeholder: 例：1990-05-12
-    validations:
-      required: true
-  - type: input
-    id: time
-    attributes:
-      label: 出生时间（几点几分）
-      placeholder: 例：08:30
-    validations:
-      required: true
-  - type: input
-    id: place
-    attributes:
-      label: 出生地或经度
-      description: 用来换算真太阳时；东西向经度差最多能差出一个时辰。
-      placeholder: 例：浙江杭州 / 东经 120.2°
+        先看一眼：各体系有些口径本来就分派别（如紫微辅星亮度、闰月归属、晚子时换日，奇门拆补与置闰，六壬涉害取法），工具会用「⚠ 假设：」标出；这类差异不算 bug，但仍欢迎指出。
   - type: dropdown
-    id: gender
+    id: system
     attributes:
-      label: 性别
-      options: ["男", "女"]
+      label: 体系
+      options: ["八字", "紫微斗数", "六爻", "梅花易数", "大六壬", "奇门遁甲", "小六壬", "择日", "太乙神数", "皇极经世", "五运六气"]
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: 输入
+      description: 运行的命令，或出生日期时间、出生地、性别、起卦时间、所给数字等。
+      placeholder: 例：node .claude/skills/bazi/scripts/bazi.mjs chart --date 1990-05-12 --time 08:30 --gender 女 --city 杭州
     validations:
       required: true
   - type: textarea
     id: ours
     attributes:
-      label: 本项目排出的结果
-      description: 截图，或贴出 generateChart 输出里相关的那几项。
+      label: 本项目算出的结果
+      description: 贴出工具输出里相关的那几项。
     validations:
       required: true
   - type: input
     id: ref
     attributes:
       label: 拿什么对照
-      placeholder: 例：其它排盘软件 / 某本书第几页
+      placeholder: 例：某本书第几卷某例 / 其它排盘软件
     validations:
       required: true
   - type: textarea
@@ -60,6 +48,11 @@ body:
     id: diff
     attributes:
       label: 具体哪一项不一致
-      placeholder: 例：命宫应在卯，这里排在戌
+      placeholder: 例：初传应为子，这里取了午
     validations:
       required: true
+  - type: input
+    id: env
+    attributes:
+      label: 运行环境
+      placeholder: 例：macOS 15 / Node 22

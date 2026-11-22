@@ -1,5 +1,5 @@
 /**
- * lib/ziwei/liuyue.ts —— 斗君、流月命宫、流日命宫（确定性推算）
+ * lib/systems/ziwei/liuyue.ts —— 斗君、流月命宫、流日命宫（确定性推算）
  *
  * 四化部分直接用 sihua.ts 现成的 getLiuYueSiHua（月干，五虎遁）与 getLiuRiSiHua（日干）；
  * 本文件只补「流月 / 流日落在哪一宫」。

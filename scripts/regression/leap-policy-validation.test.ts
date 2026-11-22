@@ -16,7 +16,7 @@
  * 为什么值得这么较真：闰月归属差一个月，命宫/身宫/四化整盘皆错，而拼错 policy
  * 原本没有任何报错。
  */
-import { generateChart, resolveEffectiveLunarDate } from '../../lib/ziwei/algorithm';
+import { generateChart, resolveEffectiveLunarDate } from '../../lib/systems/ziwei/algorithm';
 
 const POLICIES = ['split', 'next-month', 'prev-month', 'origin-month'] as const;
 

@@ -15,7 +15,7 @@
  * 独立校验见 scripts/regression/bazi-engine.test.ts（儒略日推日柱、近似太阳黄经推年月柱）。
  */
 import { LunarUtil, Solar } from 'lunar-javascript';
-import { calculateTrueSolarTime, isValidGregorianDate, shiftGregorianDate } from '@/lib/ziwei/true-solar-time';
+import { calculateTrueSolarTime, isValidGregorianDate, shiftGregorianDate } from '@/lib/calendar/true-solar-time';
 import { ASSUMPTION_MARK } from '@/lib/reasoning/kinds';
 import {
   BRANCHES, BRANCH_CLASH, BRANCH_COMBINE, BRANCH_DIRECTION, BRANCH_HARM, BRANCH_PUNISH_GROUPS,

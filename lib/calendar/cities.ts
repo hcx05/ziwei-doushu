@@ -10,9 +10,9 @@ export interface ProvinceInfo {
 
 // ★ 2026-10-07 用户反馈「出生地点还不够全」→ 补全全国区县（直辖市以外 2724 个，挂在各地级市下）。
 //   区县不放进本表：本表经 BirthForm → LocationPicker 在 /chart、/heming 首屏静态依赖图上，
-//   区县表与拼音表在 lib/ziwei/counties.generated.ts、lib/i18n/county-pinyin.generated.ts，
-//   打开地点选择框时才动态加载（lib/ziwei/county-data.ts）。区县选中后城市字段存成「地级市·区县」，
-//   见 lib/ziwei/county-label.ts。省直辖县级单位（仙桃、海南各市县、新疆兵团各市）仍是本表的市一级。
+//   区县表与拼音表在 lib/systems/ziwei/counties.generated.ts、lib/i18n/county-pinyin.generated.ts，
+//   打开地点选择框时才动态加载（lib/systems/ziwei/county-data.ts）。区县选中后城市字段存成「地级市·区县」，
+//   见 lib/systems/ziwei/county-label.ts。省直辖县级单位（仙桃、海南各市县、新疆兵团各市）仍是本表的市一级。
 export const PROVINCES: ProvinceInfo[] = [
   // ─── 直辖市 ───────────────────────────────────────────
   {

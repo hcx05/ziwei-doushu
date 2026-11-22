@@ -15,7 +15,7 @@
  *   npm run build:skill
  *
  * 改了 lib/ 或 docs/tianji-ziwei/entries.jsonl 之后要重新打包；
- * scripts/regression/skill-bundle.test.ts、bazi-skill.test.ts 会检查打包产物是否过期。
+ * scripts/regression/ 下各 *-skill.test.ts 会检查打包产物是否过期。
  */
 import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';

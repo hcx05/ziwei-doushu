@@ -1,5 +1,5 @@
 import type { BirthInfo } from './types';
-import { branchFromSolarMinutes, resolveZiweiDayOffset, shiftGregorianDate } from './true-solar-time';
+import { branchFromSolarMinutes, resolveZiweiDayOffset, shiftGregorianDate } from '../../calendar/true-solar-time';
 
 
 /** 出生资料的原始输入（字符串形式，与 CLI 参数一一对应） */

@@ -17,7 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-import { REASONING_RULES, ZIWEI_VOCABULARY } from '../../lib/ai/tasks';
+import { REASONING_RULES, ZIWEI_VOCABULARY } from '../../lib/systems/ziwei/tasks';
 
 // ── 1) 紫微规则全文钉住（2026-11-21 起加「回复写法」：先回答所问、不贴计算过程） ──
 const ZIWEI_RULES_BEFORE = [

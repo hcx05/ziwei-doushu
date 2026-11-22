@@ -1,7 +1,7 @@
 /** Regression coverage for Hongluan/Tianxi placement and palace labels. */
 import assert from 'node:assert/strict';
-import { generateChart } from '../../lib/ziwei/algorithm';
-import { BRANCHES, STEMS } from '../../lib/ziwei/constants';
+import { generateChart } from '../../lib/systems/ziwei/algorithm';
+import { BRANCHES, STEMS } from '../../lib/systems/ziwei/constants';
 
 function placementsFor(year: number, month = 5, day = 15) {
   const chart = generateChart({ year, month, day, hour: 11, gender: 'male', longitude: 120 });

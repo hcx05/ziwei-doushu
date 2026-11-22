@@ -5,7 +5,7 @@
  *   1) 原生 App 的农历起盘一直得绕回网页层，因为 Swift 侧没有 lunar-javascript 的
  *      换算能力。`POST /api/lunar-to-solar` 让原生一次 HTTP 拿到公历日期，
  *      这是拆 WebView 的一个真障碍。
- *   2) 换算口径此前只长在 `lib/ziwei/share.ts` 里（表单专用）。接口再抄一份
+ *   2) 换算口径此前只长在 `lib/systems/ziwei/share.ts` 里（表单专用）。接口再抄一份
  *      就会有两套闰月规则，所以统一收到这里，share.ts 改成调用本模块。
  *
  * 口径（沿用 lunar-javascript 与 share.ts 原有写法，未做任何改动）：
@@ -13,7 +13,7 @@
  *   · 月天数与闰月是否存在，一律查 `LunarMonth` 表，不用公历的月长去猜。
  *
  * ⚠️ 这里**不许**出现排盘 / 时辰 / 真太阳时 / 四化 任何一行。
- *    那些属于 lib/ziwei/algorithm.ts 与 /api/generate，别顺手塞进来。
+ *    那些属于 lib/systems/ziwei/algorithm.ts 与 /api/generate，别顺手塞进来。
  */
 import { Lunar, LunarMonth } from 'lunar-javascript';
 

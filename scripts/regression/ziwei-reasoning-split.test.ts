@@ -1,5 +1,5 @@
 /**
- * AI 推理分工回归（见 lib/ai/tasks.ts）
+ * AI 推理分工回归（见 lib/systems/ziwei/tasks.ts）
  *
  * 前提：假设紫微斗数规则成立。工具做不到的不做；做得到但属溯因的可以做，必须注明
  * 「仅供参考，模型在此类推理有能力限制」。钉住以下几点：
@@ -10,9 +10,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   ASSUMPTION_MARK, buildTask, REASONING_RULES, TOPICS, UNCERTAINTY_MARK, HOUR_UNKNOWN_NOTICE,
-} from '../../lib/ai/tasks';
-import { generateChart } from '../../lib/ziwei/algorithm';
-import { formToBirthInfo } from '../../lib/ziwei/share';
+} from '../../lib/systems/ziwei/tasks';
+import { generateChart } from '../../lib/systems/ziwei/algorithm';
+import { formToBirthInfo } from '../../lib/systems/ziwei/share';
 
 const read = (p: string) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
@@ -59,7 +59,7 @@ const unknown = generateChart(formToBirthInfo({
 assert.equal(unknown.birthInfo.hourUnknown, true, '时辰不详必须随命盘带出 hourUnknown');
 assert.equal(chart.birthInfo.hourUnknown, undefined, '已知时辰不应带 hourUnknown');
 assert.ok(HOUR_UNKNOWN_NOTICE.includes(`${ASSUMPTION_MARK}出生时辰不详`) && HOUR_UNKNOWN_NOTICE.includes('子时'));
-const digest = read('lib/ai/digest.ts');
+const digest = read('lib/systems/ziwei/digest.ts');
 assert.ok(digest.includes('hourUnknown') && digest.includes('HOUR_UNKNOWN_NOTICE'), '摘要须在时辰不详时附上声明');
 
 console.log('✓ AI 推理分工：溯因节须标「仅供参考」、时辰不详已声明');

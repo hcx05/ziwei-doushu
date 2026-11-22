@@ -2,13 +2,13 @@
  * scripts/skill/common.ts —— 各 Skill 命令行工具共用的参数解析与出生资料处理
  *
  * 出生资料统一换算成「东八区钟表时间 + 出生地经度」，真太阳时校正由各体系引擎自己做
- * （紫微：lib/ziwei/share.ts；八字：lib/systems/bazi/engine.ts），两边同一口径。
+ * （紫微：lib/systems/ziwei/share.ts；八字：lib/systems/bazi/engine.ts），两边同一口径。
  */
-import { PROVINCES } from '../../lib/ziwei/cities';
-import { isChinaDST } from '../../lib/ziwei/dst-cn';
-import { isValidLunarDate, lunarToSolar } from '../../lib/ziwei/lunar-solar';
-import { shiftGregorianDate } from '../../lib/ziwei/true-solar-time';
-import type { BirthFormState } from '../../lib/ziwei/share';
+import { PROVINCES } from '../../lib/calendar/cities';
+import { isChinaDST } from '../../lib/calendar/dst-cn';
+import { isValidLunarDate, lunarToSolar } from '../../lib/calendar/lunar-solar';
+import { shiftGregorianDate } from '../../lib/calendar/true-solar-time';
+import type { BirthFormState } from '../../lib/systems/ziwei/share';
 import { readFileSync } from 'node:fs';
 import { checkMarks, enforceMarks } from '../../lib/reasoning/check';
 import { UNCERTAINTY_MARK, type SectionSpec } from '../../lib/reasoning/kinds';

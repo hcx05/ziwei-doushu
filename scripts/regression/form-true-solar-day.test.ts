@@ -5,11 +5,11 @@
  *   · 东经 100° 钟表 23:30 → 真太阳时 22:10 亥时，却被挪到次日 → 排成次日亥时；
  *   · 东经 135° 钟表 22:30 → 真太阳时 23:30 晚子时，却留在本日 → 排成本日早子时；
  *   · 东经 80° 钟表 00:30 → 真太阳时前一日 21:50 亥时，却留在本日 → 排成本日亥时。
- * 换日口径与 lib/ziwei/true-solar-time.ts 的 resolveZiweiDayOffset('next-day') 一致。
+ * 换日口径与 lib/calendar/true-solar-time.ts 的 resolveZiweiDayOffset('next-day') 一致。
  */
 import assert from 'node:assert/strict';
-import { formToBirthInfo } from '../../lib/ziwei/share';
-import type { BirthFormState } from '../../lib/ziwei/share';
+import { formToBirthInfo } from '../../lib/systems/ziwei/share';
+import type { BirthFormState } from '../../lib/systems/ziwei/share';
 
 function formAt(clockHour: string, clockMinute: string, longitude: number): BirthFormState {
   return {

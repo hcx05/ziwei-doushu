@@ -1,5 +1,5 @@
 /**
- * lib/ai/tasks.ts —— 紫微斗数（与小六壬）的解读任务与小节定义
+ * lib/systems/ziwei/tasks.ts —— 紫微斗数（与小六壬）的解读任务与小节定义
  *
  * 推理分工的通用部分（推理类型、UNCERTAINTY_MARK、规则文本、输出检查）在 lib/reasoning/，
  * 所有体系共用；这里只放紫微斗数特有的小节结构与用语。
@@ -9,7 +9,7 @@
  * 可以做，但必须以 UNCERTAINTY_MARK 标明「仅供参考，模型在此类推理有能力限制」。
  */
 
-import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
+import type { Palace, ZiweiChart } from '@/lib/systems/ziwei/types';
 import {
   ASSUMPTION_MARK, REASONING_LABEL, UNCERTAINTY_MARK, type ReasoningKind, type SectionSpec,
 } from '@/lib/reasoning/kinds';
@@ -186,7 +186,7 @@ export const LIUNIAN_SECTIONS: SectionSpec[] = [
     instruction: '基于以上象意，可供命主参考的方向。' },
 ];
 
-/** 流月解读（Claude Skill 用）。依据：斗君、流月命宫、流月四化，均由 lib/ziwei/liuyue.ts 确定性算出 */
+/** 流月解读（Claude Skill 用）。依据：斗君、流月命宫、流月四化，均由 lib/systems/ziwei/liuyue.ts 确定性算出 */
 export const LIUYUE_SECTIONS: SectionSpec[] = [
   { title: '流月命宫', kind: 'deduction',
     instruction: '流月命宫落在本命哪一宫、该宫星曜，按规则推出的当月主题象意。' },
@@ -208,7 +208,7 @@ export const LIURI_SECTIONS: SectionSpec[] = [
     instruction: '在上述讯号中，当天哪些领域较值得留意。' },
 ];
 
-/** 小六壬（Claude Skill 用）。课象由 lib/divination/xiaoliuren.ts 起出，含义只用倪师原话 */
+/** 小六壬（Claude Skill 用）。课象由 lib/systems/ziwei/xiaoliuren.ts 起出，含义只用倪师原话 */
 export const XIAOLIUREN_SECTIONS: SectionSpec[] = [
   { title: '起课', kind: 'deduction',
     instruction: '起课所用的农历月、日、时辰，以及月、日、时各落哪一课，最终课象是什么。' },

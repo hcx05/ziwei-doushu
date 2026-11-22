@@ -1,10 +1,10 @@
 {
-  "name": "ziwei-doushu",
+  "name": "shushu",
   "owner": {
     "name": "hcx05"
   },
   "metadata": {
-    "description": "中國術數 Claude Skills：紫微斗數、八字、六爻、梅花易數、大六壬、奇門遁甲、太乙神數、皇極經世、五運六氣、擇日。",
+    "description": "中國術數 Claude Skills：八字、紫微斗數、六爻、梅花易數、大六壬、奇門遁甲、擇日、太乙神數、皇極經世、五運六氣。",
     "version": "1.0.0"
   },
   "plugins": [

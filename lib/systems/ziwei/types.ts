@@ -10,7 +10,7 @@ export interface BirthInfo {
   longitude?: number;  // 出生地经度（用于真太阳时校正）
   /**
    * 用户勾选了「时辰不详」。此时 hour 固定为 0（子时）只是一个**假设**，
-   * 不是推断结果；AI 解读必须据此声明不确定性（见 lib/ai/tasks.ts）。
+   * 不是推断结果；AI 解读必须据此声明不确定性（见 lib/systems/ziwei/tasks.ts）。
    */
   hourUnknown?: boolean;
   /**

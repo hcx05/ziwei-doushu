@@ -1,12 +1,12 @@
 /**
  * 出生资料 → BirthInfo 转换回归（晚子时换日）
  *
- * `lib/ziwei/share.ts` 的 `formToBirthInfo()` 是唯一的转换实现，负责「晚子时换日」：
+ * `lib/systems/ziwei/share.ts` 的 `formToBirthInfo()` 是唯一的转换实现，负责「晚子时换日」：
  * 23:00–23:59 出生按**次日**排盘（时辰取 0）。钉住早子时 / 晚子时边界与跨月、跨年进位。
  */
 import assert from 'node:assert/strict';
-import { formToBirthInfo } from '../../lib/ziwei/share';
-import type { BirthFormState } from '../../lib/ziwei/share';
+import { formToBirthInfo } from '../../lib/systems/ziwei/share';
+import type { BirthFormState } from '../../lib/systems/ziwei/share';
 
 // ── formToBirthInfo 的边界行为 ───────────────────────────────
 function formAt(

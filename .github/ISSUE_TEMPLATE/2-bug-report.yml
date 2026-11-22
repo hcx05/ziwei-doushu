@@ -5,13 +5,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        本 fork 不含网站界面与 `/api/*` 接口，只有排盘引擎与 Claude Skill。
+        本仓库不含网站界面与 `/api/*` 接口，只有各体系引擎与 Claude Skill。
   - type: textarea
     id: steps
     attributes:
       label: 复现步骤
       placeholder: |
-        1. node .claude/skills/ziwei-doushu/scripts/ziwei.mjs chart --date …… --time …… --gender ……
+        1. node .claude/skills/<skill>/scripts/<工具>.mjs ……
         2. 输出中哪一项不对 ……
     validations:
       required: true

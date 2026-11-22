@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import { generateChart } from '../../lib/ziwei/algorithm';
-import type { BirthInfo } from '../../lib/ziwei/types';
+import { generateChart } from '../../lib/systems/ziwei/algorithm';
+import type { BirthInfo } from '../../lib/systems/ziwei/types';
 
 const base: BirthInfo = { year: 1925, month: 3, day: 1, hour: 6, gender: 'male' };
 

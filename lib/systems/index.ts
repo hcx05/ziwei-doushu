@@ -8,7 +8,7 @@ import type { DivinationSystem } from '@/lib/reasoning/registry';
 import type { SectionSpec } from '@/lib/reasoning/kinds';
 import {
   XIAOLIUREN_SECTIONS, XIAOLIUREN_VOCABULARY, ZIWEI_SECTION_KEYS, ZIWEI_VOCABULARY, ziweiSectionSet,
-} from '@/lib/ai/tasks';
+} from '@/lib/systems/ziwei/tasks';
 import {
   BAZI_ABDUCTION_HOTSPOTS, BAZI_OUT_OF_SCOPE, BAZI_SECTION_SETS, BAZI_VOCABULARY,
 } from './bazi/tasks';
@@ -167,7 +167,8 @@ const qimen: DivinationSystem = {
   outOfScope: QIMEN_OUT_OF_SCOPE,
 };
 
-export const SYSTEMS: DivinationSystem[] = [ziwei, xiaoliuren, bazi, liuyao, wuyun, zeri, taiyi, huangji, meihua, liuren, qimen];
+/** 按用途排列：命理、问事占卜、择日、世局年景；各体系地位相同 */
+export const SYSTEMS: DivinationSystem[] = [bazi, ziwei, liuyao, meihua, liuren, qimen, xiaoliuren, zeri, taiyi, huangji, wuyun];
 
 export function getSystem(id: string): DivinationSystem | undefined {
   return SYSTEMS.find(s => s.id === id);

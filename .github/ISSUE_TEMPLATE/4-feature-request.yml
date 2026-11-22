@@ -15,5 +15,5 @@ body:
   - type: textarea
     id: source
     attributes:
-      label: 依据（涉及命理口径时请写）
-      description: 出自哪本书、哪一讲，或哪个排盘软件的哪种设置。没有出处的口径改动我们一般不收。
+      label: 依据（涉及术数口径时请写）
+      description: 出自哪本书哪一卷，或哪个排盘软件的哪种设置。没有出处的口径改动我们一般不收。

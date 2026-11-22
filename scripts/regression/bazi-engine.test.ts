@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { LunarUtil, Solar } from 'lunar-javascript';
 import { computeBazi, findRelations, seasonState, xunKongOf } from '../../lib/systems/bazi/engine';
 import { BRANCHES, HIDDEN_STEMS, STEMS, ganZhiOf, shiShen } from '../../lib/systems/bazi/constants';
-import { calculateTrueSolarTime, shiftGregorianDate } from '../../lib/ziwei/true-solar-time';
+import { calculateTrueSolarTime, shiftGregorianDate } from '../../lib/calendar/true-solar-time';
 
 // ── 独立算法 ────────────────────────────────────────────────
 function jdn(y: number, m: number, d: number): number {

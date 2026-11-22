@@ -5,8 +5,8 @@
  * 重新打包：npm run build:skill
  *
  * 子命令：
- *   chart     排盘，输出给模型读的命盘摘要（lib/ai/digest.ts 的 buildDigest）
- *   sections  列出某个解读主题的小节与推理类型（演绎 / 归纳 / 溯因），来自 lib/ai/tasks.ts
+ *   chart     排盘，输出给模型读的命盘摘要（lib/systems/ziwei/digest.ts 的 buildDigest）
+ *   sections  列出某个解读主题的小节与推理类型（演绎 / 归纳 / 溯因），来自 lib/systems/ziwei/tasks.ts
  *   rules     输出推理分工规则全文（可指定体系：ziwei / xiaoliuren）
  *   check     检查解读草稿：溯因节是否以「仅供参考」标记开头、小节是否齐全（--fix 自动补标记）
  *   quotes    搜索倪海厦《天纪·紫微斗数》原话（1848 条，带 B 站出处时间）
@@ -16,20 +16,20 @@
  *   liuren    小六壬：按农历月日时起课，含义只给倪师原话
  */
 
-import { generateChart } from '../../lib/ziwei/algorithm';
-import { formToBirthInfo } from '../../lib/ziwei/share';
-import { searchClassics } from '../../lib/classics';
-import { buildDigest } from '../../lib/ai/digest';
+import { generateChart } from '../../lib/systems/ziwei/algorithm';
+import { formToBirthInfo } from '../../lib/systems/ziwei/share';
+import { searchClassics } from '../../lib/systems/ziwei/classics';
+import { buildDigest } from '../../lib/systems/ziwei/digest';
 import {
   TOPICS, LIUNIAN_SECTIONS, LIUYUE_SECTIONS, LIURI_SECTIONS, XIAOLIUREN_SECTIONS,
   ASSUMPTION_MARK, REASONING_LABEL, UNCERTAINTY_MARK, buildTask,
   ziweiSectionSet, type AiTask, type SectionSpec, type TopicKey,
-} from '../../lib/ai/tasks';
-import { BRANCHES } from '../../lib/ziwei/constants';
-import { getLiuNianSiHua, getYearBranchIndex } from '../../lib/ziwei/sihua';
-import { getLiuRi, getLiuYue, solarToLunar } from '../../lib/ziwei/liuyue';
-import { LIUREN_MEANING, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/divination/xiaoliuren';
-import type { SiHua, ZiweiChart } from '../../lib/ziwei/types';
+} from '../../lib/systems/ziwei/tasks';
+import { BRANCHES } from '../../lib/systems/ziwei/constants';
+import { getLiuNianSiHua, getYearBranchIndex } from '../../lib/systems/ziwei/sihua';
+import { getLiuRi, getLiuYue, solarToLunar } from '../../lib/systems/ziwei/liuyue';
+import { LIUREN_MEANING, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/systems/ziwei/xiaoliuren';
+import type { SiHua, ZiweiChart } from '../../lib/systems/ziwei/types';
 import { fail, parseArgs, parseBirthArgs, runCheck, str, type Args } from './common';
 import { buildReasoningRules, renderSkeleton } from '../../lib/reasoning/rules';
 import { findSectionSet, getSystem, SYSTEMS } from '../../lib/systems';

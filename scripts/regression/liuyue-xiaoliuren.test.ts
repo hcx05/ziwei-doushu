@@ -7,11 +7,11 @@
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { LIUREN_MEANING, LIUREN_NAMES, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/divination/xiaoliuren';
-import { douJunBranch, getLiuRi, liuRiBranch, liuYueBranch, lunarDayStem, solarToLunar } from '../../lib/ziwei/liuyue';
-import { SCHOOL_AX } from '../../lib/ziwei/school-tables.generated';
-import { generateChart } from '../../lib/ziwei/algorithm';
-import { formToBirthInfo } from '../../lib/ziwei/share';
+import { LIUREN_MEANING, LIUREN_NAMES, LIUREN_USAGE, clockToBranch, xiaoLiuRen } from '../../lib/systems/ziwei/xiaoliuren';
+import { douJunBranch, getLiuRi, liuRiBranch, liuYueBranch, lunarDayStem, solarToLunar } from '../../lib/systems/ziwei/liuyue';
+import { SCHOOL_AX } from '../../lib/systems/ziwei/school-tables.generated';
+import { generateChart } from '../../lib/systems/ziwei/algorithm';
+import { formToBirthInfo } from '../../lib/systems/ziwei/share';
 
 // ── 1) 小六壬 ───────────────────────────────────────────────
 assert.equal(xiaoLiuRen(4, 5, 10).result, '空亡', '倪师示例：农历四月初五戌时应落空亡');

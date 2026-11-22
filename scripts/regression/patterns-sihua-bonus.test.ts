@@ -6,9 +6,9 @@
  * 用 hasStar / sanFangAllStars 查「化X」星名，永远查不到，这几条加分项从来不会出现。
  */
 import assert from 'node:assert/strict';
-import { generateChart } from '../../lib/ziwei/algorithm';
-import { detectPatterns } from '../../lib/ziwei/patterns';
-import type { ZiweiChart, SiHua } from '../../lib/ziwei/types';
+import { generateChart } from '../../lib/systems/ziwei/algorithm';
+import { detectPatterns } from '../../lib/systems/ziwei/patterns';
+import type { ZiweiChart, SiHua } from '../../lib/systems/ziwei/types';
 
 function sanFangHasSiHua(chart: ZiweiChart, hua: SiHua): boolean {
   const m = chart.mingGongBranch;

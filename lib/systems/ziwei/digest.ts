@@ -1,17 +1,17 @@
 /**
- * lib/ai/digest.ts —— 命盘 → 给 AI 读的文本摘要
+ * lib/systems/ziwei/digest.ts —— 命盘 → 给 AI 读的文本摘要
  *
  * Claude Skill（.claude/skills/ziwei-doushu）与回归测试共用这一份，
  * 保证两边喂给模型的命盘事实完全一致。这里只放排盘引擎**确定性**算出的事实；
- * 解读规则见 lib/ai/tasks.ts。
+ * 解读规则见 lib/systems/ziwei/tasks.ts。
  *
  * 隐私：默认不含姓名、出生地、经纬度、公历生日、四柱（includeBirth 才带）。
  */
 
-import type { Palace, SiHua, ZiweiChart } from '@/lib/ziwei/types';
-import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
-import { detectPatterns } from '@/lib/ziwei/patterns';
-import { getDaXianSiHua, getLiuNianSiHua, getYearBranchIndex } from '@/lib/ziwei/sihua';
+import type { Palace, SiHua, ZiweiChart } from '@/lib/systems/ziwei/types';
+import { BRANCHES, STEMS } from '@/lib/systems/ziwei/constants';
+import { detectPatterns } from '@/lib/systems/ziwei/patterns';
+import { getDaXianSiHua, getLiuNianSiHua, getYearBranchIndex } from '@/lib/systems/ziwei/sihua';
 import { HOUR_UNKNOWN_NOTICE } from './tasks';
 
 export interface DigestOptions {

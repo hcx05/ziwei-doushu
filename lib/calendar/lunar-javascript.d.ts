@@ -21,7 +21,7 @@ declare module 'lunar-javascript' {
     /** 上一個節或氣（二十四節氣都算）；奇門用 */
     getPrevJieQi(wholeDay?: boolean): JieQi;
     getNextJie(wholeDay?: boolean): JieQi;
-    /** 换算成公历(2026-08-05 补声明:lib/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
+    /** 换算成公历(2026-08-05 补声明:lib/systems/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
     getSolar(): Solar;
     // ── 择日 / 五运六气（2026-11-21 补：lib/systems/zeri、lib/systems/wuyun 用） ──
     getYearInGanZhiByLiChun(): string;

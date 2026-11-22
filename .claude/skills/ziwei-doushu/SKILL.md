@@ -186,5 +186,5 @@ node scripts/ziwei.mjs classics 紫微 [--limit 10]     # 《紫微斗数全书�
 
 ## 六、说明
 
-- 本 skill 的排盘引擎与推理规则来自仓库源码：`lib/ziwei/`、`lib/reasoning/`（通用推理分工与 `check`）、`lib/systems/`（体系注册表）、`lib/ai/tasks.ts`、`lib/ai/digest.ts`；流月流日在 `lib/ziwei/liuyue.ts`，小六壬在 `lib/divination/xiaoliuren.ts`。工具源码在 `scripts/skill/ziwei-cli.ts`，用 `npm run build:skill` 重新打包。
+- 本 skill 的排盘引擎与推理规则来自仓库源码：`lib/systems/ziwei/`（排盘、`tasks.ts`、`digest.ts`、古籍 `classics/`；流月流日在 `liuyue.ts`，小六壬在 `xiaoliuren.ts`）、`lib/calendar/`（真太阳时、夏令时、农历换算，各体系共用）、`lib/reasoning/`（通用推理分工与 `check`）、`lib/systems/index.ts`（体系注册表）。工具源码在 `scripts/skill/ziwei-cli.ts`，用 `npm run build:skill` 重新打包。
 - 倪师原话语料为 CC BY-NC-SA 4.0，不可商用；《紫微斗数全书》等古籍属公有领域。
