@@ -1,5 +1,5 @@
 import type { BirthInfo } from './types';
-import { branchFromSolarMinutes, resolveZiweiDayOffset, shiftGregorianDate } from '../../calendar/true-solar-time';
+import { calculateTrueSolarTime, resolveZiweiDayOffset, shiftGregorianDate } from '../../calendar/true-solar-time';
 
 
 /** 出生资料的原始输入（字符串形式，与 CLI 参数一一对应） */
@@ -17,15 +17,6 @@ export interface BirthFormState {
   gender: 'male' | 'female';
 }
 
-/** 根据北京时间 + 经度计算真太阳时时辰支 (0-11) */
-export function calcTrueSolarBranch(clockHour: number, clockMinute: number, longitude: number): number {
-  const clockMins = clockHour * 60 + clockMinute;
-  const offset = (longitude - 120) * 4;
-  const solar = ((clockMins + offset) % 1440 + 1440) % 1440;
-  if (solar >= 1380 || solar < 60) return 0;
-  return Math.floor((solar - 60) / 120) + 1;
-}
-
 /** BirthFormState → BirthInfo
  *
  * 子时规则（倪海厦体系/三合派标准）：
@@ -39,13 +30,18 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
   let d = parseInt(form.day) || 0;
   let hour = 0;
 
-  // 晚子时换日按真太阳时判定，与时辰支同一口径（见 true-solar-time.ts 的 resolveZiweiDayOffset）。
-  // 只看钟表 23 点会和经度校正后的时辰错位：东经 100° 钟表 23:30 是真太阳时 22:10 亥时，不该换日。
+  // 时辰支与晚子时换日都按真太阳时判定（true-solar-time.ts：钟表时间＋经度修正＋均时差），与八字引擎、时辰交界提醒同一口径。
+  // 只看钟表 23 点会和校正后的时辰错位：东经 100° 钟表 23:30 约是真太阳时 22:10 亥时，不该换日。
+  // ★ 2026-11-22 修正：此前这里只做经度修正、漏了均时差，与八字引擎判出的时辰可能不同（均时差全年约 −14～+16 分钟）。
+  // 没填出生地（province 为空）时不做校正，按东八区钟表时间。
   if (!form.unknownTime) {
-    const solar = (parseInt(form.clockHour) || 0) * 60 + (parseInt(form.clockMinute) || 0) + (form.longitude - 120) * 4;
-    const normalizedMinutes = ((solar % 1440) + 1440) % 1440;
-    hour = branchFromSolarMinutes(normalizedMinutes);
-    const dayOffset = resolveZiweiDayOffset({ dayOffset: Math.floor(solar / 1440), normalizedMinutes, branch: hour });
+    const tst = calculateTrueSolarTime({
+      year: y, month: m, day: d,
+      clockHour: parseInt(form.clockHour) || 0, clockMinute: parseInt(form.clockMinute) || 0,
+      longitude: form.province ? form.longitude : undefined, utcOffsetMinutes: 480,
+    });
+    hour = tst.branch;
+    const dayOffset = resolveZiweiDayOffset(tst);
     if (dayOffset !== 0 && y > 0 && m > 0 && d > 0) {
       ({ year: y, month: m, day: d } = shiftGregorianDate({ year: y, month: m, day: d }, dayOffset));
     }

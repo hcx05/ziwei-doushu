@@ -32,10 +32,10 @@ const pick = (b: ReturnType<typeof formToBirthInfo>) => ({ year: b.year, month: 
 const cases: Array<[string, string, number, { year: number; month: number; day: number; hour: number }, string]> = [
   ['23', '30', 120, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 120° 23:30 晚子时 → 次日子时'],
   ['0', '30', 120, { year: 2000, month: 1, day: 31, hour: 0 }, '东经 120° 00:30 早子时 → 本日子时'],
-  ['23', '30', 100, { year: 2000, month: 1, day: 31, hour: 11 }, '东经 100° 23:30（真太阳时 22:10）→ 本日亥时'],
-  ['22', '30', 135, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 135° 22:30（真太阳时 23:30）→ 次日子时'],
-  ['0', '30', 80, { year: 2000, month: 1, day: 30, hour: 11 }, '东经 80° 00:30（真太阳时前一日 21:50）→ 前一日亥时'],
-  ['23', '50', 130, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 130° 23:50（真太阳时次日 00:30）→ 次日子时'],
+  ['23', '30', 100, { year: 2000, month: 1, day: 31, hour: 11 }, '东经 100° 23:30（真太阳时约 21:57，含均时差）→ 本日亥时'],
+  ['22', '30', 135, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 135° 22:30（真太阳时约 23:17）→ 次日子时'],
+  ['0', '30', 80, { year: 2000, month: 1, day: 30, hour: 11 }, '东经 80° 00:30（真太阳时前一日约 21:37）→ 前一日亥时'],
+  ['23', '50', 130, { year: 2000, month: 2, day: 1, hour: 0 }, '东经 130° 23:50（真太阳时次日约 00:17）→ 次日子时'],
 ];
 
 for (const [h, mi, lon, expected, label] of cases) {

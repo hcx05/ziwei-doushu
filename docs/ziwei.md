@@ -4,6 +4,7 @@
 
 - Skill 用法见 [`.claude/skills/ziwei-doushu/SKILL.md`](../.claude/skills/ziwei-doushu/SKILL.md)。
 - 文中的「本轮更新」「维护节奏」「联系」等都是上游作者的说明。
+- **2026-11-22 本仓库修正**：紫微排盘的时辰判定原本只做经度修正、漏了均时差（`share.ts` 的 `formToBirthInfo`），与八字引擎判出的时辰可能不同；现已统一用 `lib/calendar/true-solar-time.ts`（钟表时间＋经度修正＋均时差），回归测试 `scripts/regression/hour-branch-consistency.test.ts`。本页 4.1 表「真太阳时校正：经度差＋均时差」的说法自此与代码一致。
 
 ---
 
