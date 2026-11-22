@@ -5,15 +5,15 @@
  * 重新打包：npm run build:skill
  *
  * 子命令：
- *   cast      起卦并装卦：--yao 手动输入六爻、--toss 由工具代掷、--time-cast 时间起卦
+ *   cast      起卦并装卦：--yao 输入问卜者亲手掷钱的结果、--time-cast 时间起卦
+ *             （不提供电脑随机数代掷：随机数不是问卜者亲手摇卦，传统上不成卦）
  *   gua       查某一卦的《周易》卦辞、爻辞原文
  *   sections  解读小节结构与推理类型；--skeleton 给出溯因节已预填标记的骨架
  *   rules     推理分工规则全文
  *   check     检查解读草稿：溯因节是否以「仅供参考」标记开头、小节是否齐全（--fix 自动补标记）
  */
-import { randomInt } from 'node:crypto';
 import { Solar } from 'lunar-javascript';
-import { buildLiuyao, parseYaoDigits, timeCast, tossCoins, type YaoValue } from '../../lib/systems/liuyao/engine';
+import { buildLiuyao, parseYaoDigits, timeCast, type YaoValue } from '../../lib/systems/liuyao/engine';
 import { buildLiuyaoDigest } from '../../lib/systems/liuyao/digest';
 import { LIUYAO_SECTION_SETS, LIUYAO_VOCABULARY } from '../../lib/systems/liuyao/tasks';
 import { ZHOUYI } from '../../lib/systems/liuyao/zhouyi.data';
@@ -25,19 +25,15 @@ import { clockBranch, fail, parseArgs, parseMoment, runCheck, str, type Args } f
 
 function cmdCast(args: Args) {
   const moment = parseMoment(args);
-  const modes = [args.yao !== undefined, !!args.toss, !!args['time-cast']].filter(Boolean).length;
-  if (modes !== 1) fail('起卦方法三选一：--yao 六位数字（自下而上，6 老阴 7 少阳 8 少阴 9 老阳）、--toss（工具代掷）、--time-cast（时间起卦）');
+  if (args.toss) fail('不提供电脑随机代掷：随机数不是问卜者亲手摇卦，传统上不成卦。请问卜者自己掷三枚铜钱六次后用 --yao 输入，或改用 --time-cast 时间起卦。');
+  const modes = [args.yao !== undefined, !!args['time-cast']].filter(Boolean).length;
+  if (modes !== 1) fail('起卦方法二选一：--yao 六位数字（问卜者亲手掷钱，自下而上，6 老阴 7 少阳 8 少阴 9 老阳）、--time-cast（时间起卦）');
   let values: YaoValue[];
   let method: string;
   const extra: string[] = [];
   if (args.yao !== undefined) {
     values = parseYaoDigits(String(args.yao));
     method = '问卜者自行掷钱，手动输入';
-  } else if (args.toss) {
-    const t = tossCoins(() => randomInt(0, 1_000_000) / 1_000_000);
-    values = t.values;
-    method = '工具代掷（每爻三枚钱，字 2、背 3）';
-    extra.push(`各爻三钱（自下而上）：${t.coins.map((c, i) => `${['初', '二', '三', '四', '五', '上'][i]}${c.join('+')}=${t.values[i]}`).join('、')}`);
   } else {
     const lunar = Solar.fromYmd(moment.year, moment.month, moment.day).getLunar() as unknown as {
       getYearZhi(): string; getMonth(): number; getDay(): number;
@@ -93,7 +89,6 @@ function cmdCheck(args: Args) {
 const HELP = `六爻 Skill 工具
 
   node liuyao.mjs cast --yao 789867 --date 2026-11-21 --time 15:20        （自下而上六爻：6 老阴 7 少阳 8 少阴 9 老阳）
-  node liuyao.mjs cast --toss --now --utc-offset 8                        （由工具代掷）
   node liuyao.mjs cast --time-cast --date 2026-11-21 --time 15:20         （时间起卦）
   node liuyao.mjs gua 乾 | gua 水雷屯 | gua 3
   node liuyao.mjs sections [liuyao] [--skeleton]

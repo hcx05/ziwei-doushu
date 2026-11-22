@@ -7,7 +7,8 @@
 import { PROVINCES } from '../../lib/calendar/cities';
 import { isChinaDST } from '../../lib/calendar/dst-cn';
 import { isValidLunarDate, lunarToSolar } from '../../lib/calendar/lunar-solar';
-import { shiftGregorianDate } from '../../lib/calendar/true-solar-time';
+import { calculateTrueSolarTime, shiftGregorianDate } from '../../lib/calendar/true-solar-time';
+import { ASSUMPTION_MARK } from '../../lib/reasoning/kinds';
 import type { BirthFormState } from '../../lib/systems/ziwei/share';
 import { readFileSync } from 'node:fs';
 import { checkMarks, enforceMarks } from '../../lib/reasoning/check';
@@ -116,12 +117,41 @@ export function parseBirthArgs(args: Args): { form: BirthFormState; notes: strin
   if (str(args['utc-offset'])) notes.push(`当地时间（UTC${Number(args['utc-offset']) >= 0 ? '+' : ''}${args['utc-offset']}）已换算为东八区 ${y}-${mo}-${d} ${clockHour}:${clockMinute.padStart(2, '0')} 再排盘`);
   if (province) notes.push(`已按出生地经度 ${longitude}° 做真太阳时校正（${province}${city ? ' ' + city : ''}）`);
   else if (!unknownTime) notes.push('未给出生地：按东经 120° 钟表时间排盘，未做真太阳时校正');
+  if (!unknownTime) {
+    const near = hourBoundaryNote(y, mo, d, Number(clockHour), Number(clockMinute), province ? longitude : undefined);
+    if (near) notes.push(near);
+  }
   if (!unknownTime && !str(args['utc-offset']) && isChinaDST(y, mo, d)) {
     notes.push('⚠ 该日期处于中国夏令时期间：若给的是当时的钟表时间，应先减 1 小时再排；请向命主确认，不要自行假设');
   }
   return { form, notes };
 }
 
+
+/** 出生时刻离时辰交界多近（分钟数阈值）：出生记录常取整到 5–15 分钟，再近就可能换时辰 */
+export const HOUR_BOUNDARY_MINUTES = 15;
+const BRANCH_NAMES = '子丑寅卯辰巳午未申酉戌亥';
+
+/**
+ * 真太阳时（有出生地时）或东八区钟表时间离最近的时辰交界（奇数整点）不到 HOUR_BOUNDARY_MINUTES 分钟时，
+ * 给出「⚠ 假设：」提醒：时辰对出生记录误差敏感，应问清时间来源，必要时两个时辰各排一次定盘。
+ */
+export function hourBoundaryNote(y: number, mo: number, d: number, hour: number, minute: number, longitude?: number): string | null {
+  const t = longitude === undefined
+    ? { hour, minute }
+    : calculateTrueSolarTime({ year: y, month: mo, day: d, clockHour: hour, clockMinute: minute, longitude, utcOffsetMinutes: 480 });
+  const mins = t.hour * 60 + t.minute;
+  let best = Infinity, boundary = 0;
+  for (let b = 60; b <= 1440; b += 120) {
+    const dist = Math.min(Math.abs(mins - b), Math.abs(mins + 1440 - b), Math.abs(mins - 1440 - b));
+    if (dist < best) { best = dist; boundary = b % 1440; }
+  }
+  if (best > HOUR_BOUNDARY_MINUTES) return null;
+  const after = Math.floor(((boundary + 60) % 1440) / 120) % 12;  // 交界之后的时辰
+  const before = (after + 11) % 12;
+  const hh = String(t.hour).padStart(2, '0'), mm = String(t.minute).padStart(2, '0');
+  return `${ASSUMPTION_MARK}出生时刻（${longitude === undefined ? '钟表时间' : '真太阳时'} ${hh}:${mm}）距${BRANCH_NAMES[before]}、${BRANCH_NAMES[after]}两个时辰的交界只有 ${Math.round(best)} 分钟，记录差几分钟时辰就会变。请问清出生时间的来源（出生证明、家人记忆或估计），不确定时两个时辰各排一次，用已发生的事定盘。`;
+}
 
 /** check 子命令的共用部分：读草稿（--file 或标准输入），--fix 输出补标版本，否则报告缺漏并以非零退出 */
 export function runCheck(args: Args, sections: SectionSpec[]): void {

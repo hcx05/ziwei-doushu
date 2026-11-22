@@ -35,6 +35,13 @@ for (const must of ['【十二宫】', '命宫在丑', '【当前大限（', '�
   assert.ok(chart.stdout.includes(must), `排盘输出缺少「${must}」`);
 }
 
+const edge = run('chart', '--date', '1990-06-15', '--time', '10:55', '--gender', '女');
+assert.ok(edge.stdout.includes('距巳、午两个时辰的交界只有 5 分钟'), '时辰交界要提醒定盘');
+assert.ok(!chart.stdout.includes('两个时辰的交界'), '10:30 离交界远，不该提醒');
+{
+  const md = readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
+  for (const must of ['先问再排', '定盘', '双胞胎', '你提到']) assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
+}
 const unknown = run('chart', '--date', '1990-06-15', '--unknown-time', '--gender', '男');
 assert.equal(unknown.status, 0, unknown.stderr);
 assert.ok(unknown.stdout.includes('⚠ 假设：出生时辰不详，本盘按子时假设排出'));

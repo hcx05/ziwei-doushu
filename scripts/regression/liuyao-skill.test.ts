@@ -1,7 +1,7 @@
 /**
  * 六爻 Claude Skill（.claude/skills/liuyao）回归：
  *   1) 仓库里的 scripts/liuyao.mjs 与源码重新打包的结果逐字节一致；
- *   2) cast 三种起卦方法可用，输出卦象、装卦、伏神、变爻、经文；参数错误干净退出；
+ *   2) cast 两种起卦方法可用（电脑随机代掷已移除，--toss 报错），输出卦象、装卦、伏神、变爻、经文；参数错误干净退出；
  *   3) gua / sections / rules / check 可用，溯因节漏标会被抓到；
  *   4) SKILL.md frontmatter 合法，写明推理分工、六爻规矩与不做清单。
  */
@@ -34,12 +34,12 @@ for (const must of ['本卦：水火既济（第63卦），坎宫三世卦', '�
 const t = run('cast', '--time-cast', '--date', '2026-11-21', '--time', '15:20');
 assert.ok(t.stdout.includes('除 8 余 6 → 上卦坎') && t.stdout.includes('本卦：水山蹇'));
 const toss = run('cast', '--toss', '--date', '2026-11-21', '--time', '15:20');
-assert.equal(toss.status, 0, toss.stderr);
-assert.ok(/各爻三钱（自下而上）：初[23]\+[23]\+[23]=\d/.test(toss.stdout));
+assert.equal(toss.status, 2, '电脑随机代掷已移除，应报错');
+assert.ok(toss.stderr.includes('不提供电脑随机代掷'), toss.stderr);
 assert.equal(run('cast', '--yao', '98767', '--date', '2026-11-21', '--time', '15:20').status, 2);
-assert.equal(run('cast', '--yao', '987678', '--toss', '--date', '2026-11-21', '--time', '15:20').status, 2, '起卦方法只能三选一');
-assert.equal(run('cast', '--toss', '--now').status, 2, '--now 未给时区应报错');
-assert.equal(run('cast', '--toss', '--date', '2026-02-30', '--time', '10:00').status, 2);
+assert.equal(run('cast', '--yao', '987678', '--time-cast', '--date', '2026-11-21', '--time', '15:20').status, 2, '起卦方法只能二选一');
+assert.equal(run('cast', '--time-cast', '--now').status, 2, '--now 未给时区应报错');
+assert.equal(run('cast', '--time-cast', '--date', '2026-02-30', '--time', '10:00').status, 2);
 const late = run('cast', '--yao', '777777', '--date', '2026-11-21', '--time', '23:10');
 assert.ok(late.stdout.includes('⚠ 假设：起卦在 23 点后'));
 
@@ -72,4 +72,4 @@ for (const must of [MARK, '⚠ 假设：', '溯因重灾区：可以回答，但
   assert.ok(md.includes(must), `SKILL.md 缺少「${must}」`);
 }
 
-console.log('✓ 六爻 Skill：打包产物最新、三种起卦 / 查卦 / 小节 / 检查可用、SKILL.md 规则齐全');
+console.log('✓ 六爻 Skill：打包产物最新、两种起卦（已无随机代掷）/ 查卦 / 小节 / 检查可用、SKILL.md 规则齐全');

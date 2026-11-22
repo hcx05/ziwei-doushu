@@ -32,6 +32,14 @@ for (const must of ['年柱：庚午', '月柱：壬午', '日柱：辛亥', '�
   '亥巳冲', '逆排', '第4步 戊寅', '【流年 2026】', '流年干支：丙午', '真太阳时校正', '夏令时']) {
   assert.ok(c.stdout.includes(must), `chart 输出缺少「${must}」`);
 }
+// 时辰交界提醒：真太阳时离奇数整点 15 分钟内要提醒定盘；10:30 不提醒
+const edge = run('chart', '--date', '1990-06-15', '--time', '10:55', '--gender', '女');
+assert.ok(edge.stdout.includes('距巳、午两个时辰的交界只有 5 分钟'), edge.stdout.slice(0, 400));
+assert.ok(!c.stdout.includes('两个时辰的交界'), '10:30 离交界远，不该提醒');
+const edgeCity = run('chart', '--date', '1990-06-15', '--time', '11:05', '--gender', '女', '--city', '杭州');
+assert.ok(edgeCity.stdout.includes('出生时刻（真太阳时 11:05）'), '有出生地时按真太阳时判断');
+// SKILL.md：先问再排、定盘、命主说的事与盘上结论分开
+for (const must of ['先问再排', '定盘', '双胞胎', '你提到']) assert.ok(readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8').includes(must), `SKILL.md 缺少「${must}」`);
 const late = run('chart', '--date', '1990-06-15', '--time', '23:30', '--gender', '男');
 assert.ok(late.stdout.includes('日柱：壬子') && late.stdout.includes('⚠ 假设：出生在晚子时'));
 const lateSame = run('chart', '--date', '1990-06-15', '--time', '23:30', '--gender', '男', '--zishi', 'same-day');

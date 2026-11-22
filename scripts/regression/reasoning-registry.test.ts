@@ -38,6 +38,7 @@ const ZIWEI_RULES_BEFORE = [
   '· 只写相关的小节：演绎、归纳节可以省略，或并成末尾一句「依据」；凡是吉凶、成败、定性、应期、具体事件等溯因结论，必须写在对应的溯因小节标题下并标注，不能写在标题外。',
   '· 工具输出的「⚠ 假设：」要转告，用一句白话说即可。',
   '· 一个问题通常一个溯因小节就够；全篇最后可加一句「想看依据可以再问」，只说一次。',
+  '· 命主告诉你的事与工具推得的结论分开写：引用时说「你提到……」，不能把命主说过的事说成是盘面看出来的。',
 ].join('\n');
 assert.equal(REASONING_RULES, ZIWEI_RULES_BEFORE, '紫微斗数推理规则全文');
 assert.equal(buildReasoningRules(ZIWEI_VOCABULARY), ZIWEI_RULES_BEFORE);

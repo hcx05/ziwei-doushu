@@ -3,7 +3,6 @@
  *
  * 起卦：
  *   · 手动：六次掷钱结果，自下而上，6 老阴（动）、7 少阳、8 少阴、9 老阳（动）；
- *   · 工具代掷：每爻三枚钱，字为 2、背为 3，三枚相加；
  *   · 时间起卦（梅花易数法）：农历年支数＋月＋日 → 上卦；再加时支数 → 下卦；总数除 6 余数为动爻。
  * 装卦：八宫与世应、纳甲干支、六亲（以本宫五行论）、六神（以日干起）、伏神（取本宫首卦）、
  *       变卦与变爻（六亲仍以本卦宫论）、月建日辰、旬空、月破、日冲、动变的回头生克与进退神。
@@ -136,12 +135,6 @@ const clashes = (a: Branch, b: Branch) => BRANCH_CLASH.some(([x, y]) => (a === x
 export function parseYaoDigits(s: string): YaoValue[] {
   if (!/^[6-9]{6}$/.test(s)) throw new RangeError(`爻值应为 6 位、每位 6–9（自下而上），收到「${s}」`);
   return s.split('').map(Number) as YaoValue[];
-}
-
-/** 工具代掷：每爻三枚钱（字 2、背 3） */
-export function tossCoins(rand: () => number): { values: YaoValue[]; coins: number[][] } {
-  const coins: number[][] = Array.from({ length: 6 }, () => Array.from({ length: 3 }, () => (rand() < 0.5 ? 2 : 3)));
-  return { values: coins.map(c => c.reduce((a, b) => a + b, 0) as YaoValue), coins };
 }
 
 /** 梅花易数时间起卦 → 六爻值（动爻为老阴 / 老阳，其余为少阴 / 少阳） */
