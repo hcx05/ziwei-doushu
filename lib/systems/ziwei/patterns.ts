@@ -2,7 +2,8 @@
  * 紫微斗數格局識別（v2 嚴格化版本）
  *
  * 設計原則：
- * 1. 古書條件優先：每個格局列出"必須 / 加分 / 破格"三層結構，出處可考
+ * 1. 古書條件優先：每個格局列出"必須 / 加分 / 破格"三層結構；description 是通行說法的白話整理，
+ *    不是古籍原文、也不是倪師原話（2026-11-22 刪除 4 句查無出處的「倪師說」，見 docs/ROADMAP-multi-system.md）
  * 2. 倪師立場：不使用宮干自化、大限四化、來因宮等飛星派工具
  * 3. 廟旺利陷：用 brightness 字段（bright=廟旺、normal=平、dim=陷）
  * 4. 三方四正會照：命宮 + 財帛 + 官祿 + 遷移
@@ -106,6 +107,27 @@ function sanFangHasSiHua(chart: ZiweiChart, hua: SiHua): boolean {
   return getSanFangPalaces(chart).some(p => palaceHasSiHua(p, hua));
 }
 const BRANCH_NAMES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+/**
+ * 主角星本身的狀態：亮度落陷 / 不得地、同宮有別的化忌、同宮四煞。
+ * 這些在古書都屬「減力」或「破格」條件，基礎格局（單一條件觸發）原本沒看，
+ * 一律寫成「主生財順利」之類的正面說法，與盤面矛盾。這裡統一補成破格條件，格局等級降一檔。
+ */
+function starCaveats(palace: Palace, starName: string): string[] {
+  const out: string[] = [];
+  const st = findStar(palace, starName);
+  if (st?.brightness === 'dim') out.push(`${starName}亮度${st.brightnessRaw ?? '落陷'}，力量減`);
+  for (const o of palace.stars) {
+    if (o.name !== starName && o.siHua === '忌') out.push(`同宮${o.name}化忌`);
+  }
+  const sha = palace.stars.filter(o => SHA_HARD.includes(o.name)).map(o => o.name);
+  if (sha.length) out.push(`同宮${sha.join('、')}`);
+  return out;
+}
+const DOWNGRADE: Record<Pattern['level'], Pattern['level']> = { excellent: 'good', good: 'neutral', neutral: 'neutral', caution: 'caution' };
+function withCaveats(level: Pattern['level'], breaking: string[]): Pattern['level'] {
+  return breaking.length ? DOWNGRADE[level] : level;
+}
 
 // ────────────────── 正格識別器 ──────────────────
 
@@ -426,6 +448,11 @@ function detectRiYueTongGong(chart: ZiweiChart, patterns: Pattern[]) {
   if (sun.branch === 7) bonus.push('未宮日月同輝（古書云未宮日月雙美）');
   if (sanFangAllStars(chart).has('文昌') && sanFangAllStars(chart).has('文曲')) bonus.push('昌曲會照');
   if (hasShaInPalace(sun, SHA_HARD)) breaking.push('日月宮煞星同坐');
+  for (const n of ['太陽', '太陰']) {
+    const st = findStar(sun, n);
+    if (st?.brightness === 'dim') breaking.push(`${n}亮度${st.brightnessRaw ?? '落陷'}`);
+  }
+  for (const o of sun.stars) if (o.siHua === '忌') breaking.push(`${o.name}化忌同宮`);
 
   patterns.push({
     name: '日月同宮',
@@ -679,12 +706,13 @@ function detectHuaLuRuMing(chart: ZiweiChart, ming: Palace, patterns: Pattern[])
   const huaLuStar = ming.stars.find(s => s.siHua === '祿' && s.type === 'major');
   if (!huaLuStar) return;
 
+  const breaking = starCaveats(ming, huaLuStar.name);
   patterns.push({
     name: `${huaLuStar.name}化祿入命`,
-    level: 'good',
+    level: withCaveats('good', breaking),
     description: `${huaLuStar.name}化祿坐命，主生財順利、人緣佳、機緣多。${huaLuStar.name === '武曲' ? '武曲化祿屬正財，宜實業、金融。' : huaLuStar.name === '太陰' ? '太陰化祿屬陰財、不動產。' : huaLuStar.name === '貪狼' ? '貪狼化祿屬人脈財、桃花財。' : ''}`,
     palaces: ['命宮'],
-    conditions: { required: [`${huaLuStar.name}化祿坐命宮`] },
+    conditions: { required: [`${huaLuStar.name}化祿坐命宮`], breaking },
     source: '《紫微斗數全書》',
   });
 }
@@ -851,14 +879,15 @@ function detectLuCunShouShen(chart: ZiweiChart, patterns: Pattern[]) {
   const inMing = luCunPalace.branch === chart.mingGongBranch;
   const inShen = luCunPalace.branch === chart.shenGongBranch;
   if (!inMing && !inShen) return;
+  const breaking = starCaveats(luCunPalace, '祿存').filter(x => !x.startsWith('同宮擎羊') && !x.startsWith('同宮陀羅'));
   patterns.push({
     name: inMing ? '祿存守命' : '祿存守身',
-    level: 'good',
+    level: withCaveats('good', breaking),
     description: inMing
       ? '祿存坐命，主一生衣食無憂、財祿穩定。性格保守，善積累，但羊陀夾祿須防小人。最宜配化祿、左輔右弼方為大格。'
-      : '祿存入身宮，主中年後財源穩定、得祿自享。倪師說「祿存入身，財氣近身」——配偶或事業方向能帶來穩定財祿。',
+      : '祿存入身宮，主中年後財源穩定、得祿自享。配偶或事業方向能帶來穩定財祿。',
     palaces: [inMing ? '命宮' : '身宮'],
-    conditions: { required: [inMing ? '祿存入命宮' : '祿存入身宮'] },
+    conditions: { required: [inMing ? '祿存入命宮' : '祿存入身宮'], breaking },
     source: '《紫微斗數全書·祿存星》',
   });
 }
@@ -874,7 +903,7 @@ function detectTianMaRuMing(chart: ZiweiChart, patterns: Pattern[]) {
     name: inMing ? '天馬入命' : '天馬在遷',
     level: 'neutral',
     description: inMing
-      ? '天馬坐命，主一生奔波、動中得財，宜走商旅、外勤、跨界發展。倪師說「天馬入命，無祿不發」——若再會祿存或化祿即「祿馬交馳」之富格。'
+      ? '天馬坐命，主一生奔波、動中得財，宜走商旅、外勤、跨界發展。若再會祿存或化祿即「祿馬交馳」之富格；無祿則奔波而少得。'
       : '天馬在遷移宮，主外出有利、遠行得財，宜異鄉發展。配化祿主異地生財，配煞星則旅途多波折。',
     palaces: [tianMaPalace.name],
     conditions: { required: [inMing ? '天馬入命宮' : '天馬入遷移宮'] },
@@ -888,12 +917,13 @@ function detectHuaLuRuCai(chart: ZiweiChart, patterns: Pattern[]) {
   if (!cai) return;
   const luStar = cai.stars.find(s => s.type === 'major' && s.siHua === '祿');
   if (!luStar) return;
+  const breaking = starCaveats(cai, luStar.name);
   patterns.push({
     name: '化祿入財',
-    level: 'good',
-    description: `${luStar.name}化祿入財帛宮，主財源暢通、收入穩定。倪師講化祿是「正財」象徵——這個化祿星所代表的能力（${luStar.name}的核心特質）是你賺錢的主軸。配祿存或天馬則財源更廣。`,
+    level: withCaveats('good', breaking),
+    description: `${luStar.name}化祿入財帛宮，主財源暢通、收入穩定。這個化祿星所代表的能力（${luStar.name}的核心特質）是賺錢的主軸。配祿存或天馬則財源更廣。`,
     palaces: ['財帛'],
-    conditions: { required: [`${luStar.name}化祿入財帛宮`] },
+    conditions: { required: [`${luStar.name}化祿入財帛宮`], breaking },
     source: '《紫微斗數全書·四化論》',
   });
 }
@@ -904,12 +934,13 @@ function detectHuaQuanRuGuan(chart: ZiweiChart, patterns: Pattern[]) {
   if (!guan) return;
   const quanStar = guan.stars.find(s => s.type === 'major' && s.siHua === '權');
   if (!quanStar) return;
+  const breaking = starCaveats(guan, quanStar.name);
   patterns.push({
     name: '化權入官',
-    level: 'good',
+    level: withCaveats('good', breaking),
     description: `${quanStar.name}化權入官祿宮，主事業有掌控力、能擔當獨當一面的職位。化權代表權力與執行力——${quanStar.name}化權說明你在事業上能成為決策者或核心執行者，宜走管理或技術權威路線。`,
     palaces: ['官祿'],
-    conditions: { required: [`${quanStar.name}化權入官祿宮`] },
+    conditions: { required: [`${quanStar.name}化權入官祿宮`], breaking },
     source: '《紫微斗數全書·四化論》',
   });
 }
@@ -923,12 +954,13 @@ function detectHuaKeRuMingShen(chart: ZiweiChart, patterns: Pattern[]) {
     const keStar = p.stars.find(s => s.type === 'major' && s.siHua === '科');
     if (!keStar) continue;
     const isMing = p.branch === chart.mingGongBranch;
+    const breaking = starCaveats(p, keStar.name);
     patterns.push({
       name: isMing ? '化科入命' : '化科入身',
-      level: 'good',
-      description: `${keStar.name}化科入${isMing ? '命' : '身'}宮，主名聲、文書、學術運。倪師講化科是「貴人星」——${keStar.name}化科帶來的是被人看重的特質，宜從事文書、教育、研究、諮詢、文創等“以名取利”的方向。`,
+      level: withCaveats('good', breaking),
+      description: `${keStar.name}化科入${isMing ? '命' : '身'}宮，主名聲、文書、學術運。${keStar.name}化科帶來的是被人看重的特質，宜從事文書、教育、研究、諮詢、文創等“以名取利”的方向。`,
       palaces: [isMing ? '命宮' : '身宮'],
-      conditions: { required: [`${keStar.name}化科入${isMing ? '命' : '身'}宮`] },
+      conditions: { required: [`${keStar.name}化科入${isMing ? '命' : '身'}宮`], breaking },
       source: '《紫微斗數全書·四化論》',
     });
     return; // 命和身重複時只識別一次
@@ -979,7 +1011,7 @@ function detectFuBiTongHui(chart: ZiweiChart, patterns: Pattern[]) {
   patterns.push({
     name: '輔弼同會',
     level: 'good',
-    description: '左輔右弼同會命宮三方四正，主一生貴人不絕、人緣極佳。最宜領導崗位與團隊合作型工作。倪師說「輔弼夾命，平生貴人多」——你不是單打獨斗的命，要善用人際網絡。',
+    description: '左輔右弼同會命宮三方四正，主一生貴人不絕、人緣極佳。最宜領導崗位與團隊合作型工作。不是單打獨鬥的命，要善用人際網絡。',
     palaces: ['命宮'],
     conditions: { required: ['左輔、右弼同會命宮三方四正'] },
     source: '《紫微斗數全書·輔弼論》',
@@ -993,7 +1025,7 @@ function detectKuiYueTongHui(chart: ZiweiChart, patterns: Pattern[]) {
   patterns.push({
     name: '魁鉞同會',
     level: 'good',
-    description: '天魁天鉞同會命宮三方四正，主"天乙貴人"加持，關鍵時刻總有貴人提攜。倪師說「魁鉞夾命，必為貴人」——遇到困難時身邊會出現得力相助者，宜主動維護人脈。',
+    description: '天魁天鉞同會命宮三方四正，主"天乙貴人"加持，關鍵時刻總有貴人提攜。遇到困難時身邊會出現得力相助者，宜主動維護人脈。',
     palaces: ['命宮'],
     conditions: { required: ['天魁、天鉞同會命宮三方四正'] },
     source: '《紫微斗數全書·魁鉞論》',

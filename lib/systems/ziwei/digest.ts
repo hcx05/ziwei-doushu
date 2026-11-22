@@ -8,7 +8,7 @@
  * 隱私：默認不含姓名、出生地、經緯度、公曆生日、四柱（includeBirth 才帶）。
  */
 
-import type { Palace, SiHua, ZiweiChart } from '@/lib/systems/ziwei/types';
+import type { Palace, ZiweiChart } from '@/lib/systems/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/systems/ziwei/constants';
 import { detectPatterns } from '@/lib/systems/ziwei/patterns';
 import { getDaXianSiHua } from '@/lib/systems/ziwei/sihua';
@@ -22,7 +22,7 @@ export interface DigestOptions {
   includeBirth?: boolean;
 }
 
-const SIHUA_ORDER: SiHua[] = ['祿', '權', '科', '忌'];
+const LEVEL_LABEL: Record<string, string> = { excellent: '上格', good: '吉', neutral: '中性', caution: '凶' };
 
 function palaceLine(palace: Palace): string {
   const stars = palace.stars.length
@@ -100,9 +100,16 @@ export function buildDigest(chart: ZiweiChart, opts: DigestOptions = {}): string
 
   const patterns = detectPatterns(chart);
   if (patterns.length) {
-    lines.push('', '【引擎識別出的格局】');
-    for (const p of patterns.slice(0, 8)) {
-      lines.push(`${p.name}（${p.level}）：${p.description.slice(0, 60)}`);
+    lines.push('', '【引擎識別出的格局】成立與否、加分、破格是按條件算出的事實；說明文字是引擎內建的通行說法，不是倪師原話、也不是古籍原文，引用時不得加引號或歸給倪師');
+    for (const p of patterns) {
+      const c = p.conditions;
+      const cond = [
+        c?.required?.length ? `成立：${c.required.join('、')}` : '',
+        c?.bonus?.length ? `加分：${c.bonus.join('、')}` : '',
+        c?.breaking?.length ? `破格／減力：${c.breaking.join('、')}` : '',
+      ].filter(Boolean).join('；');
+      lines.push(`- ${p.name}（${LEVEL_LABEL[p.level]}）${cond ? `｜${cond}` : ''}`);
+      lines.push(`  說明：${p.description}`);
     }
   }
 
