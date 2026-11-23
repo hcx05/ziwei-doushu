@@ -67,7 +67,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '實際建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的方向。' },
       { title: '應期', kind: 'abduction',
-        instruction: '命主問哪一年、什麼時候（感情上的具體事件）才寫：先用 years --palace 夫妻 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」，最可能的放第一行；沒問時間就略過本節。' },
+        instruction: '命主問哪一年、什麼時候（感情上的具體事件）才寫：先用 years --palace 夫妻 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」（依據只說哪幾層引動、吉或凶，不逐顆列星曜，每行 50 字內），最可能的放第一行；沒問時間就略過本節。問時間時只寫本節，其他小節對方沒問就不寫。' },
     ],
   },
   career: {
@@ -84,7 +84,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '實際建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的方向與行業類型。' },
       { title: '應期', kind: 'abduction',
-        instruction: '命主問哪一年、什麼時候（事業上的具體事件）才寫：先用 years --palace 官祿 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」，最可能的放第一行；沒問時間就略過本節。' },
+        instruction: '命主問哪一年、什麼時候（事業上的具體事件）才寫：先用 years --palace 官祿 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」（依據只說哪幾層引動、吉或凶，不逐顆列星曜，每行 50 字內），最可能的放第一行；沒問時間就略過本節。問時間時只寫本節，其他小節對方沒問就不寫。' },
     ],
   },
   wealth: {
@@ -101,7 +101,7 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
       { title: '理財建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的理財方向（不承諾收益、不推薦具體標的）。' },
       { title: '應期', kind: 'abduction',
-        instruction: '命主問哪一年、什麼時候（財運上的具體事件）才寫：先用 years --palace 財帛 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」，最可能的放第一行；沒問時間就略過本節。' },
+        instruction: '命主問哪一年、什麼時候（財運上的具體事件）才寫：先用 years --palace 財帛 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」（依據只說哪幾層引動、吉或凶，不逐顆列星曜，每行 50 字內），最可能的放第一行；沒問時間就略過本節。問時間時只寫本節，其他小節對方沒問就不寫。' },
     ],
   },
   health: {

@@ -37,6 +37,8 @@ export const ABDUCTION_MAX_LINES = 3;
 export const CANDIDATE_MARK = '候選：';
 export const CANDIDATE_MARK_SIMP = '候选：';
 export const MAX_CANDIDATES = 3;
+/** 一行「候選：」（不計空白）最多幾個字：依據只寫一句，不逐顆列星曜、四化 */
+export const MAX_CANDIDATE_CHARS = 50;
 
 /** 資料缺失或口徑未定時的假設聲明（不是模型推理的限制，而是輸入本身的假設） */
 export const ASSUMPTION_MARK = '⚠ 假設：';

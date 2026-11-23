@@ -1,7 +1,7 @@
 /**
  * lib/reasoning/rules.ts —— 推理分工規則文本（各體系共用，只替換體系相關的名詞）
  */
-import { ABDUCTION_MAX_LINES, CANDIDATE_MARK, MAX_CANDIDATES, REASONING_LABEL, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, CANDIDATE_MARK, MAX_CANDIDATE_CHARS, MAX_CANDIDATES, REASONING_LABEL, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
 
 export interface RulesVocabulary {
   /** 體系名，用於前提句：「假設 X 的規則成立」 */
@@ -30,7 +30,8 @@ export function buildReasoningRules(v: RulesVocabulary): string {
     `  1) 小節第一行必須以「${UNCERTAINTY_MARK}」開頭，緊接著直接寫最可能的結論，一兩句白話。`,
     '  2) 下一行用一句話寫另一種同樣說得通的讀法，以「另一種讀法：」開頭。',
     `  3) 不列支持、相反的${v.signalNoun}訊號，不寫推導過程，不加「這只是參考……」之類的套話；每個溯因小節最多 ${ABDUCTION_MAX_LINES} 行。${v.subject}想看依據時再展開。`,
-    `  4) 例外：問應期或具體事件（哪一年、什麼時候、會不會發生）時，標注行寫結論後，可以接 2 到 ${MAX_CANDIDATES} 行「${CANDIDATE_MARK}」，每行一個候選（年份、時段或事件）加一句依據，最可能的放第一行；之後照樣寫「另一種讀法：」。這種小節最多 ${ABDUCTION_MAX_LINES + MAX_CANDIDATES} 行，候選不超過 ${MAX_CANDIDATES} 個。`,
+    `  4) 例外：問應期或具體事件（哪一年、什麼時候、會不會發生）時，標注行寫結論後，可以接 2 到 ${MAX_CANDIDATES} 行「${CANDIDATE_MARK}」，每行一個候選（年份、時段或事件）加一句依據，最可能的放第一行；之後照樣寫「另一種讀法：」。這種小節最多 ${ABDUCTION_MAX_LINES + MAX_CANDIDATES} 行，候選不超過 ${MAX_CANDIDATES} 個。每行候選不超過 ${MAX_CANDIDATE_CHARS} 字，依據只說哪幾層被引動、吉或凶，不逐顆列星曜或四化。`,
+    `     問時間的回覆，第一句就給年份或時段；只寫應期這一個溯因小節，宮位、星曜、對象性質這些${v.subject}沒問就不寫。`,
     '演繹節與歸納節裡若需要做取捨或推測具體事件，把那部分移到溯因的寫法並標注，不要混在演繹裡當成定論。',
     '【回覆寫法】',
     `· 先回答所問：回覆第一句就是結論（例如「你的喜用神是土、金」「這件事偏難成」），用白話；不要以${v.chartNoun}概要、干支、宮位或排盤說明開頭。`,

@@ -9,7 +9,7 @@
  * 只認 **【標題】** 這種小節標題（標題後允許跟「（僅供參考）」等說明）。
  * 溯因節的第一個非空行可以先是一行 ASSUMPTION_MARK 假設聲明，之後的第一行必須以 UNCERTAINTY_MARK 開頭。
  */
-import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, CANDIDATE_MARK, CANDIDATE_MARK_SIMP, MAX_CANDIDATES, UNCERTAINTY_MARK, UNCERTAINTY_MARK_SIMP, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, CANDIDATE_MARK, CANDIDATE_MARK_SIMP, MAX_CANDIDATE_CHARS, MAX_CANDIDATES, UNCERTAINTY_MARK, UNCERTAINTY_MARK_SIMP, type SectionSpec } from './kinds';
 
 const isMarked = (line: string) => line.trim().startsWith(UNCERTAINTY_MARK) || line.trim().startsWith(UNCERTAINTY_MARK_SIMP);
 
@@ -43,7 +43,7 @@ function firstClaimLine(lines: string[], b: Block): number {
 export interface MarkReport {
   /** 是溯因節，但第一行沒有以 UNCERTAINTY_MARK 開頭 */
   unmarkedAbduction: string[];
-  /** 溯因節正文（不計空行、假設聲明行）超過 ABDUCTION_MAX_LINES 行（加上候選行數），或候選超過 MAX_CANDIDATES 行：多半又貼了訊號清單或推導過程 */
+  /** 溯因節正文（不計空行、假設聲明行）超過 ABDUCTION_MAX_LINES 行（加上候選行數），或候選超過 MAX_CANDIDATES 行、某行候選超過 MAX_CANDIDATE_CHARS 字：多半又貼了訊號清單或推導過程 */
   tooLongAbduction: string[];
   ok: boolean;
 }
@@ -61,7 +61,8 @@ export function checkMarks(text: string, sections: SectionSpec[]): MarkReport {
     if (i < 0 || !isMarked(lines[i])) unmarkedAbduction.push(s.title);
     const body = lines.slice(b.bodyStart, b.bodyEnd).map(l => l.trim()).filter(l => l && !l.startsWith(ASSUMPTION_MARK) && !/^依據|^依據|^```/.test(l));
     const candidates = body.filter(isCandidate).length;
-    if (candidates > MAX_CANDIDATES || body.length > ABDUCTION_MAX_LINES + candidates) tooLongAbduction.push(s.title);
+    const longCandidate = body.some(l => isCandidate(l) && l.replace(/\s/g, '').length > MAX_CANDIDATE_CHARS);
+    if (candidates > MAX_CANDIDATES || longCandidate || body.length > ABDUCTION_MAX_LINES + candidates) tooLongAbduction.push(s.title);
   }
   return { unmarkedAbduction, tooLongAbduction, ok: !unmarkedAbduction.length && !tooLongAbduction.length };
 }
