@@ -32,7 +32,7 @@ export const LIUREN_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '吉凶判斷', kind: 'abduction',
       instruction: '先說明取哪一神為類神及理由，再綜合課傳、天將判斷所問之事的傾向，並給另一種讀法。' },
     { title: '應期', kind: 'abduction',
-      instruction: '按三傳、類神、旬空出空等通行應期法推測時間，並給另一種可能。' },
+      instruction: '按三傳、類神、旬空出空等通行應期法推測時間；可列 2 到 3 行「候選：」，每行一個時間加一句依據，最可能的放第一行，並給另一種可能。' },
   ],
 };
 

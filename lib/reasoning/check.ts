@@ -2,15 +2,18 @@
  * lib/reasoning/check.ts —— 輸出端的確定性檢查：溯因節有沒有標注
  *
  * 標注原本只靠提示詞要求；模型漏寫時沒有任何補救。這裡提供：
- *   · checkMarks()：找出缺標記的溯因節（小節按需取用，不要求逐節都寫），以及正文超過 ABDUCTION_MAX_LINES 行的溯因節；
+ *   · checkMarks()：找出缺標記的溯因節（小節按需取用，不要求逐節都寫），以及正文超過 ABDUCTION_MAX_LINES 行的溯因節
+ *     （應期題每有一行「候選：」上限加一行，候選超過 MAX_CANDIDATES 行仍算過長）；
  *   · enforceMarks()：在缺標記的溯因節第一行前補上 UNCERTAINTY_MARK（不改動其他內容）。
  *
  * 只認 **【標題】** 這種小節標題（標題後允許跟「（僅供參考）」等說明）。
  * 溯因節的第一個非空行可以先是一行 ASSUMPTION_MARK 假設聲明，之後的第一行必須以 UNCERTAINTY_MARK 開頭。
  */
-import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, UNCERTAINTY_MARK, UNCERTAINTY_MARK_SIMP, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, ASSUMPTION_MARK, CANDIDATE_MARK, CANDIDATE_MARK_SIMP, MAX_CANDIDATES, UNCERTAINTY_MARK, UNCERTAINTY_MARK_SIMP, type SectionSpec } from './kinds';
 
 const isMarked = (line: string) => line.trim().startsWith(UNCERTAINTY_MARK) || line.trim().startsWith(UNCERTAINTY_MARK_SIMP);
+
+const isCandidate = (line: string) => line.startsWith(CANDIDATE_MARK) || line.startsWith(CANDIDATE_MARK_SIMP);
 
 const HEADING = /^\s*\*\*【([^】]+)】\*\*.*$/;
 
@@ -40,7 +43,7 @@ function firstClaimLine(lines: string[], b: Block): number {
 export interface MarkReport {
   /** 是溯因節，但第一行沒有以 UNCERTAINTY_MARK 開頭 */
   unmarkedAbduction: string[];
-  /** 溯因節正文（不計空行、假設聲明行）超過 ABDUCTION_MAX_LINES 行：多半又貼了訊號清單或推導過程 */
+  /** 溯因節正文（不計空行、假設聲明行）超過 ABDUCTION_MAX_LINES 行（加上候選行數），或候選超過 MAX_CANDIDATES 行：多半又貼了訊號清單或推導過程 */
   tooLongAbduction: string[];
   ok: boolean;
 }
@@ -57,7 +60,8 @@ export function checkMarks(text: string, sections: SectionSpec[]): MarkReport {
     const i = firstClaimLine(lines, b);
     if (i < 0 || !isMarked(lines[i])) unmarkedAbduction.push(s.title);
     const body = lines.slice(b.bodyStart, b.bodyEnd).map(l => l.trim()).filter(l => l && !l.startsWith(ASSUMPTION_MARK) && !/^依據|^依據|^```/.test(l));
-    if (body.length > ABDUCTION_MAX_LINES) tooLongAbduction.push(s.title);
+    const candidates = body.filter(isCandidate).length;
+    if (candidates > MAX_CANDIDATES || body.length > ABDUCTION_MAX_LINES + candidates) tooLongAbduction.push(s.title);
   }
   return { unmarkedAbduction, tooLongAbduction, ok: !unmarkedAbduction.length && !tooLongAbduction.length };
 }

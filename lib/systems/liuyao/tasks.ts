@@ -33,7 +33,7 @@ export const LIUYAO_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '吉凶判斷', kind: 'abduction',
       instruction: '綜合上述事實判斷所問之事的成敗傾向；若用神取捨有疑義，在這裡說明各種取法及其結論。' },
     { title: '應期', kind: 'abduction',
-      instruction: '按值日、沖空、合破等通行應期法推測較可能的時間，並給出另一種可能。' },
+      instruction: '按值日、沖空、合破等通行應期法推測較可能的時間；可列 2 到 3 行「候選：」，每行一個時間加一句依據，最可能的放第一行，並給出另一種可能。' },
     { title: '經文參考', kind: 'abduction',
       instruction: '先逐字引用工具按朱熹占法給出的經文，再說明它放到所問之事上可能代表什麼。' },
   ],

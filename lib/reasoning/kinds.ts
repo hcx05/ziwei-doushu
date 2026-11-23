@@ -10,7 +10,8 @@
  *   · 演繹：已知盤面 + 規則 → 結論，照規則寫、注明依據；
  *   · 歸納：把已出現的事實整理成共通描述，不新增判斷；
  *   · 溯因：取捨、定性、推測具體事件、反推原因、把預言對應到現實——
- *     可以做，但必須以 UNCERTAINTY_MARK 開頭標注，寫結論與另一種讀法（不列正反訊號、不貼過程）。
+ *     可以做，但必須以 UNCERTAINTY_MARK 開頭標注，寫結論與另一種讀法（不列正反訊號、不貼過程）；
+ *     應期、具體事件題可另列至多 MAX_CANDIDATES 行「候選：」，每行一句依據。
  */
 
 export type ReasoningKind = 'deduction' | 'induction' | 'abduction';
@@ -28,6 +29,14 @@ export const UNCERTAINTY_MARK_SIMP = '⚠ 仅供参考（模型在此类推理�
 
 /** 溯因小節正文最多幾行（不計空行與「⚠ 假設：」行）：標注行寫結論、一行另一種讀法，再留一行餘地 */
 export const ABDUCTION_MAX_LINES = 3;
+
+/**
+ * 應期、具體事件題的例外（2026-11-23）：可在結論後列「候選：」行，每行一個候選（年份、時段或事件）加一句依據。
+ * 有候選行的溯因節，篇幅上限另加候選行數（最多 MAX_CANDIDATES 行）。
+ */
+export const CANDIDATE_MARK = '候選：';
+export const CANDIDATE_MARK_SIMP = '候选：';
+export const MAX_CANDIDATES = 3;
 
 /** 資料缺失或口徑未定時的假設聲明（不是模型推理的限制，而是輸入本身的假設） */
 export const ASSUMPTION_MARK = '⚠ 假設：';

@@ -1,7 +1,7 @@
 /**
  * lib/reasoning/rules.ts —— 推理分工規則文本（各體系共用，只替換體系相關的名詞）
  */
-import { ABDUCTION_MAX_LINES, REASONING_LABEL, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
+import { ABDUCTION_MAX_LINES, CANDIDATE_MARK, MAX_CANDIDATES, REASONING_LABEL, UNCERTAINTY_MARK, type SectionSpec } from './kinds';
 
 export interface RulesVocabulary {
   /** 體系名，用於前提句：「假設 X 的規則成立」 */
@@ -30,10 +30,11 @@ export function buildReasoningRules(v: RulesVocabulary): string {
     `  1) 小節第一行必須以「${UNCERTAINTY_MARK}」開頭，緊接著直接寫最可能的結論，一兩句白話。`,
     '  2) 下一行用一句話寫另一種同樣說得通的讀法，以「另一種讀法：」開頭。',
     `  3) 不列支持、相反的${v.signalNoun}訊號，不寫推導過程，不加「這只是參考……」之類的套話；每個溯因小節最多 ${ABDUCTION_MAX_LINES} 行。${v.subject}想看依據時再展開。`,
+    `  4) 例外：問應期或具體事件（哪一年、什麼時候、會不會發生）時，標注行寫結論後，可以接 2 到 ${MAX_CANDIDATES} 行「${CANDIDATE_MARK}」，每行一個候選（年份、時段或事件）加一句依據，最可能的放第一行；之後照樣寫「另一種讀法：」。這種小節最多 ${ABDUCTION_MAX_LINES + MAX_CANDIDATES} 行，候選不超過 ${MAX_CANDIDATES} 個。`,
     '演繹節與歸納節裡若需要做取捨或推測具體事件，把那部分移到溯因的寫法並標注，不要混在演繹裡當成定論。',
     '【回覆寫法】',
     `· 先回答所問：回覆第一句就是結論（例如「你的喜用神是土、金」「這件事偏難成」），用白話；不要以${v.chartNoun}概要、干支、宮位或排盤說明開頭。`,
-    `· 不貼過程：算式、起局起卦步驟、取用過程、排盤表格、工具原始輸出都不寫進回覆。依據只寫一句，不分點、不列清單，也不另開「依據」「各年依據」之類的小節。${v.subject}追問「怎麼算的」時再展開。`,
+    `· 不貼過程：算式、起局起卦步驟、取用過程、排盤表格、工具原始輸出都不寫進回覆。依據只寫一句，不分點、不列清單，也不另開「依據」「各年依據」之類的小節（應期題的「候選：」行除外）。${v.subject}追問「怎麼算的」時再展開。`,
     '· 只寫相關的小節：演繹、歸納節可以省略，或併成末尾一句「依據」；凡是吉凶、成敗、定性、應期、具體事件等溯因結論，必須寫在對應的溯因小節標題下並標注，不能寫在標題外。',
     '· 工具輸出的「⚠ 假設：」要轉告，用一句白話說即可。',
     '· 一個問題通常一個溯因小節就夠；全篇最後可加一句「想看依據可以再問」，只說一次。',
@@ -61,7 +62,12 @@ export function renderSections(sections: SectionSpec[]): string {
 export function renderSkeleton(sections: SectionSpec[]): string {
   return [
     '（開頭就回答所問；只保留與所問有關的小節，不貼計算過程）',
-    ...sections.filter(s => s.kind === 'abduction').map(s => `**【${s.title}】**（僅供參考）\n${UNCERTAINTY_MARK}……（結論，一兩句）\n另一種讀法：……`),
+    ...sections.filter(s => s.kind === 'abduction').map(s => [
+      `**【${s.title}】**（僅供參考）`,
+      `${UNCERTAINTY_MARK}……（結論，一兩句）`,
+      ...(/應期/.test(s.title) ? [`${CANDIDATE_MARK}……（一個年份或時段，加一句依據；2 到 ${MAX_CANDIDATES} 行，最可能的放第一行；沒問時間就刪掉本節）`] : []),
+      '另一種讀法：……',
+    ].join('\n')),
     '依據：……（一句話，引用工具得出的結論）',
   ].join('\n\n');
 }

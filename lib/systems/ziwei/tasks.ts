@@ -66,6 +66,8 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
         instruction: '大限四化落入或化忌沖照「大限夫妻」與「本命夫妻」的情況（層宮名以工具的三盤疊宮為準），按規則推出的走向；問某一年再看流年四化對「流年夫妻」，找年份用 years --palace 夫妻。只講規則推出的象意；具體事件的推測放到溯因節。' },
       { title: '實際建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的方向。' },
+      { title: '應期', kind: 'abduction',
+        instruction: '命主問哪一年、什麼時候（感情上的具體事件）才寫：先用 years --palace 夫妻 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」，最可能的放第一行；沒問時間就略過本節。' },
     ],
   },
   career: {
@@ -81,6 +83,8 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
         instruction: '大限四化落入或化忌沖照「大限官祿」與「本命官祿」的情況（層宮名以工具的三盤疊宮為準），按規則推出的走向；問某一年再看流年四化對「流年官祿」，找年份用 years --palace 官祿。只講規則推出的象意；具體事件的推測放到溯因節。' },
       { title: '實際建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的方向與行業類型。' },
+      { title: '應期', kind: 'abduction',
+        instruction: '命主問哪一年、什麼時候（事業上的具體事件）才寫：先用 years --palace 官祿 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」，最可能的放第一行；沒問時間就略過本節。' },
     ],
   },
   wealth: {
@@ -96,6 +100,8 @@ const TOPIC_SECTIONS: Record<TopicKey, { intro: string; sections: SectionSpec[] 
         instruction: '大限四化落入或化忌沖照「大限財帛」「大限田宅」與本命財帛、田宅的情況（層宮名以工具的三盤疊宮為準），按規則推出的走向；問某一年再看流年四化對流年財帛、田宅。只講規則推出的象意；具體事件的推測放到溯因節。' },
       { title: '理財建議', kind: 'abduction',
         instruction: '基於以上象意，可供命主參考的理財方向（不承諾收益、不推薦具體標的）。' },
+      { title: '應期', kind: 'abduction',
+        instruction: '命主問哪一年、什麼時候（財運上的具體事件）才寫：先用 years --palace 財帛 掃描，挑碰得最多、層次最齊（本命、大限、流年同時引動）的年份，列 2 到 3 行「候選：某年——一句依據」，最可能的放第一行；沒問時間就略過本節。' },
     ],
   },
   health: {

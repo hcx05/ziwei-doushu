@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 import { REASONING_RULES, ZIWEI_VOCABULARY } from '../../lib/systems/ziwei/tasks';
 
-// ── 1) 紫微規則全文釘住（2026-11-21 起加「回覆寫法」；2026-11-22 溯因節精簡為結論＋另一種讀法，依評測結果） ──
+// ── 1) 紫微規則全文釘住（2026-11-21 起加「回覆寫法」；2026-11-22 溯因節精簡為結論＋另一種讀法，依評測結果；2026-11-23 應期題可列候選） ──
 const ZIWEI_RULES_BEFORE = [
   '【推理分工規則（最高優先級）】',
   '前提：假設紫微斗數的規則成立，不討論其真偽，也不加「命理僅供娛樂」之類的免責話術。',
@@ -31,10 +31,11 @@ const ZIWEI_RULES_BEFORE = [
   '  1) 小節第一行必須以「⚠ 僅供參考（模型在此類推理有能力限制）：」開頭，緊接著直接寫最可能的結論，一兩句白話。',
   '  2) 下一行用一句話寫另一種同樣說得通的讀法，以「另一種讀法：」開頭。',
   '  3) 不列支持、相反的盤面訊號，不寫推導過程，不加「這只是參考……」之類的套話；每個溯因小節最多 3 行。命主想看依據時再展開。',
+  '  4) 例外：問應期或具體事件（哪一年、什麼時候、會不會發生）時，標注行寫結論後，可以接 2 到 3 行「候選：」，每行一個候選（年份、時段或事件）加一句依據，最可能的放第一行；之後照樣寫「另一種讀法：」。這種小節最多 6 行，候選不超過 3 個。',
   '演繹節與歸納節裡若需要做取捨或推測具體事件，把那部分移到溯因的寫法並標注，不要混在演繹裡當成定論。',
   '【回覆寫法】',
   '· 先回答所問：回覆第一句就是結論（例如「你的喜用神是土、金」「這件事偏難成」），用白話；不要以命盤概要、干支、宮位或排盤說明開頭。',
-  '· 不貼過程：算式、起局起卦步驟、取用過程、排盤表格、工具原始輸出都不寫進回覆。依據只寫一句，不分點、不列清單，也不另開「依據」「各年依據」之類的小節。命主追問「怎麼算的」時再展開。',
+  '· 不貼過程：算式、起局起卦步驟、取用過程、排盤表格、工具原始輸出都不寫進回覆。依據只寫一句，不分點、不列清單，也不另開「依據」「各年依據」之類的小節（應期題的「候選：」行除外）。命主追問「怎麼算的」時再展開。',
   '· 只寫相關的小節：演繹、歸納節可以省略，或併成末尾一句「依據」；凡是吉凶、成敗、定性、應期、具體事件等溯因結論，必須寫在對應的溯因小節標題下並標注，不能寫在標題外。',
   '· 工具輸出的「⚠ 假設：」要轉告，用一句白話說即可。',
   '· 一個問題通常一個溯因小節就夠；全篇最後可加一句「想看依據可以再問」，只說一次。',
@@ -119,6 +120,22 @@ assert.deepEqual(checkMarks('**【優勢與注意】**\n訊號並存。', overvi
   assert.ok(checkMarks(trad, overview).ok, '繁體標記同樣認可');
   const listed = short.replace('依據：命宮太陽化祿。', '依據：\n- 命宮太陽化祿\n- 太陰化科\n- 天魁同宮');
   assert.deepEqual(checkMarks(listed, overview).tooLongAbduction, ['優勢與注意'], '分點列依據要算進篇幅');
+}
+// 應期題：結論後可列至多三行「候選：」；第四個候選、或候選之外又貼清單，仍算過長
+{
+  const love = findSectionSet('love')!.sections;
+  assert.ok(love.some(s => s.title === '應期' && s.kind === 'abduction'), '紫微感情題要有應期溯因節');
+  const head = `**【應期】**（僅供參考）\n${UNCERTAINTY_MARK}較可能在 2028 年前後。`;
+  const c = (y: number) => `候選：${y} 年——流年化祿入流年夫妻，大限夫妻同時被引動。`;
+  const tail = '另一種讀法：這幾年都只是有對象，正式結婚要到下一個大限。';
+  const three = [head, c(2028), c(2030), c(2027), tail, '', '依據：years --palace 夫妻 的掃描結果。'].join('\n');
+  assert.ok(checkMarks(three, love).ok, '三個候選加另一種讀法合規');
+  assert.ok(checkMarks(three.replace(/候選：/g, '候选：'), love).ok, '簡體「候选：」同樣認可');
+  const four = [head, c(2028), c(2030), c(2027), c(2031), tail].join('\n');
+  assert.deepEqual(checkMarks(four, love).tooLongAbduction, ['應期'], '候選超過三個要報');
+  const padded = [head, c(2028), c(2030), '- 流年化祿', '- 大限化權', tail].join('\n');
+  assert.deepEqual(checkMarks(padded, love).tooLongAbduction, ['應期'], '候選以外的清單照樣算篇幅');
+  assert.ok(buildReasoningRules(ZIWEI_VOCABULARY).includes('「候選：」'), '規則須寫明候選寫法');
 }
 // 骨架先回答所問：不含演繹節標題，只列溯因節
 const sk = renderSkeleton(overview);

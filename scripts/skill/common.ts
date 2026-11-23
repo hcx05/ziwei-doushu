@@ -12,7 +12,7 @@ import { ASSUMPTION_MARK } from '../../lib/reasoning/kinds';
 import type { BirthFormState } from '../../lib/systems/ziwei/share';
 import { readFileSync } from 'node:fs';
 import { checkMarks, enforceMarks } from '../../lib/reasoning/check';
-import { ABDUCTION_MAX_LINES, UNCERTAINTY_MARK, type SectionSpec } from '../../lib/reasoning/kinds';
+import { ABDUCTION_MAX_LINES, CANDIDATE_MARK, MAX_CANDIDATES, UNCERTAINTY_MARK, type SectionSpec } from '../../lib/reasoning/kinds';
 import type { CastMoment } from '../../lib/systems/liuyao/engine';
 
 export type Args = { _: string[]; [k: string]: string | boolean | string[] };
@@ -163,7 +163,7 @@ export function runCheck(args: Args, sections: SectionSpec[]): void {
   const r = checkMarks(text, sections);
   if (r.ok) { console.log('✓ 溯因節都已標注，篇幅也在限制內。'); return; }
   if (r.unmarkedAbduction.length) console.log(`✗ 這些溯因節第一行沒有以「${UNCERTAINTY_MARK}」開頭：${r.unmarkedAbduction.join('、')}`);
-  if (r.tooLongAbduction.length) console.log(`✗ 這些溯因節超過 ${ABDUCTION_MAX_LINES} 行（只寫結論與「另一種讀法」，不列訊號、不貼過程）：${r.tooLongAbduction.join('、')}`);
+  if (r.tooLongAbduction.length) console.log(`✗ 這些溯因節超過 ${ABDUCTION_MAX_LINES} 行（只寫結論與「另一種讀法」，不列訊號、不貼過程；應期題另可加至多 ${MAX_CANDIDATES} 行「${CANDIDATE_MARK}」）：${r.tooLongAbduction.join('、')}`);
   process.exitCode = 1;
 }
 

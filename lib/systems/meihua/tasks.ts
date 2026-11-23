@@ -32,7 +32,7 @@ export const MEIHUA_SECTION_SETS: Record<string, SectionSpec[]> = {
     { title: '吉凶判斷', kind: 'abduction',
       instruction: '綜合用、互、變的生克與旺衰判斷吉凶，說明先後（用為始、互為中、變為終），並給另一種讀法。' },
     { title: '應期', kind: 'abduction',
-      instruction: '按成卦之數與書中「行半、坐倍、立如數」或生克之卦的卦氣推測時間，並給另一種可能。' },
+      instruction: '按成卦之數與書中「行半、坐倍、立如數」或生克之卦的卦氣推測時間；可列 2 到 3 行「候選：」，每行一個時間加一句依據，最可能的放第一行，並給另一種可能。' },
     { title: '類象與爻辭', kind: 'abduction',
       instruction: '先逐字引用工具給出的動爻爻辭與八卦屬類，再說明放到所問之事上可能指什麼人、什麼物。' },
   ],
